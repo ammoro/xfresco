@@ -1,0 +1,30 @@
+6He + 208Pb C+N (s+p+d)
+NAMELIST
+ &FRESCO hcm=0.15 rmatch=100. rintp=0.20 hnl=0.025 
+	 rnl=1.0 centre=0.00 jtmax=100 absend=-0.00 dry=F 
+	 jump(1:6:1)= 0 0 0 0 0 0jbord(1:6)= 0 0 0 0 0.0 0.0
+	 kqmax=1 thmin=1.00 thmax=180 thinc=1 cutl=0.00 
+	 cutr=-15 cutc=0.00 iblock=58 pralpha=F nnu=24 
+	 mtmin=8 erange=-0.1000 dk=0.0020 chans=1 treneg=2 
+	 smats=2  xstabl=1 pel=1 exl=1 lab=1 lin=1 lex=1 
+	 elab(1:4)= 22.0 0 0 0nlab(1:3)= 0 0 0fatal=F 
+	 nosol=F psiren=F unitmass=1.007335 finec=137.03599  /
+
+ &PARTITION namep='6He' massp=6.0000 zp=2 
+	 namet='208Pb' masst=208.0000 zt=82 qval=0.0 pwf=F nex=58 
+	 readstates=21  /
+
+ &partition /
+ 
+ &POT kp=1 itt=F ap=6.000 at=208.000 rc=1.25  /
+ &pot / 
+ 
+ &overlap / 
+ 
+ &COUPLING icto=1 icfrom=1 kind=9 ip2=2 ip3=3 
+	 p1=1. p2=1.  /
+ &coupling / 
+ 
+Output code for fresco input written by xfresco version 1.5
+ at Sun Mar  5 21:37:50 2006
+ 

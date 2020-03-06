@@ -1,0 +1,26 @@
+Summary: Xfresco, a front end for fresco written by Antonio M. Moro
+Name: xfresco
+Version: 2.1
+Release: 1
+License: GNU
+Group: Applications/Math
+Source: $PWD/xfresco/xfresco-2.1.tar.gz
+%description
+This program offers an intuitive and user friendly gui for the Coupled Channels 
+Computer Code FRESCO, by I.J. Thompson.
+
+%prep
+%setup
+
+%build
+make RPM_OPT_FLAGS="$RPM_OPT_FLAGS"
+
+%install
+make install
+#install -s -m 755 -o 0 -g 0 bin/xfresco /usr/local/bin/xfresco
+
+%files
+%doc README
+
+/usr/local/bin/xfresco
+/usr/local/bin/runfresco

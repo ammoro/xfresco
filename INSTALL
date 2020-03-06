@@ -1,0 +1,123 @@
+See also installation notes at:
+
+http://www.cica.es/aliens/dfamnus/famn/amoro/download.html
+
+
+  - cdc.f is written in fortran90 (not fortran 77) so, to compile this code, you need a fortran90 
+compiler. Under linux,
+you can use the "gfortran" compiler, which comes with some linux distributions (or can be easily 
+fetched from your linux
+repository), and also the g95 compiler. You can use also the  Intel fortran  compiler (ifort). This is 
+a commercial compiler,
+but you can get a free academic version at:
+
+    http://www.intel.com/cd/software/products/asmo-na/eng/340679.htm
+
+    - fresco is also written in fortran 90. Once you have a fortran compiler installed in your system 
+(g95, ifort, gfortran...) you have to enter into the source directory (within the fresco tree), and run 
+the script "mk". This will run the "make" script with the appropriate options for you.
+
+    - Xfresco is written in starndard C. Under linux you likely have the gcc compiler installed in you 
+system. You need also the DEVELOPMENT packages of the GTK graphical libraries, but maybe they are 
+already installed, since these libraries are used by many linux applications. If not, you can get them 
+from your linux repository. The package name depends on the particular distribution. For example, in 
+fedora the package is called: " gtk+-devel" and to install them you have to run (as root) the command:
+
+        yum install gtk+-devel
+
+    In Debian or Ubuntu, the package is named:  libgtk2.0-dev, and can be installed as "apt-get install 
+libgtk2.0-dev"
+ 
+    In 64-bits systems, in order to execute the binary compiled in a 32-bits system, you need to 
+install the package "ia32-libs-gtk"    
+
+    Once you have these packages installed you have to compile xfresco running the following commands 
+(from Xfresco main directory)
+
+    ./configure
+    make
+    make install
+
+    The last command will just copy the executables "xfresco" and "runfresco" from the "src" 
+subdirectory to the default  installation  parth (/usr/local/bin). Indeed to can copy them (by hand) to 
+a different location.
+
+
+
+INSTALLATION PROBLEMS & HINTS
+================================================================================
+
+Install development GTK libraries:
+
+   - In fedora/readhat: yum install gtk+-devel
+
+   - In Debian: apt-get install libgtk2.0-dev
+
+
+FONTS: If fonts are too large, you can define smaller GTK fonts. 
+
+    - In Fedora. Create a .gtkrc-2.0 file in your HOME directory with:
+
+	style "user-font" {
+	    font_name = "Bitstream Vera Sans 8"
+	}
+	widget_class "*" style "user-font"
+
+       
+Problem: Installation in Intel Mac PowerBook with Fink: when running ./configure script some 
+    users have reported the error:
+
+	Package pango was not found in the pkg-config search path.
+	Perhaps you should add the directory containing `pango.pc'
+	to the PKG_CONFIG_PATH environment variable
+	Package 'pango', required by 'GDK', not found
+
+	Consider adjusting the PKG_CONFIG_PATH environment variable if you
+	installed software in a non-standard prefix.
+
+Solution: apparently, pango is installed but not in the directories specified by pkg-config 
+        Following this link,
+
+	  http://www.mail-archive.com/fink-users@lists.sourceforge.net/msg28211.html
+   
+	one must define the PKG_CONFIG_PATH variable to point to the right directory. So, you have 
+        to write something like:
+
+	    export PKG_CONFIG_PATH=  /sw/lib/pango-ft219/lib/
+
+	where " /sw/lib/pango-ft219/lib/" should be replaced by the directory containing the pango files. 
+        This directory can be found with the command:
+
+	    dpkg -L pango1-xft2-ft219-dev|grep pc
+
+
+
+Alpha OSF v4.0f
+------------------
+Description:
+-----------
+testglib crashes in all cases (glib 1.2.1 -> 1.2.8) on Dec alpha osf v4.0f right
+after printing "cwd: ....". Also, gtk+ crashes during memory allocation in XOpenDisplay. 
+Analysis:
+The problem is due to a broken getpwuid_r on Dec alpha osf v4.0f. It is called with an initial buffer size
+of 64 in gutils.c function "static void g_get_any_init (void)" Rather than returning an error and setting
+errno, the getpwuid_r happily writes beyond the end of the allocated buffer. This causes a crash lateron,
+when new memory is allocated. 
+Solution:
+--------
+The man page for getpwuid_r states that a minimal
+buffer size of 1024 is required.
+So setting "guint bufsize = 1024;" resolves this problem.
+
+
+SUN workstations
+----------------
+Description:When typing "make" you might get the following error message:
+mksh: Fatal error in reader: = missing from replacement macro reference
+
+Solution:
+---------
+This means that you are using a non-GNU make, that is unable to interpret some GNU 
+instructions. To fix this problem, use a gnu make. It is normally installed in SUN 
+systems under the name "gnumake" or "gmake". 
+-- 

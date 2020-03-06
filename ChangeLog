@@ -1,0 +1,80 @@
+11/04/2008: Include ISC<0 in "overlaps" section. ISC<0 for a bound state means that 
+            the depth of the corresponding binding potential will be permanently 
+            scaled for the remaining overlaps. 
+
+26/10/2007: When "Run" command is activated, the input is first saved to make sure 
+            that the input actually run is that in the interface (contributed by 
+            Mesut Karacoç). 
+
+24/07/2007: change "g_strcasecmp" to "g_ascii_strcasecmp" in namelist.c because 
+            g_strcasecmp is deprecated and in with some locales it does not work
+            properly (eg, Turkish locale!) 
+
+
+16/06/2007: XFresco 2.0 released! This is a port of Xfresco to GTK+2.x
+            Interface modified
+	    New variables: NFUS
+
+10/03/2001: Variables SPIFL and EXTRA eliminated from namelist STATES
+	    according to fresco frxx.v9
+
+03/04/2001: File->Import implemented
+
+04/04/2001: Variables CDCC, MELFIL implemented
+
+05/04/2001: Variables for R-matrix algorith implemented
+
+09/04/2001: Added command line option -s, to avoid trace output on stdout
+
+09/04/2001: Fixed bug when destroing "bins window", "R-matrix window", etc
+
+11/04/2001: In step namelist display a brief descriptive text
+
+24/07/2001: Fixed bug with Ap & Ap order
+
+05/09/2001: Fixed bug with kkt
+
+07/09/2001: plane, smallchan, smallcoup,numnode read (still not written!)
+
+11/09/2001: Fixed bug with white spaces between variable name and '=' 
+
+12/09/2001: Fixed bug with strings containing white spaces
+
+23/11/2001: Fixed bug with variable IP3 in couplings section
+
+23/11/2001: Fixed bug: combos with partitions (eg. ICTO, ICTFROM) did not refresh got
+            wrong values when partition clist was modified.
+
+10/12/2001: Added entry with index of state currently selected
+
+13/12/2001: Added entry in CFP/INEL coupling table with a brief description of the
+	    referred states IB and IA
+13/01/2002: Bug fixed: when shape is not specified in a deformed potential it was taken as 0
+            instead of 10.
+
+27/05/2002: script "runfresco" is automatically placed during installation in the bindir directory
+           
+21/06/2002: Line: #include<sys/wait.h> 
+	    eliminated in xfresco_sig.c 
+            
+	    Line: #include <time.h>
+	    eliminated in savefile.c
+	   
+	    They cause compilation erros at alpha-dec
+
+17/09/2002: Included "buttle" variable on R-matrix section
+	    Added extra tooltips
+
+19/09/2002: Bug fixed when reading INEL namelists
+
+20/01/2003: Corrected bug with NEARFA variable
+
+10/03/2003: Included ELAB and NLAB arrays
+
+27/05/2003: Bug fixed: dimension of row[] in put_states incorrect!)
+
+29/09/2003: Bug fixed: iblock only allowed 100 states
+
+14/11/2003: Restore jbord/jump variables
+
+14/07/2005: 

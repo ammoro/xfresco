@@ -1,0 +1,459 @@
+Only in ../../xfresco-2.0/src/: #xfresco_sig.c.ok#
+Common subdirectories: ../../xfresco-2.0/src/.deps and ./.deps
+diff ../../xfresco-2.0/src/Makefile ./Makefile
+69c69
+< ACLOCAL = ${SHELL} /users/home/moro/xfresco/xfresco-2.0/missing --run aclocal-1.9
+---
+> ACLOCAL = ${SHELL} /users/home/moro/xfresco/xfresco-2.1/missing --run aclocal-1.9
+72,75c72,75
+< AMTAR = ${SHELL} /users/home/moro/xfresco/xfresco-2.0/missing --run tar
+< AUTOCONF = ${SHELL} /users/home/moro/xfresco/xfresco-2.0/missing --run autoconf
+< AUTOHEADER = ${SHELL} /users/home/moro/xfresco/xfresco-2.0/missing --run autoheader
+< AUTOMAKE = ${SHELL} /users/home/moro/xfresco/xfresco-2.0/missing --run automake-1.9
+---
+> AMTAR = ${SHELL} /users/home/moro/xfresco/xfresco-2.1/missing --run tar
+> AUTOCONF = ${SHELL} /users/home/moro/xfresco/xfresco-2.1/missing --run autoconf
+> AUTOHEADER = ${SHELL} /users/home/moro/xfresco/xfresco-2.1/missing --run autoheader
+> AUTOMAKE = ${SHELL} /users/home/moro/xfresco/xfresco-2.1/missing --run automake-1.9
+109c109
+< MAKEINFO = ${SHELL} /users/home/moro/xfresco/xfresco-2.0/missing --run makeinfo
+---
+> MAKEINFO = ${SHELL} /users/home/moro/xfresco/xfresco-2.1/missing --run makeinfo
+150c150
+< install_sh = /users/home/moro/xfresco/xfresco-2.0/install-sh
+---
+> install_sh = /users/home/moro/xfresco/xfresco-2.1/install-sh
+Only in ../../xfresco-2.0/src/: Makefile.am.ok
+Common subdirectories: ../../xfresco-2.0/src/autom4te-2.53.cache and ./autom4te-2.53.cache
+Common subdirectories: ../../xfresco-2.0/src/autom4te.cache and ./autom4te.cache
+diff ../../xfresco-2.0/src/callbacks.c ./callbacks.c
+46,50d45
+< 
+< /* This is the process number currently running */
+< gint idchild=-1;
+< 
+< 
+67,68d61
+< extern gboolean FRESCO_IS_RUNNING;
+< 
+414a408
+> /** asıl kodu callbacks.c 'ye aktardım. run_file() ile ilişkili olduğu için.**/
+419,433c413
+<   if(idchild>0){
+<     /*    gchar *buffer=g_strdup("kill %i",idchild);*/
+<     g_print("Killing process %i...",idchild);
+<     if (system(g_strdup_printf("kill %i",idchild))){
+<       g_print("succeed\n\n");
+<       idchild=-1;
+<     }
+<     else{
+<       g_print("failed!\n\n");
+<     }
+<   }
+<   else{ 
+<     g_print("Umm..sorry. I found no running process\n\n");
+<   }
+< 
+---
+> kill_current_run (main_window); 
+645c625
+< 
+---
+> /** asıl on_Run_activate'i savefile.c ye aktardım. Böylece save+run'ı birleştirmiş oldum.**/
+649,702c629,630
+< { 
+<   
+<   gchar *command;
+<   gchar *message;
+<   gint itest,return_value;
+<   gint pid;
+<   gint retval;
+<   guint context;
+<   gchar *outfile;
+<   GtkWidget *statusbar=lookup_widget(main_window,"statusbar");
+<  
+< 
+<   /* gint context_id=gtk_statusbar_get_context_id(GTK_STATUSBAR(statusbar),\
+< 						"Statusbar");*/
+<   /* gchar *tmpfile; */
+<   /* gchar *echotest; */
+< 
+<   /* Build outfile name from current_filename */
+<   gchar *buffer=g_strdup(current_filename);
+<   g_strreverse(buffer);
+<   if (g_strncasecmp(buffer,"ni.",3)==0){
+<     gchar *tmp=g_strndup(current_filename,strlen(current_filename)-3);
+<     outfile=g_strdup_printf("%s.out",tmp);
+<   }
+<   else{
+<     outfile=g_strdup_printf("%s.out",current_filename);
+<   }
+<   
+<    context=gtk_statusbar_get_context_id(GTK_STATUSBAR(statusbar),
+< 				       "run");
+< 
+<   /* Create temporal file with current information */
+<   /* tmpnam(tmpfile);*/
+<   /* g_print("Fichero temporal=%s",tmpfile);*/
+<   /* real_save_file (main_window, tmpfile); */
+<   /* g_print("tmp file saved ok\n");*/
+< 
+<   /* Command to execute fresco */
+<   command=g_strdup_printf("runfresco %s %s\n",current_filename,outfile);
+<   /*command=g_strdup_printf("fresco<%s>%s",tmpfile,outfile);*/
+< 
+<   
+<   /*if (FRESCO_IS_RUNNING==TRUE){
+<     g_warning("fresco is already running\n");
+<     return;
+<   }*/
+< 
+<   if ((pid=fork())<0){
+<     g_warning("Could not fork to execute fresco\n");
+<     return;
+<   }
+< 
+<   /*if (wait(NULL) !=pid)
+<      g_print("Child is running\n");*/
+---
+> {
+>   GtkWidget *main_window;
+704,742c632
+<   if (pid==0){
+<     FRESCO_IS_RUNNING=TRUE;
+<     /* Child */
+<     /* printf("CHILD id is %d and return value is %d\n",
+< 	   getpid(),return_value);*/
+< 
+<     g_print("Executing fresco with command:\n%s\n\n",command);
+<     /*g_print("%s\n",command);*/
+<     message=g_strdup("Executing fresco...");
+<     gtk_statusbar_push(GTK_STATUSBAR(statusbar), context, message);
+<     /*retval=system(command);*/
+<     retval=execlp("runfresco","runfresco",current_filename,outfile,0);
+<     /*FRESCO_IS_RUNNING=FALSE;*/
+< 
+< 
+<     /* Check returned value */
+<     if (retval!=itest){
+<       g_print("**ERROR**:run fresco failed!!\n");
+<       message=g_strdup("fresco execution failed!");
+<       gtk_statusbar_push(GTK_STATUSBAR(statusbar), context, message);
+<     }else{
+<       g_print("\nFRESCO executed ok\n");
+<       message=g_strdup("fresco executed OK");
+<       gtk_statusbar_push(GTK_STATUSBAR(statusbar), context, message);
+<     }
+< 
+<      g_free(message);
+<      g_free(command);
+<      g_free(outfile);
+<      exit(0);
+< 	
+<   }
+<   else{
+<      FRESCO_IS_RUNNING=TRUE;
+<     /* Parent */
+<      printf("PARENT id is %d\n",getpid());
+<      /* DIRTY TRICK!!!!!! */
+<      idchild=getpid()+2;
+<   }
+---
+>   main_window = lookup_widget (GTK_WIDGET (menuitem), "main_window");
+744,747c634,642
+<   /*g_free(message);*/
+<   /*g_free(command);*/
+<   /*g_free(outfile);*/ 
+<   return;
+---
+>   /* If the current document doesn't have a filename yet, we call save_as
+>      to show the file selection dialog. */
+>   if (current_filename == NULL)
+>     save_as (main_window);
+>   else
+>     {
+>      real_save_file (main_window, current_filename);
+>      run_file(main_window, current_filename);
+>     }
+750d644
+< 
+Binary files ../../xfresco-2.0/src/callbacks.o and ./callbacks.o differ
+Only in ../../xfresco-2.0/src/: interface.c.bak
+Only in ../../xfresco-2.0/src/: interface.h.bak
+Binary files ../../xfresco-2.0/src/interface.o and ./interface.o differ
+diff ../../xfresco-2.0/src/lixo ./lixo
+1,6c1,30
+< 11,16d10
+< < /** Run'dan önce "Save" in otomatik yapılabilmesi için 19 Eylül de callbacks.c
+< <     ve savefile.c için de yerdeğiştirmeler yaptım.
+< <    unistd.h --> getpid() process ID yakalayıcı için gerekli.
+< < **/
+< < #include <unistd.h>
+---
+> Only in ../../xfresco-2.0/src/: #xfresco_sig.c.ok#
+> Common subdirectories: ../../xfresco-2.0/src/.deps and ./.deps
+> diff ../../xfresco-2.0/src/Makefile ./Makefile
+> 69c69
+> < ACLOCAL = ${SHELL} /users/home/moro/xfresco/xfresco-2.0/missing --run aclocal-1.9
+> ---
+> > ACLOCAL = ${SHELL} /users/home/moro/xfresco/xfresco-2.1/missing --run aclocal-1.9
+> 72,75c72,75
+> < AMTAR = ${SHELL} /users/home/moro/xfresco/xfresco-2.0/missing --run tar
+> < AUTOCONF = ${SHELL} /users/home/moro/xfresco/xfresco-2.0/missing --run autoconf
+> < AUTOHEADER = ${SHELL} /users/home/moro/xfresco/xfresco-2.0/missing --run autoheader
+> < AUTOMAKE = ${SHELL} /users/home/moro/xfresco/xfresco-2.0/missing --run automake-1.9
+> ---
+> > AMTAR = ${SHELL} /users/home/moro/xfresco/xfresco-2.1/missing --run tar
+> > AUTOCONF = ${SHELL} /users/home/moro/xfresco/xfresco-2.1/missing --run autoconf
+> > AUTOHEADER = ${SHELL} /users/home/moro/xfresco/xfresco-2.1/missing --run autoheader
+> > AUTOMAKE = ${SHELL} /users/home/moro/xfresco/xfresco-2.1/missing --run automake-1.9
+> 109c109
+> < MAKEINFO = ${SHELL} /users/home/moro/xfresco/xfresco-2.0/missing --run makeinfo
+> ---
+> > MAKEINFO = ${SHELL} /users/home/moro/xfresco/xfresco-2.1/missing --run makeinfo
+> 150c150
+> < install_sh = /users/home/moro/xfresco/xfresco-2.0/install-sh
+> ---
+> > install_sh = /users/home/moro/xfresco/xfresco-2.1/install-sh
+> Only in ../../xfresco-2.0/src/: Makefile.am.ok
+> Common subdirectories: ../../xfresco-2.0/src/autom4te-2.53.cache and ./autom4te-2.53.cache
+> Common subdirectories: ../../xfresco-2.0/src/autom4te.cache and ./autom4te.cache
+> diff ../../xfresco-2.0/src/callbacks.c ./callbacks.c
+> 46,50d45
+8d31
+< 23,29d16
+10d32
+< < /** savefile.c den buraya aldım kill_current_run() için**/
+12,13d33
+< < /** savefile.c den buraya aldım run_file() için**/
+< < extern gboolean FRESCO_IS_RUNNING;
+16,20c36,41
+< 1064,1188d1050
+< < /** callbacks.c den buraya aldım...**/
+< < void
+< < kill_current_run (GtkWidget *main_window)
+< < {
+---
+> 67,68d61
+> < extern gboolean FRESCO_IS_RUNNING;
+> < 
+> 414a408
+> > /** asıl kodu callbacks.c 'ye aktardım. run_file() ile ilişkili olduğu için.**/
+> 419,433c413
+36,41c57,63
+< < }
+< < 
+< < 
+< < /** callbacks.c den buraya aldım...**/
+< < void
+< < run_file(GtkWidget *main_window,const gchar *filename)
+---
+> ---
+> > kill_current_run (main_window); 
+> 645c625
+> < 
+> ---
+> > /** asıl on_Run_activate'i savefile.c ye aktardım. Böylece save+run'ı birleştirmiş oldum.**/
+> 649,702c629,630
+96c118,121
+< < 
+---
+> ---
+> > {
+> >   GtkWidget *main_window;
+> 704,742c632
+136c161,163
+< < 
+---
+> ---
+> >   main_window = lookup_widget (GTK_WIDGET (menuitem), "main_window");
+> 744,747c634,642
+141c168,183
+< < }
+---
+> ---
+> >   /* If the current document doesn't have a filename yet, we call save_as
+> >      to show the file selection dialog. */
+> >   if (current_filename == NULL)
+> >     save_as (main_window);
+> >   else
+> >     {
+> >      real_save_file (main_window, current_filename);
+> >      run_file(main_window, current_filename);
+> >     }
+> 750d644
+> < 
+> Binary files ../../xfresco-2.0/src/callbacks.o and ./callbacks.o differ
+> Only in ../../xfresco-2.0/src/: interface.c.bak
+> Only in ../../xfresco-2.0/src/: interface.h.bak
+> Binary files ../../xfresco-2.0/src/interface.o and ./interface.o differ
+Binary files ../../xfresco-2.0/src/main.o and ./main.o differ
+Binary files ../../xfresco-2.0/src/namelist.o and ./namelist.o differ
+Binary files ../../xfresco-2.0/src/openfile.o and ./openfile.o differ
+Common subdirectories: ../../xfresco-2.0/src/pixmaps and ./pixmaps
+Common subdirectories: ../../xfresco-2.0/src/po and ./po
+diff ../../xfresco-2.0/src/savefile.c ./savefile.c
+10a11,16
+> /** Run'dan önce "Save" in otomatik yapılabilmesi için 19 Eylül de callbacks.c
+>     ve savefile.c için de yerdeğiştirmeler yaptım.
+>    unistd.h --> getpid() process ID yakalayıcı için gerekli.
+> **/
+> #include <unistd.h>
+> 
+16a23,29
+> /* This is the process number currently running */
+> /** savefile.c den buraya aldım kill_current_run() için**/
+> gint idchild=-1;
+> /** savefile.c den buraya aldım run_file() için**/
+> extern gboolean FRESCO_IS_RUNNING;
+> 
+> 
+49c62
+<   Vardesc hcm_dv=define("hcm","0.1",XFR_NUMBER);
+---
+>   Vardesc hcm_dv=define("hcm","0.0",XFR_NUMBER);
+1050a1064,1188
+> /** callbacks.c den buraya aldım...**/
+> void
+> kill_current_run (GtkWidget *main_window)
+> {
+>   if(idchild>0){
+>     /*    gchar *buffer=g_strdup("kill %i",idchild);*/
+>     g_print("Killing process %i...",idchild);
+>     if (system(g_strdup_printf("kill %i",idchild))){
+>       g_print("succeed\n\n");
+>       idchild=-1;
+>     }
+>     else{
+>       g_print("failed!\n\n");
+>     }
+>   }
+>   else{ 
+>     g_print("Umm..sorry. I found no running process\n\n");
+>   }
+> 
+> }
+> 
+> 
+> /** callbacks.c den buraya aldım...**/
+> void
+> run_file(GtkWidget *main_window,const gchar *filename)
+> { 
+>   
+>   gchar *command;
+>   gchar *message;
+>   gint itest,return_value;
+>   gint pid;
+>   gint retval;
+>   guint context;
+>   gchar *outfile;
+>   GtkWidget *statusbar=lookup_widget(main_window,"statusbar");
+>  
+> 
+>   /* gint context_id=gtk_statusbar_get_context_id(GTK_STATUSBAR(statusbar),\
+> 						"Statusbar");*/
+>   /* gchar *tmpfile; */
+>   /* gchar *echotest; */
+> 
+>   /* Build outfile name from current_filename */
+>   gchar *buffer=g_strdup(current_filename);
+>   g_strreverse(buffer);
+>   if (g_strncasecmp(buffer,"ni.",3)==0){
+>     gchar *tmp=g_strndup(current_filename,strlen(current_filename)-3);
+>     outfile=g_strdup_printf("%s.out",tmp);
+>   }
+>   else{
+>     outfile=g_strdup_printf("%s.out",current_filename);
+>   }
+>   
+>    context=gtk_statusbar_get_context_id(GTK_STATUSBAR(statusbar),
+> 				       "run");
+> 
+>   /* Create temporal file with current information */
+>   /* tmpnam(tmpfile);*/
+>   /* g_print("Fichero temporal=%s",tmpfile);*/
+>   /* real_save_file (main_window, tmpfile); */
+>   /* g_print("tmp file saved ok\n");*/
+> 
+>   /* Command to execute fresco */
+>   command=g_strdup_printf("runfresco %s %s\n",current_filename,outfile);
+>   /*command=g_strdup_printf("fresco<%s>%s",tmpfile,outfile);*/
+> 
+>   
+>   /*if (FRESCO_IS_RUNNING==TRUE){
+>     g_warning("fresco is already running\n");
+>     return;
+>   }*/
+> 
+>   if ((pid=fork())<0){
+>     g_warning("Could not fork to execute fresco\n");
+>     return;
+>   }
+> 
+>   /*if (wait(NULL) !=pid)
+>      g_print("Child is running\n");*/
+> 
+>   if (pid==0){
+>     FRESCO_IS_RUNNING=TRUE;
+>     /* Child */
+>     /* printf("CHILD id is %d and return value is %d\n",
+> 	   getpid(),return_value);*/
+> 
+>     g_print("Executing fresco with command:\n%s\n\n",command);
+>     /*g_print("%s\n",command);*/
+>     message=g_strdup("Executing fresco...");
+>     gtk_statusbar_push(GTK_STATUSBAR(statusbar), context, message);
+>     /*retval=system(command);*/
+>     retval=execlp("runfresco","runfresco",current_filename,outfile,0);
+>     /*FRESCO_IS_RUNNING=FALSE;*/
+> 
+> 
+>     /* Check returned value */
+>     if (retval!=itest){
+>       g_print("**ERROR**:run fresco failed!!\n");
+>       message=g_strdup("fresco execution failed!");
+>       gtk_statusbar_push(GTK_STATUSBAR(statusbar), context, message);
+>     }else{
+>       g_print("\nFRESCO executed ok\n");
+>       message=g_strdup("fresco executed OK");
+>       gtk_statusbar_push(GTK_STATUSBAR(statusbar), context, message);
+>     }
+> 
+>      g_free(message);
+>      g_free(command);
+>      g_free(outfile);
+>      exit(0);
+> 	
+>   }
+>   else{
+>      FRESCO_IS_RUNNING=TRUE;
+>     /* Parent */
+>      printf("PARENT id is %d\n",getpid());
+>      /* DIRTY TRICK!!!!!! */
+>      idchild=getpid()+2;
+>   }
+> 
+>   /*g_free(message);*/
+>   /*g_free(command);*/
+>   /*g_free(outfile);*/ 
+>   return;
+> }
+diff ../../xfresco-2.0/src/savefile.h ./savefile.h
+9a10,17
+> /** bunlar savefile.c ye save+run için eklendi. **/
+> /**-------------------19 Eylül 2007 ---------------**/
+> void
+> kill_current_run (GtkWidget *main_window); 
+> 
+> void
+> run_file(GtkWidget *main_window,const gchar *filename);
+> /**--------------------------------------------------**/
+Binary files ../../xfresco-2.0/src/savefile.o and ./savefile.o differ
+Binary files ../../xfresco-2.0/src/support.o and ./support.o differ
+Binary files ../../xfresco-2.0/src/utils.o and ./utils.o differ
+Binary files ../../xfresco-2.0/src/xfresco and ./xfresco differ
+Only in ../../xfresco-2.0/src/: xfresco_sig.c.ok
+Only in ../../xfresco-2.0/src/: xfresco_sig.c.old
+Only in ../../xfresco-2.0/src/: xfresco_sig.h.ok
+Only in ../../xfresco-2.0/src/: xfresco_src.c.bak
+Only in ../../xfresco-2.0/src/: xfresco_src.h.bak

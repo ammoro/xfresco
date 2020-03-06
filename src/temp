@@ -1,0 +1,52 @@
+ switch(retchar=read_word(f,&word,type)){
+	  case EOF: 
+	    EndOfFile=TRUE;
+	    nwarnings+=1;
+	    if (nwarnings>MAXERRORS) too_many_warnings();
+	    g_warning("End of file found trying to \
+read value for variable %s",\
+		    bufitem->str);
+	    g_free(bufitem);
+	    return(END_OF_FILE);
+	    break;
+	    
+	  case '/':
+	    EndOfList=TRUE;
+	    /*xfr_print(" End of list found");*/
+	    if (EmptyList==TRUE) return(EMPTY_LIST);
+	    g_string_assign(var,word);
+	    xfr_print("%s ",var->str);
+	    VAR_IN_LIST=TRUE;
+	    break;
+	    
+	  case '=':
+	    g_print("\nInternal ERROR: '=' found after\n ");
+	    g_print("reading value of variable %s\n. Please\n",bufitem->str);
+            g_print("report to moro@us.es together with\n");
+	    g_print("the input that caused the error\n");
+	    exit(0);
+	    break;
+
+	  case ',':
+	    g_string_assign(var,word);      
+	    g_print("\n Real part: %s \n",var->str);
+	    if (vd->type==XFR_COMPLEX){
+	      VAR_IN_LIST=TRUE;
+	    }else{
+	      g_print("\n Unexpected ','\n ");
+	    }
+	    exit(0);
+	    break;
+
+	  default:	  
+	    if (nvals>1 && isalpha(retchar)!=0){
+	      g_print("isalpha=T\n");
+	      break;
+	    }
+	    g_string_assign(var,word);    
+	    xfr_print("%s ",var->str);
+	    /*if (vd->type==XFR_COMPLEX)  xfr_print("Default: %s ",var->str); */
+	    VAR_IN_LIST=TRUE;
+	    break;
+	      
+	  } /* switch */

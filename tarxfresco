@@ -1,0 +1,3 @@
+tar --exclude='tests' --exclude='pruebas' --exclude='*.o' --exclude='*~' \
+--exclude='misc' --exclude='*.bak' \
+--exclude='xfresco' -zcvf xfresco.tar.gz *

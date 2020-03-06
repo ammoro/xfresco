@@ -1,0 +1,52 @@
+
+				- XFresco Notes -
+				  ~~~~~~~~~~~~~
+	This is Xfresco, a graphics interface for the coupled channel computer code FRESCO, 
+written by Ian Thomson (I.Thompson@surrey.ac.uk). The official site for FRESCO is www.fresco.org.uk
+
+	Note for fresco users:
+	~~~~~~~~~~~~~~~~~~~~~~
+	If you are familiarized with the use of fresco you will notice that Xfresco
+keeps most of the scheme that fresco uses. In fact, Xfresco has been written trying
+to keep compatibility with fresco input files as much as possible. 
+
+	Features not implemented:
+	~~~~~~~~~~~~~~~~~~~~~~~~
+	Due mainly to time limitation, some features of fresco are not yet 
+implemented in Xfresco. This does not means *neccessary* that input files including these  
+features will not be read by Xfresco, but they will be omitted.
+ 
+	Indeed, you can always modify by hand the output code written by 
+Xfresco including those things that you have not been able to to include with Xfresco.
+
+	Presently these features are:
+	- 2 particle form-factors.
+	- core excitation
+
+
+	Future development:
+	~~~~~~~~~~~~~~~~~~
+	Although most of the features of fresco can be understood and parsed by
+Xfresco there are still many things to do, and to improve!. Future improvements
+depends mainly on time!! Suggestions are welcome. 
+		
+	   
+	
+	Reporting Bugs:
+	~~~~~~~~~~~~~~
+	Xfresco is on a very early stage of develpment. Although it has been tested
+for many input files it is hard to test for all the possibilities that fresco offers. 
+For this reason, Xfresco may contain significant bugs that I hope to fix in
+future versions. For this task I would appreciate very much your help. If you find
+I bug, please, report it to moro@us.es. Try to provide as much information
+as possible: input file that produced the problem, action that caused the program
+to crash and whatever you think useful to determine the bug. 
+
+				
+							Enjoy it!!!!!!
+	
+
+
+
+
+

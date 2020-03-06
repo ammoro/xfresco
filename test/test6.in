@@ -1,0 +1,224 @@
+6He+208Pb -> (alpha + 2n) + 208Pb                                               
+NAMELIST
+ &FRESCO hcm=0.100 rmatch=260.000 rintp=0.20 
+	 hnl=0.100 rnl=3.00 centre=0.00 rsp=0.0 jtmin=0.0 
+	 jtmax=200.0 absend=-0.0000 dry=F jump(1:6:1)=0 0 0 0 0 
+	 0 jbord(1:6)=0 0 0 0 0.0 0.0 thmax=180 
+	 thinc=0.50 cutl=0.00 cutr=-12.00 cutc=0.00 ips=0.0000 
+	 smallchan=1.00E-13 smallcoup=1.00E-12 iblock=26 pralpha=F 
+	 nnu=24 chans=1 smats=2  xstabl=1 cdcc=1 pel=1 
+	 exl=1 lab=1 lin=1 lex=1 elab=22 nlab(1:3)=0 0 0 fatal=T nosol=F psiren=F 
+	 unitmass=1.000 finec=137.03599d0  /
+
+ &PARTITION namep='6He' massp=6.0000 zp=2 
+	 namet='208Pb' masst=208.0000 zt=82 qval=0.9734 pwf=F 
+	 nex=25  /
+ &STATES jp=0.0 bandp=1 ep=0.0000 cpot=1 jt=0.0 
+	 bandt=1 et=0.0000 fexch=F  /
+ &STATES jp=0.0 bandp=1 ep=1.0757 cpot=1 jt=0.0 
+	 copyt=1 et=0.0000 fexch=F  /
+ &STATES jp=0.0 bandp=1 ep=1.3765 cpot=1 jt=0.0 
+	 copyt=1 et=0.0000 fexch=F  /
+ &STATES jp=0.0 bandp=1 ep=1.9100 cpot=1 jt=0.0 
+	 copyt=1 et=0.0000 fexch=F  /
+ &STATES jp=0.0 bandp=1 ep=2.6761 cpot=1 jt=0.0 
+	 copyt=1 et=0.0000 fexch=F  /
+ &STATES jp=0.0 bandp=1 ep=3.6749 cpot=1 jt=0.0 
+	 copyt=1 et=0.0000 fexch=F  /
+ &STATES jp=0.0 bandp=1 ep=4.9062 cpot=1 jt=0.0 
+	 copyt=1 et=0.0000 fexch=F  /
+ &STATES jp=0.0 bandp=1 ep=6.3703 cpot=1 jt=0.0 
+	 copyt=1 et=0.0000 fexch=F  /
+ &STATES jp=0.0 bandp=1 ep=8.0669 cpot=1 jt=0.0 
+	 copyt=1 et=0.0000 fexch=F  /
+ &STATES jp=1.0 bandp=-1 ep=1.0757 cpot=1 jt=0.0 
+	 copyt=1 et=0.0000 fexch=F  /
+ &STATES jp=1.0 bandp=-1 ep=1.3765 cpot=1 jt=0.0 
+	 copyt=1 et=0.0000 fexch=F  /
+ &STATES jp=1.0 bandp=-1 ep=1.9100 cpot=1 jt=0.0 
+	 copyt=1 et=0.0000 fexch=F  /
+ &STATES jp=1.0 bandp=-1 ep=2.6761 cpot=1 jt=0.0 
+	 copyt=1 et=0.0000 fexch=F  /
+ &STATES jp=1.0 bandp=-1 ep=3.6749 cpot=1 jt=0.0 
+	 copyt=1 et=0.0000 fexch=F  /
+ &STATES jp=1.0 bandp=-1 ep=4.9062 cpot=1 jt=0.0 
+	 copyt=1 et=0.0000 fexch=F  /
+ &STATES jp=1.0 bandp=-1 ep=6.3703 cpot=1 jt=0.0 
+	 copyt=1 et=0.0000 fexch=F  /
+ &STATES jp=1.0 bandp=-1 ep=8.0669 cpot=1 jt=0.0 
+	 copyt=1 et=0.0000 fexch=F  /
+ &STATES jp=2.0 bandp=1 ep=1.0757 cpot=1 jt=0.0 
+	 copyt=1 et=0.0000 fexch=F  /
+ &STATES jp=2.0 bandp=1 ep=1.3765 cpot=1 jt=0.0 
+	 copyt=1 et=0.0000 fexch=F  /
+ &STATES jp=2.0 bandp=1 ep=1.9100 cpot=1 jt=0.0 
+	 copyt=1 et=0.0000 fexch=F  /
+ &STATES jp=2.0 bandp=1 ep=2.6761 cpot=1 jt=0.0 
+	 copyt=1 et=0.0000 fexch=F  /
+ &STATES jp=2.0 bandp=1 ep=3.6749 cpot=1 jt=0.0 
+	 copyt=1 et=0.0000 fexch=F  /
+ &STATES jp=2.0 bandp=1 ep=4.9062 cpot=1 jt=0.0 
+	 copyt=1 et=0.0000 fexch=F  /
+ &STATES jp=2.0 bandp=1 ep=6.3703 cpot=1 jt=0.0 
+	 copyt=1 et=0.0000 fexch=F  /
+ &STATES jp=2.0 bandp=1 ep=8.0669 cpot=1 jt=0.0 
+	 copyt=1 et=0.0000 fexch=F  /
+
+ &PARTITION namep='4He' massp=4.0000 zp=2 
+	 namet='208Pb+2' masst=210.0000 zt=82 qval=0.0000 pwf=F 
+	 nex=-1  /
+ &STATES jp=0.0 bandp=1 ep=0.0000 cpot=2 jt=0.0 
+	 bandt=1 et=0.0000 fexch=F  /
+
+ &partition /
+ 
+ &POT kp=1 itt=F ap=0.0000 at=208.0000 rc=1.3000  /
+ &POT kp=4 itt=F ap=4.0000 at=2.0000 rc=0.6670  /
+ &POT kp=4 type=1 itt=F p1=84.5200 p2=0.6670 
+	 p3=0.3900  /
+ &POT kp=5 itt=F ap=4.0000 at=2.0000 rc=0.6670  /
+ &POT kp=5 type=1 itt=F p1=90.7960 p2=0.6670 
+	 p3=0.3900  /
+ &POT kp=3 itt=F ap=0.0000 at=208.0000 rc=1.1500  /
+ &POT kp=3 type=1 itt=F p1=107.0700 p2=1.1500 
+	 p3=0.8100  /
+ &POT kp=3 type=2 itt=F p1=0.0000 p2=0.0000 
+	 p3=0.0000 p4=16.1600 p5=1.3400 p6=0.6800 p7=0.0000  /
+ &POT kp=2 itt=F ap=4.0000 at=208.0000 rc=1.2200  /
+ &POT kp=2 type=1 itt=F p1=100.0000 p2=1.1130 
+	 p3=0.5800 p4=10.0000 p5=1.1130 p6=0.5800 p7=0.0000  /
+ &pot / 
+ 
+ &OVERLAP kn1=1 ic1=1 ic2=2 in=1 nn=2 sn=0.0 j=0.0 
+	 kbpot=4 be=0.9734 isc=1 nam=1 ampl=1.0000  /
+ &OVERLAP kn1=2 ic1=1 ic2=2 in=1 sn=0.0 j=0.0 
+	 kbpot=4 be=-0.1023 isc=12 ipc=2 nfl=-101 nam=1 
+	 ampl=1.0000 nk=200 er=-0.1845  /
+ &OVERLAP kn1=3 ic1=1 ic2=2 in=1 sn=0.0 j=0.0 
+	 kbpot=4 be=-0.4031 isc=12 ipc=2 nfl=-102 nam=1 
+	 ampl=1.0000 nk=200 er=-0.4172  /
+ &OVERLAP kn1=4 ic1=1 ic2=2 in=1 sn=0.0 j=0.0 
+	 kbpot=4 be=-0.9366 isc=12 ipc=2 nfl=-103 nam=1 
+	 ampl=1.0000 nk=200 er=-0.6498  /
+ &OVERLAP kn1=5 ic1=1 ic2=2 in=1 sn=0.0 j=0.0 
+	 kbpot=4 be=-1.7027 isc=12 ipc=2 nfl=-104 nam=1 
+	 ampl=1.0000 nk=200 er=-0.8824  /
+ &OVERLAP kn1=6 ic1=1 ic2=2 in=1 sn=0.0 j=0.0 
+	 kbpot=4 be=-2.7015 isc=12 ipc=2 nfl=-105 nam=1 
+	 ampl=1.0000 nk=200 er=-1.1151  /
+ &OVERLAP kn1=7 ic1=1 ic2=2 in=1 sn=0.0 j=0.0 
+	 kbpot=4 be=-3.9328 isc=12 ipc=2 nfl=-106 nam=1 
+	 ampl=1.0000 nk=200 er=-1.3477  /
+ &OVERLAP kn1=8 ic1=1 ic2=2 in=1 sn=0.0 j=0.0 
+	 kbpot=4 be=-5.3969 isc=12 ipc=2 nfl=-107 nam=1 
+	 ampl=1.0000 nk=200 er=-1.5803  /
+ &OVERLAP kn1=9 ic1=1 ic2=2 in=1 sn=0.0 j=0.0 
+	 kbpot=4 be=-7.0935 isc=12 ipc=2 nfl=-108 nam=1 
+	 ampl=1.0000 nk=200 er=-1.8130  /
+ &OVERLAP kn1=10 ic1=1 ic2=2 in=1 l=1 sn=0.0 j=1.0 
+	 kbpot=4 be=-0.1023 isc=2 ipc=2 nfl=-200 nam=1 
+	 ampl=1.0000 nk=200 er=-0.1845  /
+ &OVERLAP kn1=11 ic1=1 ic2=2 in=1 l=1 sn=0.0 j=1.0 
+	 kbpot=4 be=-0.4031 isc=2 ipc=2 nfl=-201 nam=1 
+	 ampl=1.0000 nk=200 er=-0.4172  /
+ &OVERLAP kn1=12 ic1=1 ic2=2 in=1 l=1 sn=0.0 j=1.0 
+	 kbpot=4 be=-0.9366 isc=2 ipc=2 nfl=-202 nam=1 
+	 ampl=1.0000 nk=200 er=-0.6498  /
+ &OVERLAP kn1=13 ic1=1 ic2=2 in=1 l=1 sn=0.0 j=1.0 
+	 kbpot=5 be=-1.7027 isc=2 ipc=2 nfl=-203 nam=1 
+	 ampl=1.0000 nk=200 er=-0.8824  /
+ &OVERLAP kn1=14 ic1=1 ic2=2 in=1 l=1 sn=0.0 j=1.0 
+	 kbpot=4 be=-2.7015 isc=2 ipc=2 nfl=-204 nam=1 
+	 ampl=1.0000 nk=200 er=-1.1151  /
+ &OVERLAP kn1=15 ic1=1 ic2=2 in=1 l=1 sn=0.0 j=1.0 
+	 kbpot=4 be=-3.9328 isc=2 ipc=2 nfl=-205 nam=1 
+	 ampl=1.0000 nk=200 er=-1.3477  /
+ &OVERLAP kn1=16 ic1=1 ic2=2 in=1 l=1 sn=0.0 j=1.0 
+	 kbpot=4 be=-5.3969 isc=2 ipc=2 nfl=-206 nam=1 
+	 ampl=1.0000 nk=200 er=-1.5803  /
+ &OVERLAP kn1=17 ic1=1 ic2=2 in=1 l=1 sn=0.0 j=1.0 
+	 kbpot=4 be=-7.0935 isc=2 ipc=2 nfl=-207 nam=1 
+	 ampl=1.0000 nk=200 er=-1.8130  /
+ &OVERLAP kn1=18 ic1=1 ic2=2 in=1 l=2 sn=0.0 j=2.0 
+	 kbpot=5 be=-0.1023 isc=2 ipc=2 nfl=-300 nam=1 
+	 ampl=1.0000 nk=200 er=-0.1845  /
+ &OVERLAP kn1=19 ic1=1 ic2=2 in=1 l=2 sn=0.0 j=2.0 
+	 kbpot=5 be=-0.4031 isc=2 ipc=2 nfl=-301 nam=1 
+	 ampl=1.0000 nk=200 er=-0.4172  /
+ &OVERLAP kn1=20 ic1=1 ic2=2 in=1 l=2 sn=0.0 j=2.0 
+	 kbpot=5 be=-0.9366 isc=2 ipc=2 nfl=-302 nam=1 
+	 ampl=1.0000 nk=200 er=-0.6498  /
+ &OVERLAP kn1=21 ic1=1 ic2=2 in=1 l=2 sn=0.0 j=2.0 
+	 kbpot=5 be=-1.7027 isc=2 ipc=2 nfl=-303 nam=1 
+	 ampl=1.0000 nk=200 er=-0.8824  /
+ &OVERLAP kn1=22 ic1=1 ic2=2 in=1 l=2 sn=0.0 j=2.0 
+	 kbpot=5 be=-2.7015 isc=2 ipc=2 nfl=-304 nam=1 
+	 ampl=1.0000 nk=200 er=-1.1151  /
+ &OVERLAP kn1=23 ic1=1 ic2=2 in=1 l=2 sn=0.0 j=2.0 
+	 kbpot=5 be=-3.9328 isc=2 ipc=2 nfl=-305 nam=1 
+	 ampl=1.0000 nk=200 er=-1.3477  /
+ &OVERLAP kn1=24 ic1=1 ic2=2 in=1 l=2 sn=0.0 j=2.0 
+	 kbpot=5 be=-5.3969 isc=2 ipc=2 nfl=-306 nam=1 
+	 ampl=1.0000 nk=200 er=-1.5803  /
+ &OVERLAP kn1=25 ic1=1 ic2=2 in=1 l=2 sn=0.0 j=2.0 
+	 kbpot=5 be=-7.0935 isc=2 ipc=2 nfl=-307 nam=1 
+	 ampl=1.0000 nk=200 er=-1.8130  /
+ &overlap / 
+ 
+ &COUPLING icto=1 icfrom=2 kind=3 ip1=3 ip3=10 
+	 p1=3.0000 p2=2.0000  /
+ &CFP in=1 ib=1 ia=1 kn=1 a=1.0000  /
+ &CFP in=1 ib=2 ia=1 kn=2 a=1.0000  /
+ &CFP in=1 ib=3 ia=1 kn=3 a=1.0000  /
+ &CFP in=1 ib=4 ia=1 kn=4 a=1.0000  /
+ &CFP in=1 ib=5 ia=1 kn=5 a=1.0000  /
+ &CFP in=1 ib=6 ia=1 kn=6 a=1.0000  /
+ &CFP in=1 ib=7 ia=1 kn=7 a=1.0000  /
+ &CFP in=1 ib=8 ia=1 kn=8 a=1.0000  /
+ &CFP in=1 ib=9 ia=1 kn=9 a=1.0000  /
+ &CFP in=1 ib=10 ia=1 kn=10 a=1.0000  /
+ &CFP in=1 ib=11 ia=1 kn=11 a=1.0000  /
+ &CFP in=1 ib=12 ia=1 kn=12 a=1.0000  /
+ &CFP in=1 ib=13 ia=1 kn=13 a=1.0000  /
+ &CFP in=1 ib=14 ia=1 kn=14 a=1.0000  /
+ &CFP in=1 ib=15 ia=1 kn=15 a=1.0000  /
+ &CFP in=1 ib=16 ia=1 kn=16 a=1.0000  /
+ &CFP in=1 ib=17 ia=1 kn=17 a=1.0000  /
+ &CFP in=1 ib=18 ia=1 kn=18 a=1.0000  /
+ &CFP in=1 ib=19 ia=1 kn=19 a=1.0000  /
+ &CFP in=1 ib=20 ia=1 kn=20 a=1.0000  /
+ &CFP in=1 ib=21 ia=1 kn=21 a=1.0000  /
+ &CFP in=1 ib=22 ia=1 kn=22 a=1.0000  /
+ &CFP in=1 ib=23 ia=1 kn=23 a=1.0000  /
+ &CFP in=1 ib=24 ia=1 kn=24 a=1.0000  /
+ &CFP in=1 ib=25 ia=1 kn=25 a=1.0000  /
+ &cfp / 
+ 
+ &Scale     qscale(0)=(    0.100    ,   1.000    )
+    qscale(1)=(   0.2000    ,   2.000    )
+    qscale(2)=(    0.300    ,   3.000    )
+    qscale(3)=(    0.400    ,   4.000    )
+/ 
+ &COUPLING icto=1  icfrom=2  kind=3 ip1=1 ip3=12 
+	 p1=3.0000 p2=2.0000  /
+ &CFP in=1 ib=1 ia=1 kn=1 a=1.0000  /
+ &CFP in=1 ib=1 ia=1 kn=1 a=1.0000  /
+ &cfp / 
+ 
+ &Scale     qscale(0)=(1.00,1.00)
+    qscale(1)=(error,error)
+/ 
+ &COUPLING icto=1  icfrom=2  kind=3 ip1=1 ip3=12 
+	 p1=3.0000 p2=2.0000  /
+ &CFP in=1 ib=1 ia=1 kn=1 a=1.0000  /
+ &CFP in=1 ib=1 ia=1 kn=1 a=1.0000  /
+ &cfp / 
+ 
+ &Scale     qscale(0)=(1.000,1.000)
+    qscale(1)=(1.000,1.000)
+/ 
+ &coupling / 
+ 
+Output code for fresco input written by xfresco version 1.5
+ at Sun Mar  5 01:26:27 2006
+ 

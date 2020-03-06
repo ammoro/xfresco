@@ -1,0 +1,21 @@
+USERS:
+
+* Parity, J and L dependent potentials
+* New KIND couplings (photon couplings)
+* smallchan, smallcoup
+* Exchange button, in Replace, Insert, Add...
+* Two-particle form factors
+* sinjmax
+* improve run command
+* Output options (eg. whether print defaults)
+* COMBO with list of states, i.e., in STEP namelist
+* Read and save unrecognized variables
+* Improve Import (autodetect parameters headings...)
+
+
+
+INTERNAL CODE: 
+* Boolean variables are treated now as STRINGS in reading and NUMBER in writting->fix this
+* Bin window, Jbord window, Rmat window, shoud not receive destroy signal
+* define enum's as globals
+* When changing projectile/target in Couplings, should uptdate informative text for ia and ib

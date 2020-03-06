@@ -1,0 +1,25 @@
+nohup fresco < $1 > $2
+echo -n Fresco execution ended 
+
+exit
+# Rename main outputs
+input=$1
+base=${input%%.*}
+mv fort.201 $base.201
+mv fort.202 $base.202
+mv fort.203 $base.203
+mv fort.16 $base.16
+mv fort.13 $base.13
+mv fort.56 $base.56
+
+exit
+# and delete the rest
+rm fort.??
+
+
+exit
+
+##############
+
+To get the basename (without extension) I use:
+base=${input%%.*}
