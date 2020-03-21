@@ -167,7 +167,8 @@ abs_valof(Vardesc *var_dv){
   gstring=&g_array_index(garray,GString,0);
   buffer=g_strdup(gstring->str);
 
-  if (g_strcasecmp(g_strndup(buffer,1),minus)==0) 
+/*  if (g_strcasecmp(g_strndup(buffer,1),minus)==0) */
+  if (g_ascii_strcasecmp(g_strndup(buffer,1),minus)==0) 
     g_string_erase(gstring,0,1);
   /*
   g_free(minus);
@@ -188,7 +189,9 @@ gchar *
 valof_n(Vardesc *var_dv,gint n){
   GArray *garray=var_dv->garray;
   GString *gstring;
-  g_return_if_fail(garray!=NULL);
+/*  g_return_if_fail(garray!=NULL); */
+    g_return_val_if_fail(garray!=NULL,"1");
+
   if (garray->len <n) return("0");
   gstring=&g_array_index(garray,GString,n);
   return(gstring->str);
@@ -199,7 +202,8 @@ gchar *
 valof_nimag(Vardesc *var_dv,gint n){
   GArray *carray=var_dv->carray;
   GString *gstring;
-  g_return_if_fail(carray!=NULL);
+  /*  g_return_if_fail(garray!=NULL); */
+    g_return_val_if_fail(carray!=NULL,"1");
   if (carray->len <n || carray==NULL ) return("0");
   gstring=&g_array_index(carray,GString,n);
   return(gstring->str);
@@ -326,7 +330,8 @@ readnl(Namelist *mylist,FILE *f){
   }
   
   if (LISTFOUND==FALSE){
-    if (g_strcasecmp(listname,"COUPLING")==0){
+/*	if (g_strcasecmp(listname,"COUPLING")==0){  */
+    if (g_ascii_strcasecmp(listname,"COUPLING")==0){
       g_warning("End of file trying to read COUPLING namelist\n");
     }
     else{
