@@ -3871,7 +3871,7 @@ on_qscale_focus_out_event              (GtkWidget       *widget,
   /*Row selected on coup clist*/
   if (!selection){
     g_warning("No row selected in couplings!\n");
-    return;
+    return 0;
   }
   else {
     coup_row=GPOINTER_TO_INT(selection->data);
@@ -3893,7 +3893,7 @@ on_qscale_focus_out_event              (GtkWidget       *widget,
     }
     else{
       g_print("Internal error. Could not retrieve entry in qscale_changed\n");
-      return;
+      return 0;
     }
   }
   if (qscale_clist==NULL) g_warning("qscale_clist is NULL!\n");
@@ -3901,7 +3901,7 @@ on_qscale_focus_out_event              (GtkWidget       *widget,
   if ((GTK_CLIST(qscale_clist)->rows)-1 < coup_row){
     g_warning("\n In qscale clist number of rows is %i, but expected at least %i\n",\
 	      GTK_CLIST(qscale_clist)->rows,coup_row+1);
-    return;
+    return 0;
   }
   gtk_clist_insert(GTK_CLIST(qscale_clist),coup_row,rowtext);
   return FALSE;
