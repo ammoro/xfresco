@@ -49,7 +49,7 @@ am__installdirs = "$(DESTDIR)$(bindir)"
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
 am_xfresco_OBJECTS = main.$(OBJEXT) interface.$(OBJEXT) \
-	callbacks.$(OBJEXT) namelist.$(OBJEXT) savefile.$(OBJEXT) \
+	callbacks.$(OBJEXT) clist_compat.$(OBJEXT) namelist.$(OBJEXT) savefile.$(OBJEXT) \
 	openfile.$(OBJEXT) utils.$(OBJEXT) support.$(OBJEXT)
 xfresco_OBJECTS = $(am_xfresco_OBJECTS)
 am__DEPENDENCIES_1 =
@@ -166,19 +166,20 @@ target_alias = @target_alias@
 INCLUDES = \
 	-DPACKAGE_DATA_DIR=\""$(datadir)"\" \
 	-DPACKAGE_LOCALE_DIR=\""$(prefix)/$(DATADIRNAME)/locale"\" \
-	@PACKAGE_CFLAGS@
+	@DEPS_CFLAGS@
 
 xfresco_SOURCES = \
 	main.c \
 	interface.c interface.h \
 	callbacks.c callbacks.h \
+	clist_compat.c clist_compat.h \
 	namelist.c namelist.h \
 	savefile.c savefile.h \
 	openfile.c openfile.h \
 	utils.c	utils.h \
 	support.c support.h 
 
-xfresco_LDADD = @PACKAGE_LIBS@ $(INTLLIBS)
+xfresco_LDADD = @DEPS_LIBS@
 all: all-am
 
 .SUFFIXES:
@@ -246,6 +247,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/callbacks.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/clist_compat.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/interface.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/namelist.Po@am__quote@

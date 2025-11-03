@@ -15,7 +15,7 @@ glade_util_create_dialog_with_buttons (const gchar * message,
 				       gint nbuttons,
 				       const gchar * buttons[],
 				       gint default_button,
-				       GtkSignalFunc signal_handlers[],
+				       GCallback signal_handlers[],
 				       gpointer data);
 extern void on_confirm_exit(GtkWidget *button,gpointer data);
 
@@ -1075,7 +1075,7 @@ gint
 too_many_warnings(){
   GtkWidget *dialog;
   const gchar *buttons[] = {"OK","Cancel"};
-  /* GtkSignalFunc handlers[] = {on_confirm_exit, NULL }; */
+  /* GCallback handlers[] = {on_confirm_exit, NULL }; */
   GCallback handlers[]={G_CALLBACK(on_confirm_exit), NULL };
   
   dialog = glade_util_create_dialog_with_buttons ("Too many errors. Abort?",
@@ -1084,7 +1084,7 @@ too_many_warnings(){
 						  handlers,
 						  NULL);
 
-  gtk_window_set_position (GTK_WINDOW (dialog), GTK_WIN_POS_MOUSE);
+  /* gtk_window_set_position (GTK_WINDOW (dialog), GTK_WIN_POS_MOUSE); */ /* GTK_WIN_POS_MOUSE removed in GTK-4 */
   gtk_window_set_modal (GTK_WINDOW (dialog), FALSE);
   gtk_widget_show (dialog);
   return(0);

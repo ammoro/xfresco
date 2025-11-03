@@ -24,8 +24,10 @@
   <signal name="destroy" handler="on_main_window_destroy"/>
 
   <child>
-    <widget class="GtkVBox" id="main_vbox">
+    <widget class="GtkBox" id="main_vbox">
       <property name="visible">True</property>
+      <property name="homogeneous">False</property>
+      <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
       <property name="homogeneous">False</property>
       <property name="spacing">0</property>
 
@@ -404,8 +406,10 @@
 	  <signal name="key_release_event" handler="on_main_notebook_key_release_event"/>
 
 	  <child>
-	    <widget class="GtkVBox" id="vbox_integration_tab">
+	    <widget class="GtkBox" id="vbox_integration_tab">
 	      <property name="visible">True</property>
+	      <property name="homogeneous">False</property>
+       <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
 	      <property name="homogeneous">False</property>
 	      <property name="spacing">0</property>
 
@@ -430,14 +434,18 @@
 		      <property name="right_padding">0</property>
 
 		      <child>
-			<widget class="GtkVBox" id="vbox86">
+			<widget class="GtkBox" id="vbox86">
 			  <property name="visible">True</property>
+			  <property name="homogeneous">False</property>
+     <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
 			  <property name="homogeneous">False</property>
 			  <property name="spacing">0</property>
 
 			  <child>
-			    <widget class="GtkHBox" id="hbox149">
+			    <widget class="GtkBox" id="hbox149">
 			      <property name="visible">True</property>
+			      <property name="homogeneous">False</property>
+         <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 			      <property name="homogeneous">False</property>
 			      <property name="spacing">0</property>
 
@@ -493,8 +501,10 @@
 			  </child>
 
 			  <child>
-			    <widget class="GtkHBox" id="hbox_essential">
+			    <widget class="GtkBox" id="hbox_essential">
 			      <property name="border_width">2</property>
+			      <property name="visible">True</property>
+         <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 			      <property name="visible">True</property>
 			      <property name="homogeneous">False</property>
 			      <property name="spacing">0</property>
@@ -520,11 +530,8 @@
 				      <property name="right_padding">0</property>
 
 				      <child>
-					<widget class="GtkTable" id="table83">
-					  <property name="visible">True</property>
-					  <property name="n_rows">4</property>
-					  <property name="n_columns">2</property>
-					  <property name="homogeneous">False</property>
+					<widget class="GtkGrid" id="table83">
+					  <property name="visible">True</property>					  <property name="homogeneous">False</property>
 					  <property name="row_spacing">0</property>
 					  <property name="column_spacing">0</property>
 
@@ -772,12 +779,9 @@
 				  <property name="shadow_type">GTK_SHADOW_ETCHED_IN</property>
 
 				  <child>
-				    <widget class="GtkTable" id="table_jinterval">
+				    <widget class="GtkGrid" id="table_jinterval">
 				      <property name="border_width">5</property>
-				      <property name="visible">True</property>
-				      <property name="n_rows">4</property>
-				      <property name="n_columns">4</property>
-				      <property name="homogeneous">False</property>
+				      <property name="visible">True</property>				      <property name="homogeneous">False</property>
 				      <property name="row_spacing">0</property>
 				      <property name="column_spacing">2</property>
 
@@ -1039,12 +1043,9 @@
 				  <property name="shadow_type">GTK_SHADOW_ETCHED_IN</property>
 
 				  <child>
-				    <widget class="GtkTable" id="table_angular_range">
+				    <widget class="GtkGrid" id="table_angular_range">
 				      <property name="border_width">6</property>
-				      <property name="visible">True</property>
-				      <property name="n_rows">3</property>
-				      <property name="n_columns">2</property>
-				      <property name="homogeneous">False</property>
+				      <property name="visible">True</property>				      <property name="homogeneous">False</property>
 				      <property name="row_spacing">0</property>
 				      <property name="column_spacing">0</property>
 
@@ -1285,15 +1286,19 @@
 		  <property name="shadow_type">GTK_SHADOW_OUT</property>
 
 		  <child>
-		    <widget class="GtkVBox" id="vbox78">
+		    <widget class="GtkBox" id="vbox78">
 		      <property name="border_width">4</property>
+		      <property name="visible">True</property>
+        <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
 		      <property name="visible">True</property>
 		      <property name="homogeneous">False</property>
 		      <property name="spacing">2</property>
 
 		      <child>
-			<widget class="GtkHBox" id="hbox137">
+			<widget class="GtkBox" id="hbox137">
 			  <property name="visible">True</property>
+			  <property name="homogeneous">False</property>
+     <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 			  <property name="homogeneous">False</property>
 			  <property name="spacing">0</property>
 
@@ -1370,8 +1375,10 @@
 		      </child>
 
 		      <child>
-			<widget class="GtkHBox" id="hbox_eintervals">
+			<widget class="GtkBox" id="hbox_eintervals">
 			  <property name="border_width">5</property>
+			  <property name="homogeneous">False</property>
+     <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 			  <property name="homogeneous">False</property>
 			  <property name="spacing">5</property>
 
@@ -1567,17 +1574,16 @@
 		      </child>
 
 		      <child>
-			<widget class="GtkTable" id="table_inchan">
-			  <property name="visible">True</property>
-			  <property name="n_rows">2</property>
-			  <property name="n_columns">4</property>
-			  <property name="homogeneous">False</property>
+			<widget class="GtkGrid" id="table_inchan">
+			  <property name="visible">True</property>			  <property name="homogeneous">False</property>
 			  <property name="row_spacing">2</property>
 			  <property name="column_spacing">8</property>
 
 			  <child>
-			    <widget class="GtkHBox" id="hbox86">
+			    <widget class="GtkBox" id="hbox86">
 			      <property name="visible">True</property>
+			      <property name="homogeneous">False</property>
+         <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 			      <property name="homogeneous">False</property>
 			      <property name="spacing">0</property>
 
@@ -1893,14 +1899,18 @@
 		  <property name="enable_popup">False</property>
 
 		  <child>
-		    <widget class="GtkVBox" id="vbox87">
+		    <widget class="GtkBox" id="vbox87">
 		      <property name="visible">True</property>
+		      <property name="homogeneous">False</property>
+        <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
 		      <property name="homogeneous">False</property>
 		      <property name="spacing">0</property>
 
 		      <child>
-			<widget class="GtkHBox" id="hbox_trans">
+			<widget class="GtkBox" id="hbox_trans">
 			  <property name="visible">True</property>
+			  <property name="homogeneous">False</property>
+     <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 			  <property name="homogeneous">False</property>
 			  <property name="spacing">0</property>
 
@@ -1913,18 +1923,17 @@
 			      <property name="shadow_type">GTK_SHADOW_ETCHED_IN</property>
 
 			      <child>
-				<widget class="GtkHBox" id="hbox_fnr">
+				<widget class="GtkBox" id="hbox_fnr">
 				  <property name="border_width">3</property>
+				  <property name="visible">True</property>
+      <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 				  <property name="visible">True</property>
 				  <property name="homogeneous">False</property>
 				  <property name="spacing">3</property>
 
 				  <child>
-				    <widget class="GtkTable" id="table_transfer">
-				      <property name="visible">True</property>
-				      <property name="n_rows">3</property>
-				      <property name="n_columns">4</property>
-				      <property name="homogeneous">False</property>
+				    <widget class="GtkGrid" id="table_transfer">
+				      <property name="visible">True</property>				      <property name="homogeneous">False</property>
 				      <property name="row_spacing">1</property>
 				      <property name="column_spacing">0</property>
 
@@ -2292,12 +2301,9 @@
 			  <property name="shadow_type">GTK_SHADOW_ETCHED_IN</property>
 
 			  <child>
-			    <widget class="GtkTable" id="table50">
+			    <widget class="GtkGrid" id="table50">
 			      <property name="border_width">5</property>
-			      <property name="visible">True</property>
-			      <property name="n_rows">1</property>
-			      <property name="n_columns">7</property>
-			      <property name="homogeneous">False</property>
+			      <property name="visible">True</property>			      <property name="homogeneous">False</property>
 			      <property name="row_spacing">1</property>
 			      <property name="column_spacing">2</property>
 
@@ -2540,8 +2546,10 @@
 		  </child>
 
 		  <child>
-		    <widget class="GtkVBox" id="vboxzr">
+		    <widget class="GtkBox" id="vboxzr">
 		      <property name="border_width">10</property>
+		      <property name="visible">True</property>
+        <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
 		      <property name="visible">True</property>
 		      <property name="homogeneous">False</property>
 		      <property name="spacing">15</property>
@@ -2652,12 +2660,9 @@
 		      <property name="shadow_type">GTK_SHADOW_ETCHED_IN</property>
 
 		      <child>
-			<widget class="GtkTable" id="table_2ntransfer">
+			<widget class="GtkGrid" id="table_2ntransfer">
 			  <property name="border_width">5</property>
-			  <property name="visible">True</property>
-			  <property name="n_rows">3</property>
-			  <property name="n_columns">2</property>
-			  <property name="homogeneous">False</property>
+			  <property name="visible">True</property>			  <property name="homogeneous">False</property>
 			  <property name="row_spacing">5</property>
 			  <property name="column_spacing">5</property>
 
@@ -2872,8 +2877,10 @@
 		  </child>
 
 		  <child>
-		    <widget class="GtkVBox" id="vbox85">
+		    <widget class="GtkBox" id="vbox85">
 		      <property name="visible">True</property>
+		      <property name="homogeneous">False</property>
+        <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
 		      <property name="homogeneous">False</property>
 		      <property name="spacing">0</property>
 
@@ -2886,8 +2893,10 @@
 			  <property name="shadow_type">GTK_SHADOW_ETCHED_IN</property>
 
 			  <child>
-			    <widget class="GtkHBox" id="hbox148">
+			    <widget class="GtkBox" id="hbox148">
 			      <property name="border_width">2</property>
+			      <property name="visible">True</property>
+         <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 			      <property name="visible">True</property>
 			      <property name="homogeneous">False</property>
 			      <property name="spacing">0</property>
@@ -2968,13 +2977,10 @@
 		      </child>
 
 		      <child>
-			<widget class="GtkTable" id="table_bins">
+			<widget class="GtkGrid" id="table_bins">
 			  <property name="border_width">15</property>
 			  <property name="width_request">124</property>
-			  <property name="visible">True</property>
-			  <property name="n_rows">2</property>
-			  <property name="n_columns">2</property>
-			  <property name="homogeneous">False</property>
+			  <property name="visible">True</property>			  <property name="homogeneous">False</property>
 			  <property name="row_spacing">4</property>
 			  <property name="column_spacing">4</property>
 
@@ -3127,8 +3133,10 @@
 		      <property name="shadow_type">GTK_SHADOW_ETCHED_IN</property>
 
 		      <child>
-			<widget class="GtkVBox" id="vbox82">
+			<widget class="GtkBox" id="vbox82">
 			  <property name="visible">True</property>
+			  <property name="homogeneous">False</property>
+     <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
 			  <property name="homogeneous">False</property>
 			  <property name="spacing">0</property>
 
@@ -3160,10 +3168,7 @@
 			      <property name="shadow_type">GTK_SHADOW_ETCHED_IN</property>
 
 			      <child>
-				<widget class="GtkTable" id="table_maxcoup">
-				  <property name="n_rows">2</property>
-				  <property name="n_columns">5</property>
-				  <property name="homogeneous">False</property>
+				<widget class="GtkGrid" id="table_maxcoup">				  <property name="homogeneous">False</property>
 				  <property name="row_spacing">0</property>
 				  <property name="column_spacing">0</property>
 
@@ -3274,8 +3279,10 @@
 				  <property name="right_padding">0</property>
 
 				  <child>
-				    <widget class="GtkHBox" id="hbox108">
+				    <widget class="GtkBox" id="hbox108">
 				      <property name="visible">True</property>
+				      <property name="homogeneous">False</property>
+          <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 				      <property name="homogeneous">False</property>
 				      <property name="spacing">0</property>
 
@@ -3359,12 +3366,9 @@
 			  </child>
 
 			  <child>
-			    <widget class="GtkTable" id="table_constants">
+			    <widget class="GtkGrid" id="table_constants">
 			      <property name="border_width">5</property>
-			      <property name="visible">True</property>
-			      <property name="n_rows">2</property>
-			      <property name="n_columns">4</property>
-			      <property name="homogeneous">False</property>
+			      <property name="visible">True</property>			      <property name="homogeneous">False</property>
 			      <property name="row_spacing">5</property>
 			      <property name="column_spacing">5</property>
 
@@ -3659,8 +3663,10 @@
 	  </child>
 
 	  <child>
-	    <widget class="GtkVBox" id="vbox43">
+	    <widget class="GtkBox" id="vbox43">
 	      <property name="visible">True</property>
+	      <property name="homogeneous">False</property>
+       <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
 	      <property name="homogeneous">False</property>
 	      <property name="spacing">0</property>
 
@@ -3673,8 +3679,10 @@
 		  <property name="shadow_type">GTK_SHADOW_ETCHED_IN</property>
 
 		  <child>
-		    <widget class="GtkHBox" id="hbox87">
+		    <widget class="GtkBox" id="hbox87">
 		      <property name="visible">True</property>
+		      <property name="homogeneous">False</property>
+        <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 		      <property name="homogeneous">False</property>
 		      <property name="spacing">0</property>
 
@@ -3962,17 +3970,16 @@
 	      </child>
 
 	      <child>
-		<widget class="GtkTable" id="table_trace">
-		  <property name="visible">True</property>
-		  <property name="n_rows">7</property>
-		  <property name="n_columns">2</property>
-		  <property name="homogeneous">False</property>
+		<widget class="GtkGrid" id="table_trace">
+		  <property name="visible">True</property>		  <property name="homogeneous">False</property>
 		  <property name="row_spacing">0</property>
 		  <property name="column_spacing">0</property>
 
 		  <child>
-		    <widget class="GtkHBox" id="hbox69">
+		    <widget class="GtkBox" id="hbox69">
 		      <property name="visible">True</property>
+		      <property name="homogeneous">False</property>
+        <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 		      <property name="homogeneous">False</property>
 		      <property name="spacing">0</property>
 
@@ -3984,8 +3991,10 @@
 			  <property name="shadow_type">GTK_SHADOW_ETCHED_IN</property>
 
 			  <child>
-			    <widget class="GtkHBox" id="hbox70">
+			    <widget class="GtkBox" id="hbox70">
 			      <property name="visible">True</property>
+			      <property name="homogeneous">False</property>
+         <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 			      <property name="homogeneous">False</property>
 			      <property name="spacing">0</property>
 
@@ -4059,8 +4068,10 @@
 		      <property name="shadow_type">GTK_SHADOW_ETCHED_IN</property>
 
 		      <child>
-			<widget class="GtkVBox" id="vbox48">
+			<widget class="GtkBox" id="vbox48">
 			  <property name="visible">True</property>
+			  <property name="homogeneous">True</property>
+     <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
 			  <property name="homogeneous">True</property>
 			  <property name="spacing">0</property>
 
@@ -4157,8 +4168,10 @@
 		      <property name="shadow_type">GTK_SHADOW_ETCHED_IN</property>
 
 		      <child>
-			<widget class="GtkVBox" id="vbox44">
+			<widget class="GtkBox" id="vbox44">
 			  <property name="visible">True</property>
+			  <property name="homogeneous">False</property>
+     <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
 			  <property name="homogeneous">False</property>
 			  <property name="spacing">0</property>
 
@@ -4188,8 +4201,10 @@
 			  </child>
 
 			  <child>
-			    <widget class="GtkHBox" id="hbox77">
+			    <widget class="GtkBox" id="hbox77">
 			      <property name="visible">True</property>
+			      <property name="homogeneous">False</property>
+         <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 			      <property name="homogeneous">False</property>
 			      <property name="spacing">0</property>
 
@@ -4280,12 +4295,9 @@
 		      <property name="shadow_type">GTK_SHADOW_ETCHED_IN</property>
 
 		      <child>
-			<widget class="GtkTable" id="table_lampl">
+			<widget class="GtkGrid" id="table_lampl">
 			  <property name="border_width">2</property>
-			  <property name="visible">True</property>
-			  <property name="n_rows">2</property>
-			  <property name="n_columns">2</property>
-			  <property name="homogeneous">False</property>
+			  <property name="visible">True</property>			  <property name="homogeneous">False</property>
 			  <property name="row_spacing">0</property>
 			  <property name="column_spacing">0</property>
 
@@ -4483,8 +4495,10 @@
 		      <property name="shadow_type">GTK_SHADOW_ETCHED_IN</property>
 
 		      <child>
-			<widget class="GtkHBox" id="hbox75">
+			<widget class="GtkBox" id="hbox75">
 			  <property name="visible">True</property>
+			  <property name="homogeneous">False</property>
+     <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 			  <property name="homogeneous">False</property>
 			  <property name="spacing">0</property>
 
@@ -4552,8 +4566,10 @@
 		      <property name="shadow_type">GTK_SHADOW_ETCHED_IN</property>
 
 		      <child>
-			<widget class="GtkHBox" id="hbox73">
+			<widget class="GtkBox" id="hbox73">
 			  <property name="visible">True</property>
+			  <property name="homogeneous">False</property>
+     <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 			  <property name="homogeneous">False</property>
 			  <property name="spacing">0</property>
 
@@ -4621,11 +4637,8 @@
 		      <property name="shadow_type">GTK_SHADOW_ETCHED_IN</property>
 
 		      <child>
-			<widget class="GtkTable" id="table90">
-			  <property name="visible">True</property>
-			  <property name="n_rows">2</property>
-			  <property name="n_columns">2</property>
-			  <property name="homogeneous">False</property>
+			<widget class="GtkGrid" id="table90">
+			  <property name="visible">True</property>			  <property name="homogeneous">False</property>
 			  <property name="row_spacing">0</property>
 			  <property name="column_spacing">0</property>
 
@@ -4747,8 +4760,10 @@
 		      <property name="shadow_type">GTK_SHADOW_ETCHED_IN</property>
 
 		      <child>
-			<widget class="GtkVBox" id="vbox45">
+			<widget class="GtkBox" id="vbox45">
 			  <property name="visible">True</property>
+			  <property name="homogeneous">False</property>
+     <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
 			  <property name="homogeneous">False</property>
 			  <property name="spacing">0</property>
 
@@ -4811,8 +4826,10 @@
 		      <property name="shadow_type">GTK_SHADOW_ETCHED_IN</property>
 
 		      <child>
-			<widget class="GtkHBox" id="hbox74">
+			<widget class="GtkBox" id="hbox74">
 			  <property name="visible">True</property>
+			  <property name="homogeneous">False</property>
+     <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 			  <property name="homogeneous">False</property>
 			  <property name="spacing">0</property>
 
@@ -4882,8 +4899,10 @@
 		      <property name="shadow_type">GTK_SHADOW_ETCHED_IN</property>
 
 		      <child>
-			<widget class="GtkHBox" id="hbox78">
+			<widget class="GtkBox" id="hbox78">
 			  <property name="visible">True</property>
+			  <property name="homogeneous">False</property>
+     <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 			  <property name="homogeneous">False</property>
 			  <property name="spacing">0</property>
 
@@ -4951,8 +4970,10 @@
 		      <property name="shadow_type">GTK_SHADOW_ETCHED_IN</property>
 
 		      <child>
-			<widget class="GtkHBox" id="hbox71">
+			<widget class="GtkBox" id="hbox71">
 			  <property name="visible">True</property>
+			  <property name="homogeneous">False</property>
+     <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 			  <property name="homogeneous">False</property>
 			  <property name="spacing">0</property>
 
@@ -5020,12 +5041,9 @@
 		      <property name="shadow_type">GTK_SHADOW_ETCHED_IN</property>
 
 		      <child>
-			<widget class="GtkTable" id="table_wdisk">
+			<widget class="GtkGrid" id="table_wdisk">
 			  <property name="border_width">3</property>
-			  <property name="visible">True</property>
-			  <property name="n_rows">3</property>
-			  <property name="n_columns">2</property>
-			  <property name="homogeneous">False</property>
+			  <property name="visible">True</property>			  <property name="homogeneous">False</property>
 			  <property name="row_spacing">0</property>
 			  <property name="column_spacing">0</property>
 
@@ -5195,8 +5213,10 @@
 		      <property name="shadow_type">GTK_SHADOW_ETCHED_IN</property>
 
 		      <child>
-			<widget class="GtkVBox" id="vbox74">
+			<widget class="GtkBox" id="vbox74">
 			  <property name="visible">True</property>
+			  <property name="homogeneous">False</property>
+     <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
 			  <property name="homogeneous">False</property>
 			  <property name="spacing">0</property>
 
@@ -5335,8 +5355,10 @@
 		  <property name="shadow_type">GTK_SHADOW_IN</property>
 
 		  <child>
-		    <widget class="GtkVBox" id="vbox80">
+		    <widget class="GtkBox" id="vbox80">
 		      <property name="visible">True</property>
+		      <property name="homogeneous">False</property>
+        <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
 		      <property name="homogeneous">False</property>
 		      <property name="spacing">0</property>
 
@@ -5361,18 +5383,17 @@
 			      <property name="right_padding">0</property>
 
 			      <child>
-				<widget class="GtkHBox" id="hbox143">
+				<widget class="GtkBox" id="hbox143">
 				  <property name="visible">True</property>
+				  <property name="homogeneous">True</property>
+      <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 				  <property name="homogeneous">True</property>
 				  <property name="spacing">0</property>
 
 				  <child>
-				    <widget class="GtkTable" id="table_method_solution">
+				    <widget class="GtkGrid" id="table_method_solution">
 				      <property name="border_width">5</property>
-				      <property name="visible">True</property>
-				      <property name="n_rows">7</property>
-				      <property name="n_columns">5</property>
-				      <property name="homogeneous">False</property>
+				      <property name="visible">True</property>				      <property name="homogeneous">False</property>
 				      <property name="row_spacing">2</property>
 				      <property name="column_spacing">5</property>
 
@@ -5669,14 +5690,18 @@
 				      </child>
 
 				      <child>
-					<widget class="GtkHBox" id="hbox115">
+					<widget class="GtkBox" id="hbox115">
 					  <property name="visible">True</property>
+					  <property name="homogeneous">False</property>
+       <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 					  <property name="homogeneous">False</property>
 					  <property name="spacing">0</property>
 
 					  <child>
-					    <widget class="GtkHBox" id="hbox147">
+					    <widget class="GtkBox" id="hbox147">
 					      <property name="visible">True</property>
+					      <property name="homogeneous">False</property>
+           <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 					      <property name="homogeneous">False</property>
 					      <property name="spacing">0</property>
 
@@ -5830,11 +5855,8 @@
 				  </child>
 
 				  <child>
-				    <widget class="GtkTable" id="table93">
-				      <property name="visible">True</property>
-				      <property name="n_rows">4</property>
-				      <property name="n_columns">2</property>
-				      <property name="homogeneous">False</property>
+				    <widget class="GtkGrid" id="table93">
+				      <property name="visible">True</property>				      <property name="homogeneous">False</property>
 				      <property name="row_spacing">0</property>
 				      <property name="column_spacing">0</property>
 				    </widget>
@@ -5900,12 +5922,9 @@
 			      <property name="right_padding">0</property>
 
 			      <child>
-				<widget class="GtkTable" id="table_taps">
+				<widget class="GtkGrid" id="table_taps">
 				  <property name="border_width">4</property>
-				  <property name="visible">True</property>
-				  <property name="n_rows">3</property>
-				  <property name="n_columns">4</property>
-				  <property name="homogeneous">False</property>
+				  <property name="visible">True</property>				  <property name="homogeneous">False</property>
 				  <property name="row_spacing">4</property>
 				  <property name="column_spacing">5</property>
 
@@ -6311,12 +6330,9 @@
 			      <property name="right_padding">0</property>
 
 			      <child>
-				<widget class="GtkTable" id="table_restrictions">
+				<widget class="GtkGrid" id="table_restrictions">
 				  <property name="border_width">2</property>
-				  <property name="visible">True</property>
-				  <property name="n_rows">10</property>
-				  <property name="n_columns">3</property>
-				  <property name="homogeneous">False</property>
+				  <property name="visible">True</property>				  <property name="homogeneous">False</property>
 				  <property name="row_spacing">0</property>
 				  <property name="column_spacing">10</property>
 
@@ -6349,8 +6365,10 @@
 				  </child>
 
 				  <child>
-				    <widget class="GtkHBox" id="hbox107">
+				    <widget class="GtkBox" id="hbox107">
 				      <property name="visible">True</property>
+				      <property name="homogeneous">False</property>
+          <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 				      <property name="homogeneous">False</property>
 				      <property name="spacing">0</property>
 
@@ -6434,8 +6452,10 @@
 				  </child>
 
 				  <child>
-				    <widget class="GtkHBox" id="hbox106">
+				    <widget class="GtkBox" id="hbox106">
 				      <property name="visible">True</property>
+				      <property name="homogeneous">False</property>
+          <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 				      <property name="homogeneous">False</property>
 				      <property name="spacing">0</property>
 
@@ -6497,8 +6517,10 @@
 				  </child>
 
 				  <child>
-				    <widget class="GtkHBox" id="hbox105">
+				    <widget class="GtkBox" id="hbox105">
 				      <property name="visible">True</property>
+				      <property name="homogeneous">False</property>
+          <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 				      <property name="homogeneous">False</property>
 				      <property name="spacing">0</property>
 
@@ -6607,8 +6629,10 @@
 				  </child>
 
 				  <child>
-				    <widget class="GtkHBox" id="hbox_iter">
+				    <widget class="GtkBox" id="hbox_iter">
 				      <property name="visible">True</property>
+				      <property name="homogeneous">False</property>
+          <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 				      <property name="homogeneous">False</property>
 				      <property name="spacing">10</property>
 
@@ -6703,12 +6727,9 @@
 					  <property name="right_padding">0</property>
 
 					  <child>
-					    <widget class="GtkTable" id="table_cutr">
+					    <widget class="GtkGrid" id="table_cutr">
 					      <property name="border_width">4</property>
-					      <property name="visible">True</property>
-					      <property name="n_rows">3</property>
-					      <property name="n_columns">2</property>
-					      <property name="homogeneous">False</property>
+					      <property name="visible">True</property>					      <property name="homogeneous">False</property>
 					      <property name="row_spacing">2</property>
 					      <property name="column_spacing">10</property>
 
@@ -6906,14 +6927,18 @@
 				  </child>
 
 				  <child>
-				    <widget class="GtkHBox" id="hbox144">
+				    <widget class="GtkBox" id="hbox144">
 				      <property name="visible">True</property>
+				      <property name="homogeneous">False</property>
+          <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 				      <property name="homogeneous">False</property>
 				      <property name="spacing">0</property>
 
 				      <child>
-					<widget class="GtkHBox" id="hbox145">
+					<widget class="GtkBox" id="hbox145">
 					  <property name="visible">True</property>
+					  <property name="homogeneous">False</property>
+       <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 					  <property name="homogeneous">False</property>
 					  <property name="spacing">0</property>
 
@@ -6971,8 +6996,10 @@
 				      </child>
 
 				      <child>
-					<widget class="GtkHBox" id="hbox146">
+					<widget class="GtkBox" id="hbox146">
 					  <property name="visible">True</property>
+					  <property name="homogeneous">False</property>
+       <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 					  <property name="homogeneous">False</property>
 					  <property name="spacing">0</property>
 
@@ -7142,14 +7169,18 @@
 	  </child>
 
 	  <child>
-	    <widget class="GtkVBox" id="vbox_partitions_tab">
+	    <widget class="GtkBox" id="vbox_partitions_tab">
 	      <property name="visible">True</property>
+	      <property name="homogeneous">False</property>
+       <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
 	      <property name="homogeneous">False</property>
 	      <property name="spacing">0</property>
 
 	      <child>
-		<widget class="GtkHBox" id="hbox117">
+		<widget class="GtkBox" id="hbox117">
 		  <property name="visible">True</property>
+		  <property name="homogeneous">False</property>
+    <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 		  <property name="homogeneous">False</property>
 		  <property name="spacing">0</property>
 
@@ -7161,13 +7192,10 @@
 		      <property name="shadow_type">GTK_SHADOW_ETCHED_IN</property>
 
 		      <child>
-			<widget class="GtkTable" id="table5">
+			<widget class="GtkGrid" id="table5">
 			  <property name="border_width">3</property>
 			  <property name="width_request">150</property>
-			  <property name="visible">True</property>
-			  <property name="n_rows">2</property>
-			  <property name="n_columns">3</property>
-			  <property name="homogeneous">True</property>
+			  <property name="visible">True</property>			  <property name="homogeneous">True</property>
 			  <property name="row_spacing">1</property>
 			  <property name="column_spacing">0</property>
 
@@ -7361,13 +7389,10 @@
 		      <property name="shadow_type">GTK_SHADOW_ETCHED_IN</property>
 
 		      <child>
-			<widget class="GtkTable" id="table6">
+			<widget class="GtkGrid" id="table6">
 			  <property name="border_width">4</property>
 			  <property name="width_request">150</property>
-			  <property name="visible">True</property>
-			  <property name="n_rows">2</property>
-			  <property name="n_columns">3</property>
-			  <property name="homogeneous">True</property>
+			  <property name="visible">True</property>			  <property name="homogeneous">True</property>
 			  <property name="row_spacing">0</property>
 			  <property name="column_spacing">0</property>
 
@@ -7553,11 +7578,8 @@
 		  </child>
 
 		  <child>
-		    <widget class="GtkTable" id="table_qvalue">
-		      <property name="visible">True</property>
-		      <property name="n_rows">2</property>
-		      <property name="n_columns">2</property>
-		      <property name="homogeneous">False</property>
+		    <widget class="GtkGrid" id="table_qvalue">
+		      <property name="visible">True</property>		      <property name="homogeneous">False</property>
 		      <property name="row_spacing">10</property>
 		      <property name="column_spacing">3</property>
 
@@ -7683,8 +7705,10 @@
 		      <property name="shadow_type">GTK_SHADOW_ETCHED_IN</property>
 
 		      <child>
-			<widget class="GtkVBox" id="vbox68">
+			<widget class="GtkBox" id="vbox68">
 			  <property name="visible">True</property>
+			  <property name="homogeneous">True</property>
+     <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
 			  <property name="homogeneous">True</property>
 			  <property name="spacing">0</property>
 
@@ -7747,8 +7771,10 @@ for this partition[NEX&lt;0]</property>
 		  </child>
 
 		  <child>
-		    <widget class="GtkVBox" id="vbox_butpot">
+		    <widget class="GtkBox" id="vbox_butpot">
 		      <property name="border_width">4</property>
+		      <property name="visible">True</property>
+        <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
 		      <property name="visible">True</property>
 		      <property name="homogeneous">True</property>
 		      <property name="spacing">0</property>
@@ -7774,8 +7800,10 @@ for this partition[NEX&lt;0]</property>
 			      <property name="right_padding">0</property>
 
 			      <child>
-				<widget class="GtkHBox" id="hbox134">
+				<widget class="GtkBox" id="hbox134">
 				  <property name="visible">True</property>
+				  <property name="homogeneous">False</property>
+      <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 				  <property name="homogeneous">False</property>
 				  <property name="spacing">2</property>
 
@@ -7887,8 +7915,10 @@ for this partition[NEX&lt;0]</property>
 			      <property name="right_padding">0</property>
 
 			      <child>
-				<widget class="GtkHBox" id="hbox135">
+				<widget class="GtkBox" id="hbox135">
 				  <property name="visible">True</property>
+				  <property name="homogeneous">False</property>
+      <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 				  <property name="homogeneous">False</property>
 				  <property name="spacing">2</property>
 
@@ -7971,9 +8001,7 @@ for this partition[NEX&lt;0]</property>
 		  <child>
 		    <widget class="GtkCList" id="part_clist">
 		      <property name="visible">True</property>
-		      <property name="can_focus">True</property>
-		      <property name="n_columns">10</property>
-		      <property name="column_widths">62,62,47,68,67,34,69,44,65,80</property>
+		      <property name="can_focus">True</property>		      <property name="column_widths">62,62,47,68,67,34,69,44,65,80</property>
 		      <property name="selection_mode">GTK_SELECTION_SINGLE</property>
 		      <property name="show_titles">True</property>
 		      <property name="shadow_type">GTK_SHADOW_IN</property>
@@ -8189,8 +8217,10 @@ for this partition[NEX&lt;0]</property>
 	      </child>
 
 	      <child>
-		<widget class="GtkHBox" id="hbox_states">
+		<widget class="GtkBox" id="hbox_states">
 		  <property name="visible">True</property>
+		  <property name="homogeneous">False</property>
+    <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 		  <property name="homogeneous">False</property>
 		  <property name="spacing">0</property>
 
@@ -8215,12 +8245,9 @@ for this partition[NEX&lt;0]</property>
 			  <property name="right_padding">0</property>
 
 			  <child>
-			    <widget class="GtkTable" id="table82">
+			    <widget class="GtkGrid" id="table82">
 			      <property name="width_request">344</property>
-			      <property name="visible">True</property>
-			      <property name="n_rows">3</property>
-			      <property name="n_columns">7</property>
-			      <property name="homogeneous">True</property>
+			      <property name="visible">True</property>			      <property name="homogeneous">True</property>
 			      <property name="row_spacing">0</property>
 			      <property name="column_spacing">0</property>
 
@@ -8641,8 +8668,10 @@ for this partition[NEX&lt;0]</property>
 			      </child>
 
 			      <child>
-				<widget class="GtkHBox" id="hbox111">
+				<widget class="GtkBox" id="hbox111">
 				  <property name="visible">True</property>
+				  <property name="homogeneous">False</property>
+      <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 				  <property name="homogeneous">False</property>
 				  <property name="spacing">0</property>
 
@@ -8819,11 +8848,8 @@ for this partition[NEX&lt;0]</property>
 		      <property name="shadow_type">GTK_SHADOW_ETCHED_IN</property>
 
 		      <child>
-			<widget class="GtkTable" id="table72">
-			  <property name="visible">True</property>
-			  <property name="n_rows">4</property>
-			  <property name="n_columns">2</property>
-			  <property name="homogeneous">False</property>
+			<widget class="GtkGrid" id="table72">
+			  <property name="visible">True</property>			  <property name="homogeneous">False</property>
 			  <property name="row_spacing">0</property>
 			  <property name="column_spacing">0</property>
 
@@ -9050,9 +9076,11 @@ for this partition[NEX&lt;0]</property>
 		  </child>
 
 		  <child>
-		    <widget class="GtkVButtonBox" id="vbuttonbox1">
+		    <widget class="GtkButtonBox" id="vbuttonbox1">
 		      <property name="border_width">5</property>
 		      <property name="visible">True</property>
+		      <property name="layout_style">GTK_BUTTONBOX_DEFAULT_STYLE</property>
+        <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
 		      <property name="layout_style">GTK_BUTTONBOX_DEFAULT_STYLE</property>
 		      <property name="spacing">2</property>
 
@@ -9113,8 +9141,10 @@ for this partition[NEX&lt;0]</property>
 			      <property name="right_padding">0</property>
 
 			      <child>
-				<widget class="GtkHBox" id="hbox136">
+				<widget class="GtkBox" id="hbox136">
 				  <property name="visible">True</property>
+				  <property name="homogeneous">False</property>
+      <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 				  <property name="homogeneous">False</property>
 				  <property name="spacing">2</property>
 
@@ -9192,9 +9222,7 @@ for this partition[NEX&lt;0]</property>
 		  <child>
 		    <widget class="GtkCList" id="states_clist">
 		      <property name="visible">True</property>
-		      <property name="can_focus">True</property>
-		      <property name="n_columns">17</property>
-		      <property name="column_widths">57,60,47,60,62,53,49,57,58,58,80,80,80,66,62,67,80</property>
+		      <property name="can_focus">True</property>		      <property name="column_widths">57,60,47,60,62,53,49,57,58,58,80,80,80,66,62,67,80</property>
 		      <property name="selection_mode">GTK_SELECTION_SINGLE</property>
 		      <property name="show_titles">True</property>
 		      <property name="shadow_type">GTK_SHADOW_IN</property>
@@ -9585,21 +9613,27 @@ for this partition[NEX&lt;0]</property>
 	      <property name="can_focus">True</property>
 
 	      <child>
-		<widget class="GtkVBox" id="vbox75">
+		<widget class="GtkBox" id="vbox75">
 		  <property name="visible">True</property>
+		  <property name="homogeneous">False</property>
+    <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
 		  <property name="homogeneous">False</property>
 		  <property name="spacing">0</property>
 
 		  <child>
-		    <widget class="GtkHBox" id="hbox_pot">
+		    <widget class="GtkBox" id="hbox_pot">
 		      <property name="border_width">2</property>
+		      <property name="visible">True</property>
+        <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 		      <property name="visible">True</property>
 		      <property name="homogeneous">False</property>
 		      <property name="spacing">0</property>
 
 		      <child>
-			<widget class="GtkVBox" id="vbox55">
+			<widget class="GtkBox" id="vbox55">
 			  <property name="border_width">2</property>
+			  <property name="visible">True</property>
+     <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
 			  <property name="visible">True</property>
 			  <property name="homogeneous">False</property>
 			  <property name="spacing">2</property>
@@ -9666,12 +9700,9 @@ index (kP)&lt;/b&gt;</property>
 			  <property name="shadow_type">GTK_SHADOW_ETCHED_IN</property>
 
 			  <child>
-			    <widget class="GtkTable" id="table_type_shape">
+			    <widget class="GtkGrid" id="table_type_shape">
 			      <property name="border_width">2</property>
-			      <property name="visible">True</property>
-			      <property name="n_rows">2</property>
-			      <property name="n_columns">2</property>
-			      <property name="homogeneous">False</property>
+			      <property name="visible">True</property>			      <property name="homogeneous">False</property>
 			      <property name="row_spacing">0</property>
 			      <property name="column_spacing">0</property>
 
@@ -10504,13 +10535,10 @@ index (kP)&lt;/b&gt;</property>
 			  <property name="shadow_type">GTK_SHADOW_ETCHED_IN</property>
 
 			  <child>
-			    <widget class="GtkTable" id="table_p">
+			    <widget class="GtkGrid" id="table_p">
 			      <property name="border_width">2</property>
 			      <property name="width_request">120</property>
-			      <property name="visible">True</property>
-			      <property name="n_rows">4</property>
-			      <property name="n_columns">4</property>
-			      <property name="homogeneous">True</property>
+			      <property name="visible">True</property>			      <property name="homogeneous">True</property>
 			      <property name="row_spacing">0</property>
 			      <property name="column_spacing">4</property>
 
@@ -10899,14 +10927,18 @@ index (kP)&lt;/b&gt;</property>
 			  <property name="shadow_type">GTK_SHADOW_ETCHED_IN</property>
 
 			  <child>
-			    <widget class="GtkHBox" id="hbox61">
+			    <widget class="GtkBox" id="hbox61">
 			      <property name="visible">True</property>
+			      <property name="homogeneous">False</property>
+         <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 			      <property name="homogeneous">False</property>
 			      <property name="spacing">0</property>
 
 			      <child>
-				<widget class="GtkVBox" id="vbox_p7">
+				<widget class="GtkBox" id="vbox_p7">
 				  <property name="visible">True</property>
+				  <property name="homogeneous">False</property>
+      <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
 				  <property name="homogeneous">False</property>
 				  <property name="spacing">0</property>
 
@@ -10978,8 +11010,10 @@ component</property>
 		      </child>
 
 		      <child>
-			<widget class="GtkVButtonBox" id="vbuttonbox_potentials">
+			<widget class="GtkButtonBox" id="vbuttonbox_potentials">
 			  <property name="visible">True</property>
+			  <property name="layout_style">GTK_BUTTONBOX_DEFAULT_STYLE</property>
+     <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
 			  <property name="layout_style">GTK_BUTTONBOX_DEFAULT_STYLE</property>
 			  <property name="spacing">0</property>
 
@@ -11004,8 +11038,10 @@ component</property>
 				  <property name="right_padding">0</property>
 
 				  <child>
-				    <widget class="GtkHBox" id="hbox127">
+				    <widget class="GtkBox" id="hbox127">
 				      <property name="visible">True</property>
+				      <property name="homogeneous">False</property>
+          <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 				      <property name="homogeneous">False</property>
 				      <property name="spacing">2</property>
 
@@ -11102,8 +11138,10 @@ component</property>
 				  <property name="right_padding">0</property>
 
 				  <child>
-				    <widget class="GtkHBox" id="hbox129">
+				    <widget class="GtkBox" id="hbox129">
 				      <property name="visible">True</property>
+				      <property name="homogeneous">False</property>
+          <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 				      <property name="homogeneous">False</property>
 				      <property name="spacing">2</property>
 
@@ -11183,9 +11221,7 @@ component</property>
 		      <child>
 			<widget class="GtkCList" id="pot_clist">
 			  <property name="visible">True</property>
-			  <property name="can_focus">True</property>
-			  <property name="n_columns">12</property>
-			  <property name="column_widths">29,32,43,27,60,60,61,55,46,54,46,76</property>
+			  <property name="can_focus">True</property>			  <property name="column_widths">29,32,43,27,60,60,61,55,46,54,46,76</property>
 			  <property name="selection_mode">GTK_SELECTION_SINGLE</property>
 			  <property name="show_titles">True</property>
 			  <property name="shadow_type">GTK_SHADOW_IN</property>
@@ -11447,14 +11483,18 @@ component</property>
 	      </child>
 
 	      <child>
-		<widget class="GtkVBox" id="vbox76">
+		<widget class="GtkBox" id="vbox76">
 		  <property name="visible">True</property>
+		  <property name="homogeneous">False</property>
+    <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
 		  <property name="homogeneous">False</property>
 		  <property name="spacing">0</property>
 
 		  <child>
-		    <widget class="GtkHBox" id="hbox_step">
+		    <widget class="GtkBox" id="hbox_step">
 		      <property name="visible">True</property>
+		      <property name="sensitive">False</property>
+        <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 		      <property name="sensitive">False</property>
 		      <property name="homogeneous">False</property>
 		      <property name="spacing">0</property>
@@ -11469,12 +11509,9 @@ component</property>
 			  <property name="shadow_type">GTK_SHADOW_ETCHED_IN</property>
 
 			  <child>
-			    <widget class="GtkTable" id="table_step">
+			    <widget class="GtkGrid" id="table_step">
 			      <property name="border_width">2</property>
-			      <property name="visible">True</property>
-			      <property name="n_rows">2</property>
-			      <property name="n_columns">6</property>
-			      <property name="homogeneous">False</property>
+			      <property name="visible">True</property>			      <property name="homogeneous">False</property>
 			      <property name="row_spacing">3</property>
 			      <property name="column_spacing">0</property>
 
@@ -11769,12 +11806,9 @@ component</property>
 		      </child>
 
 		      <child>
-			<widget class="GtkTable" id="buttons_step">
+			<widget class="GtkGrid" id="buttons_step">
 			  <property name="border_width">5</property>
-			  <property name="visible">True</property>
-			  <property name="n_rows">2</property>
-			  <property name="n_columns">2</property>
-			  <property name="homogeneous">True</property>
+			  <property name="visible">True</property>			  <property name="homogeneous">True</property>
 			  <property name="row_spacing">4</property>
 			  <property name="column_spacing">5</property>
 
@@ -11838,8 +11872,10 @@ component</property>
 				  <property name="right_padding">0</property>
 
 				  <child>
-				    <widget class="GtkHBox" id="hbox141">
+				    <widget class="GtkBox" id="hbox141">
 				      <property name="visible">True</property>
+				      <property name="homogeneous">False</property>
+          <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 				      <property name="homogeneous">False</property>
 				      <property name="spacing">2</property>
 
@@ -11919,8 +11955,10 @@ component</property>
 				  <property name="right_padding">0</property>
 
 				  <child>
-				    <widget class="GtkHBox" id="hbox142">
+				    <widget class="GtkBox" id="hbox142">
 				      <property name="visible">True</property>
+				      <property name="homogeneous">False</property>
+          <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 				      <property name="homogeneous">False</property>
 				      <property name="spacing">2</property>
 
@@ -12004,9 +12042,7 @@ component</property>
 		      <child>
 			<widget class="GtkCList" id="step_clist">
 			  <property name="visible">True</property>
-			  <property name="can_focus">True</property>
-			  <property name="n_columns">6</property>
-			  <property name="column_widths">80,131,80,128,80,80</property>
+			  <property name="can_focus">True</property>			  <property name="column_widths">80,131,80,128,80,80</property>
 			  <property name="selection_mode">GTK_SELECTION_SINGLE</property>
 			  <property name="show_titles">True</property>
 			  <property name="shadow_type">GTK_SHADOW_NONE</property>
@@ -12177,8 +12213,10 @@ component</property>
 	  </child>
 
 	  <child>
-	    <widget class="GtkVBox" id="vbox66">
+	    <widget class="GtkBox" id="vbox66">
 	      <property name="visible">True</property>
+	      <property name="homogeneous">False</property>
+       <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
 	      <property name="homogeneous">False</property>
 	      <property name="spacing">0</property>
 
@@ -12196,8 +12234,10 @@ component</property>
 		      <property name="shadow_type">GTK_SHADOW_IN</property>
 
 		      <child>
-			<widget class="GtkVBox" id="vbox_overlaps">
+			<widget class="GtkBox" id="vbox_overlaps">
 			  <property name="visible">True</property>
+			  <property name="homogeneous">False</property>
+     <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
 			  <property name="homogeneous">False</property>
 			  <property name="spacing">0</property>
 
@@ -12222,11 +12262,8 @@ component</property>
 				  <property name="right_padding">0</property>
 
 				  <child>
-				    <widget class="GtkTable" id="table86">
-				      <property name="visible">True</property>
-				      <property name="n_rows">2</property>
-				      <property name="n_columns">4</property>
-				      <property name="homogeneous">False</property>
+				    <widget class="GtkGrid" id="table86">
+				      <property name="visible">True</property>				      <property name="homogeneous">False</property>
 				      <property name="row_spacing">0</property>
 				      <property name="column_spacing">15</property>
 
@@ -12623,12 +12660,9 @@ component</property>
 			      <property name="shadow_type">GTK_SHADOW_ETCHED_IN</property>
 
 			      <child>
-				<widget class="GtkTable" id="table70">
+				<widget class="GtkGrid" id="table70">
 				  <property name="border_width">3</property>
-				  <property name="visible">True</property>
-				  <property name="n_rows">3</property>
-				  <property name="n_columns">6</property>
-				  <property name="homogeneous">False</property>
+				  <property name="visible">True</property>				  <property name="homogeneous">False</property>
 				  <property name="row_spacing">2</property>
 				  <property name="column_spacing">0</property>
 
@@ -13120,12 +13154,9 @@ component</property>
 			      <property name="shadow_type">GTK_SHADOW_ETCHED_IN</property>
 
 			      <child>
-				<widget class="GtkTable" id="table_qnumbers">
+				<widget class="GtkGrid" id="table_qnumbers">
 				  <property name="border_width">4</property>
-				  <property name="visible">True</property>
-				  <property name="n_rows">3</property>
-				  <property name="n_columns">6</property>
-				  <property name="homogeneous">True</property>
+				  <property name="visible">True</property>				  <property name="homogeneous">True</property>
 				  <property name="row_spacing">2</property>
 				  <property name="column_spacing">0</property>
 
@@ -13599,12 +13630,9 @@ component</property>
 				  <property name="right_padding">0</property>
 
 				  <child>
-				    <widget class="GtkTable" id="table_bindpot">
+				    <widget class="GtkGrid" id="table_bindpot">
 				      <property name="width_request">200</property>
-				      <property name="visible">True</property>
-				      <property name="n_rows">1</property>
-				      <property name="n_columns">3</property>
-				      <property name="homogeneous">False</property>
+				      <property name="visible">True</property>				      <property name="homogeneous">False</property>
 				      <property name="row_spacing">0</property>
 				      <property name="column_spacing">5</property>
 
@@ -13628,14 +13656,18 @@ component</property>
 					      <property name="right_padding">0</property>
 
 					      <child>
-						<widget class="GtkVBox" id="vbox83">
+						<widget class="GtkBox" id="vbox83">
 						  <property name="visible">True</property>
+						  <property name="homogeneous">False</property>
+        <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
 						  <property name="homogeneous">False</property>
 						  <property name="spacing">0</property>
 
 						  <child>
-						    <widget class="GtkHBox" id="hbox138">
+						    <widget class="GtkBox" id="hbox138">
 						      <property name="visible">True</property>
+						      <property name="homogeneous">False</property>
+            <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 						      <property name="homogeneous">False</property>
 						      <property name="spacing">0</property>
 
@@ -13692,8 +13724,10 @@ component</property>
 						  </child>
 
 						  <child>
-						    <widget class="GtkHBox" id="hbox139">
+						    <widget class="GtkBox" id="hbox139">
 						      <property name="visible">True</property>
+						      <property name="homogeneous">False</property>
+            <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 						      <property name="homogeneous">False</property>
 						      <property name="spacing">0</property>
 
@@ -13789,8 +13823,10 @@ component</property>
 						  </child>
 
 						  <child>
-						    <widget class="GtkHBox" id="hbox140">
+						    <widget class="GtkBox" id="hbox140">
 						      <property name="visible">True</property>
+						      <property name="homogeneous">False</property>
+            <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 						      <property name="homogeneous">False</property>
 						      <property name="spacing">0</property>
 
@@ -13941,12 +13977,9 @@ component</property>
 					      <property name="right_padding">0</property>
 
 					      <child>
-						<widget class="GtkTable" id="table91">
+						<widget class="GtkGrid" id="table91">
 						  <property name="border_width">2</property>
-						  <property name="visible">True</property>
-						  <property name="n_rows">3</property>
-						  <property name="n_columns">2</property>
-						  <property name="homogeneous">False</property>
+						  <property name="visible">True</property>						  <property name="homogeneous">False</property>
 						  <property name="row_spacing">0</property>
 						  <property name="column_spacing">0</property>
 
@@ -14129,12 +14162,9 @@ component</property>
 			      <property name="shadow_type">GTK_SHADOW_ETCHED_IN</property>
 
 			      <child>
-				<widget class="GtkTable" id="table78">
+				<widget class="GtkGrid" id="table78">
 				  <property name="border_width">4</property>
-				  <property name="visible">True</property>
-				  <property name="n_rows">1</property>
-				  <property name="n_columns">6</property>
-				  <property name="homogeneous">False</property>
+				  <property name="visible">True</property>				  <property name="homogeneous">False</property>
 				  <property name="row_spacing">4</property>
 				  <property name="column_spacing">4</property>
 
@@ -14354,11 +14384,8 @@ component</property>
 				      <property name="right_padding">0</property>
 
 				      <child>
-					<widget class="GtkTable" id="table_miscbins">
-					  <property name="border_width">3</property>
-					  <property name="n_rows">2</property>
-					  <property name="n_columns">4</property>
-					  <property name="homogeneous">False</property>
+					<widget class="GtkGrid" id="table_miscbins">
+					  <property name="border_width">3</property>					  <property name="homogeneous">False</property>
 					  <property name="row_spacing">0</property>
 					  <property name="column_spacing">0</property>
 
@@ -14574,9 +14601,11 @@ component</property>
 		  <property name="shadow_type">GTK_SHADOW_ETCHED_IN</property>
 
 		  <child>
-		    <widget class="GtkHButtonBox" id="hbuttonbox5">
+		    <widget class="GtkButtonBox" id="hbuttonbox5">
 		      <property name="border_width">2</property>
 		      <property name="visible">True</property>
+		      <property name="layout_style">GTK_BUTTONBOX_SPREAD</property>
+        <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 		      <property name="layout_style">GTK_BUTTONBOX_SPREAD</property>
 		      <property name="spacing">25</property>
 
@@ -14638,8 +14667,10 @@ component</property>
 	      </child>
 
 	      <child>
-		<widget class="GtkHBox" id="hbox122">
+		<widget class="GtkBox" id="hbox122">
 		  <property name="visible">True</property>
+		  <property name="homogeneous">False</property>
+    <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 		  <property name="homogeneous">False</property>
 		  <property name="spacing">0</property>
 
@@ -14655,9 +14686,7 @@ component</property>
 		      <child>
 			<widget class="GtkCList" id="overlap_clist">
 			  <property name="visible">True</property>
-			  <property name="can_focus">True</property>
-			  <property name="n_columns">25</property>
-			  <property name="column_widths">29,29,28,23,21,28,26,25,17,30,22,15,26,17,39,36,45,20,28,27,43,47,30,33,40</property>
+			  <property name="can_focus">True</property>			  <property name="column_widths">29,29,28,23,21,28,26,25,17,30,22,15,26,17,39,36,45,20,28,27,43,47,30,33,40</property>
 			  <property name="selection_mode">GTK_SELECTION_SINGLE</property>
 			  <property name="show_titles">True</property>
 			  <property name="shadow_type">GTK_SHADOW_NONE</property>
@@ -15173,9 +15202,11 @@ component</property>
 		  </child>
 
 		  <child>
-		    <widget class="GtkVButtonBox" id="vbuttonbox2">
+		    <widget class="GtkButtonBox" id="vbuttonbox2">
 		      <property name="border_width">4</property>
 		      <property name="visible">True</property>
+		      <property name="layout_style">GTK_BUTTONBOX_DEFAULT_STYLE</property>
+        <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
 		      <property name="layout_style">GTK_BUTTONBOX_DEFAULT_STYLE</property>
 		      <property name="spacing">0</property>
 
@@ -15201,8 +15232,10 @@ component</property>
 			      <property name="right_padding">0</property>
 
 			      <child>
-				<widget class="GtkHBox" id="hbox123">
+				<widget class="GtkBox" id="hbox123">
 				  <property name="visible">True</property>
+				  <property name="homogeneous">False</property>
+      <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 				  <property name="homogeneous">False</property>
 				  <property name="spacing">2</property>
 
@@ -15289,8 +15322,10 @@ component</property>
 			      <property name="right_padding">0</property>
 
 			      <child>
-				<widget class="GtkHBox" id="hbox125">
+				<widget class="GtkBox" id="hbox125">
 				  <property name="visible">True</property>
+				  <property name="homogeneous">False</property>
+      <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 				  <property name="homogeneous">False</property>
 				  <property name="spacing">2</property>
 
@@ -15364,8 +15399,10 @@ component</property>
 			      <property name="right_padding">0</property>
 
 			      <child>
-				<widget class="GtkHBox" id="hbox124">
+				<widget class="GtkBox" id="hbox124">
 				  <property name="visible">True</property>
+				  <property name="homogeneous">False</property>
+      <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 				  <property name="homogeneous">False</property>
 				  <property name="spacing">2</property>
 
@@ -15486,14 +15523,18 @@ component</property>
 		      <property name="shadow_type">GTK_SHADOW_ETCHED_IN</property>
 
 		      <child>
-			<widget class="GtkVBox" id="vbox26">
+			<widget class="GtkBox" id="vbox26">
 			  <property name="visible">True</property>
+			  <property name="homogeneous">False</property>
+     <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
 			  <property name="homogeneous">False</property>
 			  <property name="spacing">0</property>
 
 			  <child>
-			    <widget class="GtkHBox" id="hbox32">
+			    <widget class="GtkBox" id="hbox32">
 			      <property name="border_width">4</property>
+			      <property name="visible">True</property>
+         <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 			      <property name="visible">True</property>
 			      <property name="homogeneous">False</property>
 			      <property name="spacing">0</property>
@@ -15507,12 +15548,9 @@ component</property>
 				  <property name="shadow_type">GTK_SHADOW_ETCHED_IN</property>
 
 				  <child>
-				    <widget class="GtkTable" id="table69">
+				    <widget class="GtkGrid" id="table69">
 				      <property name="border_width">3</property>
-				      <property name="visible">True</property>
-				      <property name="n_rows">4</property>
-				      <property name="n_columns">4</property>
-				      <property name="homogeneous">False</property>
+				      <property name="visible">True</property>				      <property name="homogeneous">False</property>
 				      <property name="row_spacing">5</property>
 				      <property name="column_spacing">3</property>
 
@@ -16012,12 +16050,9 @@ component</property>
 				      <property name="enable_popup">False</property>
 
 				      <child>
-					<widget class="GtkTable" id="table_kind3">
+					<widget class="GtkGrid" id="table_kind3">
 					  <property name="width_request">200</property>
-					  <property name="visible">True</property>
-					  <property name="n_rows">4</property>
-					  <property name="n_columns">4</property>
-					  <property name="homogeneous">False</property>
+					  <property name="visible">True</property>					  <property name="homogeneous">False</property>
 					  <property name="row_spacing">4</property>
 					  <property name="column_spacing">5</property>
 
@@ -16383,12 +16418,9 @@ IP2=2: Coulomb only</property>
 				      </child>
 
 				      <child>
-					<widget class="GtkTable" id="table_kind5">
+					<widget class="GtkGrid" id="table_kind5">
 					  <property name="border_width">5</property>
-					  <property name="visible">True</property>
-					  <property name="n_rows">3</property>
-					  <property name="n_columns">2</property>
-					  <property name="homogeneous">False</property>
+					  <property name="visible">True</property>					  <property name="homogeneous">False</property>
 					  <property name="row_spacing">0</property>
 					  <property name="column_spacing">0</property>
 
@@ -16559,12 +16591,9 @@ IP2=2: Coulomb only</property>
 				      </child>
 
 				      <child>
-					<widget class="GtkTable" id="table92">
+					<widget class="GtkGrid" id="table92">
 					  <property name="border_width">4</property>
-					  <property name="visible">True</property>
-					  <property name="n_rows">4</property>
-					  <property name="n_columns">2</property>
-					  <property name="homogeneous">False</property>
+					  <property name="visible">True</property>					  <property name="homogeneous">False</property>
 					  <property name="row_spacing">2</property>
 					  <property name="column_spacing">0</property>
 
@@ -16773,8 +16802,10 @@ IP2=2: Coulomb only</property>
 				      </child>
 
 				      <child>
-					<widget class="GtkVBox" id="vbox88">
+					<widget class="GtkBox" id="vbox88">
 					  <property name="border_width">4</property>
+					  <property name="visible">True</property>
+       <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
 					  <property name="visible">True</property>
 					  <property name="homogeneous">True</property>
 					  <property name="spacing">0</property>
@@ -16869,8 +16900,10 @@ IP2=2: Coulomb only</property>
 				      </child>
 
 				      <child>
-					<widget class="GtkVBox" id="vbox_k9">
+					<widget class="GtkBox" id="vbox_k9">
 					  <property name="border_width">4</property>
+					  <property name="visible">True</property>
+       <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
 					  <property name="visible">True</property>
 					  <property name="homogeneous">True</property>
 					  <property name="spacing">1</property>
@@ -17030,8 +17063,10 @@ IP2=2: Coulomb only</property>
 					  </child>
 
 					  <child>
-					    <widget class="GtkHBox" id="hbox91">
+					    <widget class="GtkBox" id="hbox91">
 					      <property name="visible">True</property>
+					      <property name="homogeneous">False</property>
+           <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 					      <property name="homogeneous">False</property>
 					      <property name="spacing">0</property>
 
@@ -17169,10 +17204,12 @@ IP2=2: Coulomb only</property>
 			      </child>
 
 			      <child>
-				<widget class="GtkVButtonBox" id="vbuttonbox_coupling">
+				<widget class="GtkButtonBox" id="vbuttonbox_coupling">
 				  <property name="border_width">2</property>
 				  <property name="height_request">144</property>
 				  <property name="visible">True</property>
+				  <property name="layout_style">GTK_BUTTONBOX_SPREAD</property>
+      <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
 				  <property name="layout_style">GTK_BUTTONBOX_SPREAD</property>
 				  <property name="spacing">5</property>
 
@@ -17197,8 +17234,10 @@ IP2=2: Coulomb only</property>
 					  <property name="right_padding">0</property>
 
 					  <child>
-					    <widget class="GtkHBox" id="hbox132">
+					    <widget class="GtkBox" id="hbox132">
 					      <property name="visible">True</property>
+					      <property name="homogeneous">False</property>
+           <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 					      <property name="homogeneous">False</property>
 					      <property name="spacing">2</property>
 
@@ -17295,8 +17334,10 @@ IP2=2: Coulomb only</property>
 					  <property name="right_padding">0</property>
 
 					  <child>
-					    <widget class="GtkHBox" id="hbox133">
+					    <widget class="GtkBox" id="hbox133">
 					      <property name="visible">True</property>
+					      <property name="homogeneous">False</property>
+           <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 					      <property name="homogeneous">False</property>
 					      <property name="spacing">2</property>
 
@@ -17374,9 +17415,7 @@ IP2=2: Coulomb only</property>
 			      <child>
 				<widget class="GtkCList" id="coup_clist">
 				  <property name="visible">True</property>
-				  <property name="can_focus">True</property>
-				  <property name="n_columns">10</property>
-				  <property name="column_widths">58,73,33,47,46,59,65,63,80,80</property>
+				  <property name="can_focus">True</property>				  <property name="column_widths">58,73,33,47,46,59,65,63,80,80</property>
 				  <property name="selection_mode">GTK_SELECTION_SINGLE</property>
 				  <property name="show_titles">True</property>
 				  <property name="shadow_type">GTK_SHADOW_NONE</property>
@@ -17609,14 +17648,18 @@ IP2=2: Coulomb only</property>
 		      <property name="shadow_type">GTK_SHADOW_ETCHED_IN</property>
 
 		      <child>
-			<widget class="GtkVBox" id="vbox27">
+			<widget class="GtkBox" id="vbox27">
 			  <property name="visible">True</property>
+			  <property name="homogeneous">False</property>
+     <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
 			  <property name="homogeneous">False</property>
 			  <property name="spacing">0</property>
 
 			  <child>
-			    <widget class="GtkHBox" id="hbox79">
+			    <widget class="GtkBox" id="hbox79">
 			      <property name="visible">True</property>
+			      <property name="homogeneous">False</property>
+         <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 			      <property name="homogeneous">False</property>
 			      <property name="spacing">0</property>
 
@@ -17631,24 +17674,25 @@ IP2=2: Coulomb only</property>
 				  <property name="enable_popup">False</property>
 
 				  <child>
-				    <widget class="GtkVBox" id="vbox52">
+				    <widget class="GtkBox" id="vbox52">
 				      <property name="visible">True</property>
+				      <property name="homogeneous">False</property>
+          <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
 				      <property name="homogeneous">False</property>
 				      <property name="spacing">0</property>
 
 				      <child>
-					<widget class="GtkHBox" id="hbox81">
+					<widget class="GtkBox" id="hbox81">
 					  <property name="visible">True</property>
+					  <property name="homogeneous">False</property>
+       <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 					  <property name="homogeneous">False</property>
 					  <property name="spacing">0</property>
 
 					  <child>
-					    <widget class="GtkTable" id="table59">
+					    <widget class="GtkGrid" id="table59">
 					      <property name="border_width">3</property>
-					      <property name="visible">True</property>
-					      <property name="n_rows">3</property>
-					      <property name="n_columns">8</property>
-					      <property name="homogeneous">False</property>
+					      <property name="visible">True</property>					      <property name="homogeneous">False</property>
 					      <property name="row_spacing">0</property>
 					      <property name="column_spacing">5</property>
 
@@ -18102,9 +18146,7 @@ IP2=2: Coulomb only</property>
 					  <child>
 					    <widget class="GtkCList" id="inel_clist">
 					      <property name="visible">True</property>
-					      <property name="can_focus">True</property>
-					      <property name="n_columns">6</property>
-					      <property name="column_widths">80,80,80,80,80,173</property>
+					      <property name="can_focus">True</property>					      <property name="column_widths">80,80,80,80,80,173</property>
 					      <property name="selection_mode">GTK_SELECTION_SINGLE</property>
 					      <property name="show_titles">True</property>
 					      <property name="shadow_type">GTK_SHADOW_NONE</property>
@@ -18270,17 +18312,16 @@ IP2=2: Coulomb only</property>
 				  </child>
 
 				  <child>
-				    <widget class="GtkVBox" id="vbox53">
+				    <widget class="GtkBox" id="vbox53">
 				      <property name="visible">True</property>
+				      <property name="homogeneous">False</property>
+          <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
 				      <property name="homogeneous">False</property>
 				      <property name="spacing">0</property>
 
 				      <child>
-					<widget class="GtkTable" id="table64">
-					  <property name="visible">True</property>
-					  <property name="n_rows">2</property>
-					  <property name="n_columns">7</property>
-					  <property name="homogeneous">False</property>
+					<widget class="GtkGrid" id="table64">
+					  <property name="visible">True</property>					  <property name="homogeneous">False</property>
 					  <property name="row_spacing">2</property>
 					  <property name="column_spacing">2</property>
 
@@ -18604,9 +18645,7 @@ IP2=2: Coulomb only</property>
 					  <child>
 					    <widget class="GtkCList" id="cfp_clist">
 					      <property name="visible">True</property>
-					      <property name="can_focus">True</property>
-					      <property name="n_columns">5</property>
-					      <property name="column_widths">80,80,80,80,80</property>
+					      <property name="can_focus">True</property>					      <property name="column_widths">80,80,80,80,80</property>
 					      <property name="selection_mode">GTK_SELECTION_SINGLE</property>
 					      <property name="show_titles">True</property>
 					      <property name="shadow_type">GTK_SHADOW_IN</property>
@@ -18764,12 +18803,9 @@ IP2=2: Coulomb only</property>
 					  <property name="shadow_type">GTK_SHADOW_IN</property>
 
 					  <child>
-					    <widget class="GtkTable" id="table_qscale">
+					    <widget class="GtkGrid" id="table_qscale">
 					      <property name="border_width">3</property>
-					      <property name="visible">True</property>
-					      <property name="n_rows">10</property>
-					      <property name="n_columns">3</property>
-					      <property name="homogeneous">False</property>
+					      <property name="visible">True</property>					      <property name="homogeneous">False</property>
 					      <property name="row_spacing">0</property>
 					      <property name="column_spacing">0</property>
 
@@ -19579,9 +19615,11 @@ IP2=2: Coulomb only</property>
 			      </child>
 
 			      <child>
-				<widget class="GtkVButtonBox" id="buttons_cfp">
+				<widget class="GtkButtonBox" id="buttons_cfp">
 				  <property name="border_width">4</property>
 				  <property name="visible">True</property>
+				  <property name="layout_style">GTK_BUTTONBOX_SPREAD</property>
+      <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
 				  <property name="layout_style">GTK_BUTTONBOX_SPREAD</property>
 				  <property name="spacing">4</property>
 
@@ -19606,8 +19644,10 @@ IP2=2: Coulomb only</property>
 					  <property name="right_padding">0</property>
 
 					  <child>
-					    <widget class="GtkHBox" id="hbox130">
+					    <widget class="GtkBox" id="hbox130">
 					      <property name="visible">True</property>
+					      <property name="homogeneous">False</property>
+           <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 					      <property name="homogeneous">False</property>
 					      <property name="spacing">2</property>
 
@@ -19704,8 +19744,10 @@ IP2=2: Coulomb only</property>
 					  <property name="right_padding">0</property>
 
 					  <child>
-					    <widget class="GtkHBox" id="hbox131">
+					    <widget class="GtkBox" id="hbox131">
 					      <property name="visible">True</property>
+					      <property name="homogeneous">False</property>
+           <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 					      <property name="homogeneous">False</property>
 					      <property name="spacing">2</property>
 
@@ -19916,8 +19958,10 @@ IP2=2: Coulomb only</property>
   <signal name="delete_event" handler="on_window_constants_delete_event"/>
 
   <child>
-    <widget class="GtkVBox" id="vbox65">
+    <widget class="GtkBox" id="vbox65">
       <property name="visible">True</property>
+      <property name="homogeneous">False</property>
+      <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
       <property name="homogeneous">False</property>
       <property name="spacing">0</property>
 
@@ -19929,8 +19973,10 @@ IP2=2: Coulomb only</property>
 	  <property name="shadow_type">GTK_SHADOW_ETCHED_IN</property>
 
 	  <child>
-	    <widget class="GtkVBox" id="vbox70">
+	    <widget class="GtkBox" id="vbox70">
 	      <property name="border_width">3</property>
+	      <property name="visible">True</property>
+       <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
 	      <property name="visible">True</property>
 	      <property name="homogeneous">False</property>
 	      <property name="spacing">3</property>
@@ -19978,8 +20024,10 @@ IP2=2: Coulomb only</property>
       </child>
 
       <child>
-	<widget class="GtkHButtonBox" id="hbuttonbox4">
+	<widget class="GtkButtonBox" id="hbuttonbox4">
 	  <property name="visible">True</property>
+	  <property name="layout_style">GTK_BUTTONBOX_DEFAULT_STYLE</property>
+   <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 	  <property name="layout_style">GTK_BUTTONBOX_DEFAULT_STYLE</property>
 	  <property name="spacing">30</property>
 
@@ -20024,8 +20072,10 @@ IP2=2: Coulomb only</property>
   <signal name="delete_event" handler="on_window_ccwf_delete_event"/>
 
   <child>
-    <widget class="GtkVBox" id="vbox60">
+    <widget class="GtkBox" id="vbox60">
       <property name="visible">True</property>
+      <property name="homogeneous">False</property>
+      <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
       <property name="homogeneous">False</property>
       <property name="spacing">0</property>
 
@@ -20038,18 +20088,17 @@ IP2=2: Coulomb only</property>
 	  <property name="shadow_type">GTK_SHADOW_ETCHED_IN</property>
 
 	  <child>
-	    <widget class="GtkVBox" id="vbox10">
+	    <widget class="GtkBox" id="vbox10">
 	      <property name="visible">True</property>
+	      <property name="homogeneous">False</property>
+       <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
 	      <property name="homogeneous">False</property>
 	      <property name="spacing">0</property>
 
 	      <child>
-		<widget class="GtkTable" id="table_ccwf">
+		<widget class="GtkGrid" id="table_ccwf">
 		  <property name="border_width">3</property>
-		  <property name="visible">True</property>
-		  <property name="n_rows">5</property>
-		  <property name="n_columns">2</property>
-		  <property name="homogeneous">False</property>
+		  <property name="visible">True</property>		  <property name="homogeneous">False</property>
 		  <property name="row_spacing">3</property>
 		  <property name="column_spacing">0</property>
 
@@ -20283,8 +20332,10 @@ IP2=2: Coulomb only</property>
       </child>
 
       <child>
-	<widget class="GtkHButtonBox" id="hbuttonbox2">
+	<widget class="GtkButtonBox" id="hbuttonbox2">
 	  <property name="visible">True</property>
+	  <property name="layout_style">GTK_BUTTONBOX_DEFAULT_STYLE</property>
+   <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 	  <property name="layout_style">GTK_BUTTONBOX_DEFAULT_STYLE</property>
 	  <property name="spacing">30</property>
 
@@ -20330,8 +20381,10 @@ IP2=2: Coulomb only</property>
   <signal name="delete_event" handler="on_window_jbord_delete_event"/>
 
   <child>
-    <widget class="GtkVBox" id="vbox61">
+    <widget class="GtkBox" id="vbox61">
       <property name="visible">True</property>
+      <property name="homogeneous">False</property>
+      <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
       <property name="homogeneous">False</property>
       <property name="spacing">7</property>
 
@@ -20344,12 +20397,9 @@ IP2=2: Coulomb only</property>
 	  <property name="shadow_type">GTK_SHADOW_ETCHED_IN</property>
 
 	  <child>
-	    <widget class="GtkTable" id="table18">
+	    <widget class="GtkGrid" id="table18">
 	      <property name="border_width">5</property>
-	      <property name="visible">True</property>
-	      <property name="n_rows">5</property>
-	      <property name="n_columns">4</property>
-	      <property name="homogeneous">False</property>
+	      <property name="visible">True</property>	      <property name="homogeneous">False</property>
 	      <property name="row_spacing">5</property>
 	      <property name="column_spacing">2</property>
 
@@ -20870,8 +20920,10 @@ IP2=2: Coulomb only</property>
       </child>
 
       <child>
-	<widget class="GtkHButtonBox" id="hbuttonbox3">
+	<widget class="GtkButtonBox" id="hbuttonbox3">
 	  <property name="visible">True</property>
+	  <property name="layout_style">GTK_BUTTONBOX_DEFAULT_STYLE</property>
+   <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 	  <property name="layout_style">GTK_BUTTONBOX_DEFAULT_STYLE</property>
 	  <property name="spacing">25</property>
 
@@ -20958,8 +21010,10 @@ IP2=2: Coulomb only</property>
   <signal name="delete_event" handler="on_window_nlab_delete_event"/>
 
   <child>
-    <widget class="GtkVBox" id="vbox67">
+    <widget class="GtkBox" id="vbox67">
       <property name="border_width">1</property>
+      <property name="visible">True</property>
+      <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
       <property name="visible">True</property>
       <property name="homogeneous">False</property>
       <property name="spacing">9</property>
@@ -20973,12 +21027,9 @@ IP2=2: Coulomb only</property>
 	  <property name="shadow_type">GTK_SHADOW_ETCHED_IN</property>
 
 	  <child>
-	    <widget class="GtkTable" id="table60">
+	    <widget class="GtkGrid" id="table60">
 	      <property name="border_width">7</property>
-	      <property name="visible">True</property>
-	      <property name="n_rows">3</property>
-	      <property name="n_columns">5</property>
-	      <property name="homogeneous">False</property>
+	      <property name="visible">True</property>	      <property name="homogeneous">False</property>
 	      <property name="row_spacing">5</property>
 	      <property name="column_spacing">5</property>
 
@@ -21397,8 +21448,10 @@ IP2=2: Coulomb only</property>
       </child>
 
       <child>
-	<widget class="GtkHButtonBox" id="hbuttonbox6">
+	<widget class="GtkButtonBox" id="hbuttonbox6">
 	  <property name="visible">True</property>
+	  <property name="layout_style">GTK_BUTTONBOX_DEFAULT_STYLE</property>
+   <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 	  <property name="layout_style">GTK_BUTTONBOX_DEFAULT_STYLE</property>
 	  <property name="spacing">30</property>
 
@@ -21441,8 +21494,10 @@ IP2=2: Coulomb only</property>
   <property name="urgency_hint">False</property>
 
   <child>
-    <widget class="GtkVBox" id="vbox69">
+    <widget class="GtkBox" id="vbox69">
       <property name="border_width">10</property>
+      <property name="visible">True</property>
+      <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
       <property name="visible">True</property>
       <property name="homogeneous">False</property>
       <property name="spacing">0</property>
@@ -21614,10 +21669,12 @@ by A. Moro (1999-2009)</property>
       </child>
 
       <child>
-	<widget class="GtkVBox" id="vbox25">
+	<widget class="GtkBox" id="vbox25">
 	  <property name="width_request">0</property>
 	  <property name="height_request">0</property>
 	  <property name="visible">True</property>
+	  <property name="homogeneous">False</property>
+   <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
 	  <property name="homogeneous">False</property>
 	  <property name="spacing">0</property>
 
@@ -21652,10 +21709,12 @@ by A. Moro (1999-2009)</property>
       </child>
 
       <child>
-	<widget class="GtkHBox" id="hbox92">
+	<widget class="GtkBox" id="hbox92">
 	  <property name="width_request">0</property>
 	  <property name="height_request">0</property>
 	  <property name="visible">True</property>
+	  <property name="homogeneous">False</property>
+   <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 	  <property name="homogeneous">False</property>
 	  <property name="spacing">0</property>
 
@@ -21699,14 +21758,18 @@ by A. Moro (1999-2009)</property>
 	  <property name="shadow_type">GTK_SHADOW_ETCHED_IN</property>
 
 	  <child>
-	    <widget class="GtkVBox" id="vbox13">
+	    <widget class="GtkBox" id="vbox13">
 	      <property name="visible">True</property>
+	      <property name="homogeneous">False</property>
+       <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
 	      <property name="homogeneous">False</property>
 	      <property name="spacing">0</property>
 
 	      <child>
-		<widget class="GtkHBox" id="hbox64">
+		<widget class="GtkBox" id="hbox64">
 		  <property name="visible">True</property>
+		  <property name="homogeneous">False</property>
+    <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 		  <property name="homogeneous">False</property>
 		  <property name="spacing">0</property>
 
@@ -21718,8 +21781,10 @@ by A. Moro (1999-2009)</property>
 		      <property name="shadow_type">GTK_SHADOW_ETCHED_IN</property>
 
 		      <child>
-			<widget class="GtkHBox" id="hbox65">
+			<widget class="GtkBox" id="hbox65">
 			  <property name="visible">True</property>
+			  <property name="homogeneous">False</property>
+     <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 			  <property name="homogeneous">False</property>
 			  <property name="spacing">0</property>
 
@@ -21787,8 +21852,10 @@ by A. Moro (1999-2009)</property>
 		  <property name="shadow_type">GTK_SHADOW_ETCHED_IN</property>
 
 		  <child>
-		    <widget class="GtkVBox" id="vbox39">
+		    <widget class="GtkBox" id="vbox39">
 		      <property name="visible">True</property>
+		      <property name="homogeneous">False</property>
+        <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
 		      <property name="homogeneous">False</property>
 		      <property name="spacing">0</property>
 
@@ -21901,11 +21968,8 @@ by A. Moro (1999-2009)</property>
 	  <property name="shadow_type">GTK_SHADOW_ETCHED_IN</property>
 
 	  <child>
-	    <widget class="GtkTable" id="table51">
-	      <property name="visible">True</property>
-	      <property name="n_rows">2</property>
-	      <property name="n_columns">2</property>
-	      <property name="homogeneous">False</property>
+	    <widget class="GtkGrid" id="table51">
+	      <property name="visible">True</property>	      <property name="homogeneous">False</property>
 	      <property name="row_spacing">0</property>
 	      <property name="column_spacing">0</property>
 	    </widget>
@@ -22064,8 +22128,10 @@ by A. Moro (1999-2009)</property>
   <signal name="delete_event" handler="on_window_files_delete_event"/>
 
   <child>
-    <widget class="GtkVBox" id="vbox72">
+    <widget class="GtkBox" id="vbox72">
       <property name="visible">True</property>
+      <property name="homogeneous">False</property>
+      <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
       <property name="homogeneous">False</property>
       <property name="spacing">0</property>
 
@@ -22108,11 +22174,8 @@ by A. Moro (1999-2009)</property>
 	      <property name="shadow_type">GTK_SHADOW_IN</property>
 
 	      <child>
-		<widget class="GtkTable" id="table74">
-		  <property name="visible">True</property>
-		  <property name="n_rows">9</property>
-		  <property name="n_columns">2</property>
-		  <property name="homogeneous">False</property>
+		<widget class="GtkGrid" id="table74">
+		  <property name="visible">True</property>		  <property name="homogeneous">False</property>
 		  <property name="row_spacing">0</property>
 		  <property name="column_spacing">0</property>
 
@@ -22556,8 +22619,10 @@ by A. Moro (1999-2009)</property>
   <signal name="delete_event" handler="on_window_Rmatrix_delete_event"/>
 
   <child>
-    <widget class="GtkVBox" id="vbox_rmatrix">
+    <widget class="GtkBox" id="vbox_rmatrix">
       <property name="border_width">8</property>
+      <property name="visible">True</property>
+      <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
       <property name="visible">True</property>
       <property name="homogeneous">False</property>
       <property name="spacing">0</property>
@@ -22570,11 +22635,8 @@ by A. Moro (1999-2009)</property>
 	  <property name="shadow_type">GTK_SHADOW_ETCHED_IN</property>
 
 	  <child>
-	    <widget class="GtkTable" id="table75">
-	      <property name="visible">True</property>
-	      <property name="n_rows">9</property>
-	      <property name="n_columns">2</property>
-	      <property name="homogeneous">False</property>
+	    <widget class="GtkGrid" id="table75">
+	      <property name="visible">True</property>	      <property name="homogeneous">False</property>
 	      <property name="row_spacing">0</property>
 	      <property name="column_spacing">0</property>
 
@@ -23122,8 +23184,10 @@ by A. Moro (1999-2009)</property>
 	      </child>
 
 	      <child>
-		<widget class="GtkHBox" id="hbox89">
+		<widget class="GtkBox" id="hbox89">
 		  <property name="visible">True</property>
+		  <property name="homogeneous">False</property>
+    <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 		  <property name="homogeneous">False</property>
 		  <property name="spacing">0</property>
 
@@ -23309,8 +23373,10 @@ by A. Moro (1999-2009)</property>
   <signal name="delete_event" handler="on_window_ener_delete_event"/>
 
   <child>
-    <widget class="GtkVBox" id="vbox77">
+    <widget class="GtkBox" id="vbox77">
       <property name="visible">True</property>
+      <property name="homogeneous">False</property>
+      <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
       <property name="homogeneous">False</property>
       <property name="spacing">7</property>
 
@@ -23323,12 +23389,9 @@ by A. Moro (1999-2009)</property>
 	  <property name="shadow_type">GTK_SHADOW_ETCHED_IN</property>
 
 	  <child>
-	    <widget class="GtkTable" id="table76">
+	    <widget class="GtkGrid" id="table76">
 	      <property name="border_width">5</property>
-	      <property name="visible">True</property>
-	      <property name="n_rows">4</property>
-	      <property name="n_columns">3</property>
-	      <property name="homogeneous">False</property>
+	      <property name="visible">True</property>	      <property name="homogeneous">False</property>
 	      <property name="row_spacing">5</property>
 	      <property name="column_spacing">2</property>
 
@@ -23658,8 +23721,10 @@ by A. Moro (1999-2009)</property>
       </child>
 
       <child>
-	<widget class="GtkHButtonBox" id="hbuttonbox7">
+	<widget class="GtkButtonBox" id="hbuttonbox7">
 	  <property name="visible">True</property>
+	  <property name="layout_style">GTK_BUTTONBOX_DEFAULT_STYLE</property>
+   <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 	  <property name="layout_style">GTK_BUTTONBOX_DEFAULT_STYLE</property>
 	  <property name="spacing">25</property>
 
@@ -23708,14 +23773,18 @@ by A. Moro (1999-2009)</property>
   <property name="urgency_hint">False</property>
 
   <child internal-child="vbox">
-    <widget class="GtkVBox" id="dialog-vbox1">
+    <widget class="GtkBox" id="dialog-vbox1">
       <property name="visible">True</property>
+      <property name="homogeneous">False</property>
+      <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
       <property name="homogeneous">False</property>
       <property name="spacing">24</property>
 
       <child internal-child="action_area">
-	<widget class="GtkHButtonBox" id="dialog-action_area1">
+	<widget class="GtkButtonBox" id="dialog-action_area1">
 	  <property name="visible">True</property>
+	  <property name="layout_style">GTK_BUTTONBOX_END</property>
+   <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
 	  <property name="layout_style">GTK_BUTTONBOX_END</property>
 
 	  <child>

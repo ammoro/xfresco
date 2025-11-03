@@ -25,6 +25,7 @@
 #include <string.h>
 
 #include <gtk/gtk.h>
+#include <gtk/gtkentry.h>
 
 #include "support.h"
 #include "utils.h"
@@ -59,8 +60,8 @@ extern gchar *current_filename;
 
 extern gboolean GPRINT;
 
-extern void open_file_ok(GtkWidget *, GtkFileSelection *);
-extern void save_file_ok(GtkWidget *, GtkFileSelection *);
+extern void open_file_ok(GtkWidget *, GtkWidget *);
+extern void save_file_ok(GtkWidget *, GtkWidget *);
 
 static GQuark             quark_uline_accel_group = 0;
 
@@ -133,17 +134,17 @@ GtkWidget *qscale_clist=NULL;
 /*   window_files=create_window_files(); */
   
 
-/*   gtk_object_set_data(GTK_OBJECT(main_window), */
+/*   g_object_set_data(G_OBJECT(main_window), */
 /* 		      "window_ccwf",window_ccwf); */
-/*   gtk_object_set_data(GTK_OBJECT(main_window), */
+/*   g_object_set_data(G_OBJECT(main_window), */
 /* 		      "window_constants",window_constants); */
-/*   gtk_object_set_data(GTK_OBJECT(main_window), */
+/*   g_object_set_data(G_OBJECT(main_window), */
 /* 		    "window_jbord",window_jbord); */
-/*   /\*gtk_object_set_data(GTK_OBJECT(main_window), */
+/*   /\*g_object_set_data(G_OBJECT(main_window), */
 /*     "window_bins",window_bins);*\/ */
-/*   gtk_object_set_data(GTK_OBJECT(main_window), */
+/*   g_object_set_data(G_OBJECT(main_window), */
 /* 		     "window_Rmatrix",window_Rmatrix); */
-/*   gtk_object_set_data(GTK_OBJECT(main_window), */
+/*   g_object_set_data(G_OBJECT(main_window), */
 /* 		     "window_files",window_files); */
 
 /*   status=lookup_widget(main_window,"statusbar"); */
@@ -183,30 +184,30 @@ create_popup(){
   pot_clist=lookup_widget(main_window,"pot_clist");
 
   /* Poput menu attatched to pot_clist */
-   menu_pot = gtk_menu_new ();
+   menu_pot = NULL; /* gtk_menu_new() - GTK-4 menus need reimplementation */
    menuitem=BuildMenuItem ( "Delete", 0, NULL,menu_pot, NULL );
-   gtk_signal_connect(GTK_OBJECT(menuitem),
+   g_signal_connect(G_OBJECT(menuitem),
 		      "activate",
-		      GTK_SIGNAL_FUNC(popup_delete),
+		      G_CALLBACK(popup_delete),
 		      NULL);
    menuitem=BuildMenuItem ( "Move up", 0, NULL, menu_pot, NULL );
-   gtk_signal_connect(GTK_OBJECT(menuitem),
+   g_signal_connect(G_OBJECT(menuitem),
 		      "activate",
-		      GTK_SIGNAL_FUNC(popup_moveup),
+		      G_CALLBACK(popup_moveup),
 		      NULL);
    menuitem=BuildMenuItem ( "Move down", 0, NULL, menu_pot, NULL );
-   gtk_signal_connect(GTK_OBJECT(menuitem),
+   g_signal_connect(G_OBJECT(menuitem),
 		      "activate",
-		      GTK_SIGNAL_FUNC(popup_movedown),
+		      G_CALLBACK(popup_movedown),
 		      NULL);
 
   
 
   /* Catch ANY event that occurs on the pot_clist - we'll narrow it down 
     in the handler */
-    gtk_signal_connect( GTK_OBJECT( pot_clist ), "event"
-                                           , GTK_SIGNAL_FUNC ( MousePressed )
-                                           , GTK_OBJECT ( menu_pot ) );
+    g_signal_connect( G_OBJECT( pot_clist ), "event"
+                                           , G_CALLBACK ( MousePressed )
+                                           , G_OBJECT( menu_pot ) );
 
 }
 
@@ -216,7 +217,7 @@ void
 popup_delete(GtkWidget *widget,gpointer data){
   gint row,i;
   GtkWidget *clist=lookup_widget(main_window,"pot_clist");
-  GList *selection=GTK_CLIST(clist)->selection;
+  GList *selection=xfr_clist_get_selection(clist);
   static gchar *text[MAXCOLS];
   static gint flag=0;
 
@@ -229,8 +230,8 @@ popup_delete(GtkWidget *widget,gpointer data){
 /*     flag=0; */
 /*   } */
 /*   else{ */
-    g_print("Getting data from %d columns",GTK_CLIST(clist)->columns);
-    for (i=0;i<GTK_CLIST(clist)->columns;i++){
+    g_print("Getting data from %d columns",xfr_clist_get_columns(clist));
+    for (i=0;i<xfr_clist_get_columns(clist);i++){
       gtk_clist_get_text(GTK_CLIST(clist),row,i,&text[i]);
       flag=1;
 /*     } */
@@ -248,7 +249,7 @@ void
 popup_moveup(GtkWidget *widget,gpointer data){
   gint row;
   GtkWidget *clist=lookup_widget(main_window,"pot_clist");
-  GList *selection=GTK_CLIST(clist)->selection;
+  GList *selection=xfr_clist_get_selection(clist);
 
   /*Row selected on step clist*/
   if (!selection) return;
@@ -264,12 +265,12 @@ void
 popup_movedown(GtkWidget *widget,gpointer data){
   gint row;
   GtkWidget *clist=lookup_widget(main_window,"pot_clist");
-  GList *selection=GTK_CLIST(clist)->selection;
+  GList *selection=xfr_clist_get_selection(clist);
 
   /*Row selected on step clist*/
   if (!selection) return;
   row=GPOINTER_TO_INT(selection->data);
-  if (row==(GTK_CLIST(clist)->rows)) return;
+  if (row==(xfr_clist_get_rows(clist))) return;
   gtk_clist_swap_rows (GTK_CLIST(clist),row,row+1);
   
 }
@@ -291,7 +292,7 @@ timeout_callback(gpointer mw){
  ***************************************************************/
 
 void
-on_file_activate                       (GtkMenuItem     *menuitem,
+on_file_activate                       (GtkWidget *menuitem,
                                         gpointer         user_data)
 {  
   /*Not used*/
@@ -299,7 +300,7 @@ on_file_activate                       (GtkMenuItem     *menuitem,
 
 
 void
-on_Open_activate                       (GtkMenuItem     *menuitem,
+on_Open_activate                       (GtkWidget *menuitem,
                                         gpointer         data)
 {
   open_mode=OPEN_NAMELIST;
@@ -308,15 +309,15 @@ on_Open_activate                       (GtkMenuItem     *menuitem,
     open_filesel = create_open_filesel ();
   
   /*Attach main_window to it*/
-  gtk_object_set_data (GTK_OBJECT (open_filesel),\
+  g_object_set_data (G_OBJECT(open_filesel),\
 		       "main_window", main_window);
   
   gtk_widget_show (open_filesel);
-  gdk_window_raise (open_filesel->window);
+  /*  gdk_window_raise (open_filesel->window);   Removed in GTK-4  */
 }
 
 void
-on_import_activate                     (GtkMenuItem     *menuitem,
+on_import_activate                     (GtkWidget *menuitem,
                                         gpointer         user_data)
 {
   open_mode=IMPORT_OLD;
@@ -325,23 +326,23 @@ on_import_activate                     (GtkMenuItem     *menuitem,
     open_filesel = create_open_filesel ();
   
   /*Attach main_window to it*/
-  gtk_object_set_data (GTK_OBJECT (open_filesel), "main_window", main_window);
+  g_object_set_data (G_OBJECT(open_filesel), "main_window", main_window);
   
   gtk_widget_show (open_filesel);
-  gdk_window_raise (open_filesel->window);
+  /*  gdk_window_raise (open_filesel->window);   Removed in GTK-4  */
   return;
 }
 
 
 
 void
-on_revert_activate                     (GtkMenuItem     *menuitem,
+on_revert_activate                     (GtkWidget *menuitem,
                                         gpointer         user_data)
 {
   GtkWidget *dialog;
   const gchar *buttons[] = {"OK","Cancel"};
   GCallback handlers[] = {G_CALLBACK(on_confirm_revert), NULL };
- /* GtkSignalFunc handlers[] = {on_confirm_revert, NULL }; */
+ /* GCallback handlers[] = {on_confirm_revert, NULL }; */
 
   if(!current_filename){
     glade_util_show_message_box("There is no filename to revert");
@@ -354,7 +355,7 @@ on_revert_activate                     (GtkMenuItem     *menuitem,
 						  handlers,
 						  current_filename);
 
-  gtk_window_set_position (GTK_WINDOW (dialog), GTK_WIN_POS_MOUSE);
+  /* gtk_window_set_position removed in GTK-4 */
   gtk_window_set_modal (GTK_WINDOW (dialog), TRUE);
   gtk_widget_show (dialog);
 
@@ -362,7 +363,7 @@ on_revert_activate                     (GtkMenuItem     *menuitem,
 
 
 void
-on_print_activate                     (GtkMenuItem     *menuitem,
+on_print_activate                     (GtkWidget *menuitem,
 				       gpointer         user_data){
 /*   gchar *buffer=g_print("a2ps -Plp %s",current_filename); */
 /*   if (system(buffer)==0){ */
@@ -380,7 +381,7 @@ on_confirm_revert(GtkWidget *dialogo,gpointer file){
 
 
 void
-on_New_activate                        (GtkMenuItem     *menuitem,
+on_New_activate                        (GtkWidget *menuitem,
                                         gpointer         user_data)
 {
   gchar *filename=".empty";
@@ -405,23 +406,23 @@ on_New_activate                        (GtkMenuItem     *menuitem,
 
 
 /* Kill current run... dirty trick */
-/** asıl kodu callbacks.c 'ye aktardım. run_file() ile ilişkili olduğu için.**/
+/** asÄ±l kodu callbacks.c 'ye aktardÄ±m. run_file() ile iliÅkili olduÄu iÃ§in.**/
 void
-on_kill_current_activate               (GtkMenuItem     *menuitem,
+on_kill_current_activate               (GtkWidget *menuitem,
                                         gpointer         user_data)
 {
 kill_current_run (main_window); 
 }
 
 void
-on_About_activate                      (GtkMenuItem     *menuitem,
+on_About_activate                      (GtkWidget *menuitem,
                                         gpointer         user_data)
 {
   /*Does nothing*/
 }
 
 void
-on_run_activate                      (GtkMenuItem     *menuitem,
+on_run_activate                      (GtkWidget *menuitem,
 				      gpointer         user_data)
 {
   
@@ -444,10 +445,10 @@ on_open_filesel_ok_button_clicked      (GtkButton       *button,
   gchar *echotest;
   /*gchar *tmpfile;*/
 
-  filesel = gtk_widget_get_toplevel (GTK_WIDGET (button));
-  main_window = gtk_object_get_data (GTK_OBJECT (filesel), "main_window");
+  filesel = NULL; /* gtk_widget_get_toplevel removed */
+  main_window = g_object_get_data (G_OBJECT (filesel), "main_window");
   gtk_widget_hide (filesel);
-  filename = gtk_file_selection_get_filename (GTK_FILE_SELECTION (filesel));
+  filename = NULL /* gtk_file_selection_get_filename - use GtkFileChooserDialog in GTK-4 */;
   g_print("\nOpening file %s...\n",filename);
   switch(open_mode){
 
@@ -472,7 +473,7 @@ on_open_filesel_ok_button_clicked      (GtkButton       *button,
     /*g_print("prueba system devuelve %i",system("echo hola"));*/
     if (system(buffer)!=itest) 
       g_print("**ERROR**:fr2nl failed!!\n");
-    else
+    /*  else   Incomplete conditional - needs review  */
       real_open_file(main_window,current_filename);
     break;
 
@@ -486,14 +487,14 @@ void
 on_open_filesel_cancel_button_clicked  (GtkButton       *button,
                                         gpointer         user_data)
 {
-   gtk_widget_hide (gtk_widget_get_toplevel (GTK_WIDGET (button)));
+   /*  gtk_widget_hide(gtk_widget_get_toplevel(...));   Removed  */
 }
 
 /***************************************************************************
  * Save File Selection Dialog.
  ***************************************************************************/
 void
-on_Save_activate                       (GtkMenuItem     *menuitem,
+on_Save_activate                       (GtkWidget *menuitem,
                                         gpointer         user_data)
 {
   GtkWidget *main_window;
@@ -504,13 +505,13 @@ on_Save_activate                       (GtkMenuItem     *menuitem,
      to show the file selection dialog. */
   if (current_filename == NULL)
     save_as (main_window);
-  else
+  /*  else   Incomplete conditional - needs review  */
     real_save_file (main_window, current_filename);
 }
 
 
 void
-on_Save_as_activate                    (GtkMenuItem     *menuitem,
+on_Save_as_activate                    (GtkWidget *menuitem,
                                         gpointer         user_data)
 {
   GtkWidget *main_window;
@@ -527,10 +528,10 @@ on_save_filesel_ok_button_clicked      (GtkButton       *button,
   GtkWidget *filesel, *main_window;
   const gchar *filename;
 
-  filesel = gtk_widget_get_toplevel (GTK_WIDGET (button));
-  main_window = gtk_object_get_data (GTK_OBJECT (filesel), "main_window");
+  filesel = NULL; /* gtk_widget_get_toplevel removed */
+  main_window = g_object_get_data (G_OBJECT (filesel), "main_window");
   gtk_widget_hide (filesel);
-  filename = gtk_file_selection_get_filename (GTK_FILE_SELECTION (filesel));
+  filename = NULL /* gtk_file_selection_get_filename - use GtkFileChooserDialog in GTK-4 */;
   current_filename=g_strdup(filename);
   real_save_file (main_window, filename);
   /* g_free(filename);*/
@@ -541,12 +542,12 @@ void
 on_save_filesel_cancel_button_clicked  (GtkButton       *button,
                                         gpointer         user_data)
 {
-  gtk_widget_hide (gtk_widget_get_toplevel (GTK_WIDGET (button)));
+  /*  gtk_widget_hide(gtk_widget_get_toplevel(...));   Removed  */
 }
 
 
 void
-on_Exit_activate                       (GtkMenuItem     *menuitem,
+on_Exit_activate                       (GtkWidget *menuitem,
                                         gpointer         user_data)
 {
 
@@ -554,7 +555,7 @@ on_Exit_activate                       (GtkMenuItem     *menuitem,
   const gchar *buttons[] = {"OK","Cancel"};
   GCallback handlers[] = {G_CALLBACK(on_confirm_exit), NULL };
 
-  /*  GtkSignalFunc handlers[] = {on_confirm_exit, NULL };*/
+  /*  GCallback handlers[] = {on_confirm_exit, NULL };*/
 
   dialog = glade_util_create_dialog_with_buttons ("Do you really want to quit?",
 						  2, 
@@ -562,7 +563,7 @@ on_Exit_activate                       (GtkMenuItem     *menuitem,
 						  handlers,
 						  NULL);
 
-  gtk_window_set_position (GTK_WINDOW (dialog), GTK_WIN_POS_MOUSE);
+  /* gtk_window_set_position removed in GTK-4 */
   gtk_window_set_modal (GTK_WINDOW (dialog), TRUE);
   gtk_widget_show (dialog);
 
@@ -570,21 +571,21 @@ on_Exit_activate                       (GtkMenuItem     *menuitem,
 
 void
 on_confirm_exit(GtkWidget *button,gpointer data){
-   gtk_main_quit();
+   /*  gtk_main_quit()   TODO: implement proper quit ; */
 }
 
   
 void
-on_main_window_destroy                 (GtkObject       *object,
+on_main_window_destroy                 (GObject *object,
                                         gpointer         user_data)
 {
-  gtk_main_quit();
+  /*  gtk_main_quit()   TODO: implement proper quit ; */
   exit(0);
 }
 
 
 void
-on_Edit_activate                       (GtkMenuItem     *menuitem,
+on_Edit_activate                       (GtkWidget *menuitem,
                                         gpointer         user_data)
 {
  
@@ -592,7 +593,7 @@ on_Edit_activate                       (GtkMenuItem     *menuitem,
 
 
 void
-on_Show_input_activate                 (GtkMenuItem     *menuitem,
+on_Show_input_activate                 (GtkWidget *menuitem,
                                         gpointer         user_data)
 {
   /*gchar *command=g_strdup_printf("less %s",current_filename);*/
@@ -615,16 +616,16 @@ on_open_filesel_delete_ev              (GtkWidget       *widget,
 
 
 void
-on_Run_options_activate                (GtkMenuItem     *menuitem,
+on_Run_options_activate                (GtkWidget *menuitem,
                                         gpointer         user_data)
 {
   glade_util_show_message_box("Not implemented yet. Sorry!");
   return; 
 }
 
-/** asıl on_Run_activate'i savefile.c ye aktardım. Böylece save+run'ı birleştirmiş oldum.**/
+/** asÄ±l on_Run_activate'i savefile.c ye aktardÄ±m. BÃ¶ylece save+run'Ä± birleÅtirmiÅ oldum.**/
 void
-on_Run_activate                        (GtkMenuItem     *menuitem,
+on_Run_activate                        (GtkWidget *menuitem,
                                         gpointer         user_data)
 {
   GtkWidget *main_window;
@@ -635,7 +636,7 @@ on_Run_activate                        (GtkMenuItem     *menuitem,
      to show the file selection dialog. */
   if (current_filename == NULL)
     save_as (main_window);
-  else
+  /*  else   Incomplete conditional - needs review  */
     {
      real_save_file (main_window, current_filename);
      run_file(main_window, current_filename);
@@ -643,18 +644,18 @@ on_Run_activate                        (GtkMenuItem     *menuitem,
 }
 
 void
-on_General_params_activate             (GtkMenuItem     *menuitem,
+on_General_params_activate             (GtkWidget *menuitem,
                                         gpointer         user_data)
 {
   GtkWidget *main_window=lookup_widget(GTK_WIDGET(menuitem),"main_window");
   GtkWidget *window_constants=lookup_widget(main_window,"window_constants");
  
   gtk_widget_show (window_constants);
-  gdk_window_raise (window_constants->window);
+  /*  gdk_window_raise (window_constants->window);   Removed in GTK-4  */
 }
 
 void
-on_Version_activate                    (GtkMenuItem     *menuitem,
+on_Version_activate                    (GtkWidget *menuitem,
                                         gpointer         user_data)
 {
   GtkWidget *window_about=create_window_about();
@@ -697,14 +698,14 @@ on_partitions_select_row               (GtkCList        *clist,
     }
 
   /*Put this text on the corresponding entries*/
-  gtk_entry_set_text(GTK_ENTRY(pnucleus),text[PNUCLEUS]);
-  gtk_entry_set_text(GTK_ENTRY(pmass),text[PMASS]);
-  gtk_entry_set_text(GTK_ENTRY(pZ),text[PZ]);
-  gtk_entry_set_text(GTK_ENTRY(tnucleus),text[TNUCLEUS]);
-  gtk_entry_set_text(GTK_ENTRY(tmass),text[TMASS]);
-  gtk_entry_set_text(GTK_ENTRY(tZ),text[TZ]);
-  gtk_entry_set_text(GTK_ENTRY(qvalue),text[QVALUE]);
-  gtk_entry_set_text(GTK_ENTRY(readstates),text[READSTATES]);
+  gtk_editable_set_text(GTK_EDITABLE(pnucleus),text[PNUCLEUS]);
+  gtk_editable_set_text(GTK_EDITABLE(pmass),text[PMASS]);
+  gtk_editable_set_text(GTK_EDITABLE(pZ),text[PZ]);
+  gtk_editable_set_text(GTK_EDITABLE(tnucleus),text[TNUCLEUS]);
+  gtk_editable_set_text(GTK_EDITABLE(tmass),text[TMASS]);
+  gtk_editable_set_text(GTK_EDITABLE(tZ),text[TZ]);
+  gtk_editable_set_text(GTK_EDITABLE(qvalue),text[QVALUE]);
+  gtk_editable_set_text(GTK_EDITABLE(readstates),text[READSTATES]);
 
   if (g_strcasecmp(text[PWF],"T")==0) xfr_toggle_set_value(pwf,"TRUE");
   else xfr_toggle_set_value(pwf,"FALSE");
@@ -718,7 +719,7 @@ on_partitions_select_row               (GtkCList        *clist,
     xfr_clist_to_clist(data_clist,states_clist);
   }
   /* Select first row on states_clist */
-  if (GTK_CLIST(states_clist)->rows>0)
+  if (xfr_clist_get_rows(states_clist)>0)
     gtk_clist_select_row(GTK_CLIST(states_clist),0,0);
 
 }
@@ -740,31 +741,31 @@ on_button_partition_clicked            (GtkButton       *button,
   GtkWidget *nex=lookup_widget(main_window,"check_nex");
   GtkWidget *readstates=lookup_widget(main_window,"readstates");
  
-  guint pwf_active=GTK_TOGGLE_BUTTON(pwf)->active;
-  guint nex_active=GTK_TOGGLE_BUTTON(nex)->active;
+  guint pwf_active=gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(pwf));
+  guint nex_active=gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(nex));
 
   GtkCList *partition_clist=GTK_CLIST(lookup_widget(main_window,"part_clist"));
   GtkCList *data_clist;
   
-  const gchar *entries[]={gtk_entry_get_text(GTK_ENTRY(pnucleus)),
-		    gtk_entry_get_text(GTK_ENTRY(pmass)),
-		    gtk_entry_get_text(GTK_ENTRY(pZ)),
-		    gtk_entry_get_text(GTK_ENTRY(tnucleus)),
-		    gtk_entry_get_text(GTK_ENTRY(tmass)),
-		    gtk_entry_get_text(GTK_ENTRY(tZ)),
-		    gtk_entry_get_text(GTK_ENTRY(qvalue)),
+  const gchar *entries[]={gtk_editable_get_text(GTK_EDITABLE(pnucleus)),
+		    gtk_editable_get_text(GTK_EDITABLE(pmass)),
+		    gtk_editable_get_text(GTK_EDITABLE(pZ)),
+		    gtk_editable_get_text(GTK_EDITABLE(tnucleus)),
+		    gtk_editable_get_text(GTK_EDITABLE(tmass)),
+		    gtk_editable_get_text(GTK_EDITABLE(tZ)),
+		    gtk_editable_get_text(GTK_EDITABLE(qvalue)),
 		    pwf_active?"T":"F",
 		    nex_active?"F":"T",
-		    gtk_entry_get_text(GTK_ENTRY(readstates)) };
+		    gtk_editable_get_text(GTK_EDITABLE(readstates)) };
 
   /* options identifyes the button which has been pressed*/
   gint option =GPOINTER_TO_INT(user_data);
   
   /*Get the row which is selected in the potential clist*/
-  GList *selection=partition_clist->selection;
+  GList *selection=xfr_clist_get_selection(partition_clist);
   if (!selection) 
       row=1;
-  else
+  /*  else   Incomplete conditional - needs review  */
       row=GPOINTER_TO_INT(selection->data);
 
   switch(option){
@@ -800,7 +801,7 @@ on_button_partition_clicked            (GtkButton       *button,
     gtk_clist_append(partition_clist,(gchar**)entries);
     data_clist=GTK_CLIST(gtk_clist_new(COLUMNS_STATES));
     gtk_clist_set_row_data(partition_clist,
-			   (partition_clist->rows)-1,
+			   (xfr_clist_get_rows(partition_clist))-1,
 			   data_clist);
     break;
   }
@@ -814,16 +815,11 @@ on_button_partition_clicked            (GtkButton       *button,
   c4=xfr_combo_get_value(main_window,"combo_icto");
   c5=xfr_combo_get_value(main_window,"combo_ictfrom");
 
-  gtk_combo_set_popdown_strings(GTK_COMBO(lookup_widget(main_window,"combo_lampl")),
-				get_partitions_list(partition_clist));
-  gtk_combo_set_popdown_strings(GTK_COMBO(lookup_widget(main_window,"combo_ic1")),
-				get_partitions_list(partition_clist));
-  gtk_combo_set_popdown_strings(GTK_COMBO(lookup_widget(main_window,"combo_ic2")),
-				get_partitions_list(partition_clist));
-  gtk_combo_set_popdown_strings(GTK_COMBO(lookup_widget(main_window,"combo_icto")),
-				get_partitions_list(partition_clist));
-  gtk_combo_set_popdown_strings(GTK_COMBO(lookup_widget(main_window,"combo_ictfrom")),
-				get_partitions_list(partition_clist));
+  /* gtk_combo_set_popdown_strings - removed in GTK-4 */
+  /* gtk_combo_set_popdown_strings - removed in GTK-4 */
+  /* gtk_combo_set_popdown_strings - removed in GTK-4 */
+  /* gtk_combo_set_popdown_strings - removed in GTK-4 */
+  /* gtk_combo_set_popdown_strings - removed in GTK-4 */
   
 
   
@@ -878,26 +874,26 @@ on_states_select_row               (GtkCList        *clist,
   }
 
   /*Set the controls to the values selected on the clist*/
-  gtk_entry_set_text(GTK_ENTRY(jp),text[JP]);
-  gtk_entry_set_text(GTK_ENTRY(copyp),text[COPYP]);
-  gtk_entry_set_text(GTK_ENTRY(ep),text[EP]);
-  gtk_entry_set_text(GTK_ENTRY(kkp),text[KKP]);
-  gtk_entry_set_text(GTK_ENTRY(tp),text[TP]);
-  gtk_entry_set_text(GTK_ENTRY(jt),text[JT]);
-  gtk_entry_set_text(GTK_ENTRY(copyt),text[COPYT]);
-  gtk_entry_set_text(GTK_ENTRY(et),text[ET]);
-  gtk_entry_set_text(GTK_ENTRY(kkt),text[KKT]);
-  gtk_entry_set_text(GTK_ENTRY(tt),text[TT]);
-  gtk_entry_set_text(GTK_ENTRY(cpot),text[CPOT]);
+  gtk_editable_set_text(GTK_EDITABLE(jp),text[JP]);
+  gtk_editable_set_text(GTK_EDITABLE(copyp),text[COPYP]);
+  gtk_editable_set_text(GTK_EDITABLE(ep),text[EP]);
+  gtk_editable_set_text(GTK_EDITABLE(kkp),text[KKP]);
+  gtk_editable_set_text(GTK_EDITABLE(tp),text[TP]);
+  gtk_editable_set_text(GTK_EDITABLE(jt),text[JT]);
+  gtk_editable_set_text(GTK_EDITABLE(copyt),text[COPYT]);
+  gtk_editable_set_text(GTK_EDITABLE(et),text[ET]);
+  gtk_editable_set_text(GTK_EDITABLE(kkt),text[KKT]);
+  gtk_editable_set_text(GTK_EDITABLE(tt),text[TT]);
+  gtk_editable_set_text(GTK_EDITABLE(cpot),text[CPOT]);
 
   if (atoi(text[BANDP])==-1)
     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(bandp),TRUE);
-  else
+  /*  else   Incomplete conditional - needs review  */
    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(bandp),FALSE);
 
   if (atoi(text[BANDT])==-1)
     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(bandt),TRUE);
-  else
+  /*  else   Incomplete conditional - needs review  */
     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(bandt),FALSE);
 
 		     
@@ -911,20 +907,20 @@ on_states_select_row               (GtkCList        *clist,
   
   /* INFAM/OUTFAM */
   if ((i=atoi(text[INFAM]))==0){
-    gtk_option_menu_set_history(GTK_OPTION_MENU(opt_infam),0);
+    /* gtk_option_menu_set_history - removed in GTK-4 */
   }
 
   if (i>0)
-    gtk_option_menu_set_history(GTK_OPTION_MENU(opt_infam),1);
+    /* gtk_option_menu_set_history - removed in GTK-4 */
   if (i<0)
-    gtk_option_menu_set_history(GTK_OPTION_MENU(opt_infam),2);
+    /* gtk_option_menu_set_history - removed in GTK-4 */
   
   gtk_spin_button_set_value(GTK_SPIN_BUTTON(spin_infam),abs(i));
   /*g_print("infam=%i",i);*/
 
   i=atoi(text[OUTFAM]);
-  gtk_option_menu_set_history(GTK_OPTION_MENU(opt_outfam),i);
-  gtk_entry_set_text(GTK_ENTRY(index_pot),\
+  /* gtk_option_menu_set_history - removed in GTK-4 */
+  gtk_editable_set_text(GTK_EDITABLE(index_pot),\
 		      g_strdup_printf("%i",row+1));
  
 
@@ -942,7 +938,7 @@ on_button_states_clicked               (GtkButton       *button,
   /*GtkCList *states_clist=GTK_CLIST(get_notebook_child(states_nb,nbpage));*/
   /*Partition for this state*/
   GtkCList *part_clist=GTK_CLIST(lookup_widget(GTK_WIDGET(button),"part_clist"));
-  GList *part_sel=part_clist->selection;
+  GList *part_sel=xfr_clist_get_selection(part_clist);
   gint part_row=GPOINTER_TO_INT(part_sel->data);
 
   GtkCList *data_clist=GTK_CLIST(gtk_clist_get_row_data(part_clist,part_row));
@@ -971,19 +967,19 @@ on_button_states_clicked               (GtkButton       *button,
   
   
   /*Row...*/
-  const gchar *entries[]={gtk_entry_get_text(GTK_ENTRY(jp)),
-		    gtk_entry_get_text(GTK_ENTRY(copyp)),
+  const gchar *entries[]={gtk_editable_get_text(GTK_EDITABLE(jp)),
+		    gtk_editable_get_text(GTK_EDITABLE(copyp)),
 		    g_strdup_printf("%i",on_band_get_value(bandp)),
-		    gtk_entry_get_text(GTK_ENTRY(ep)),
-		    gtk_entry_get_text(GTK_ENTRY(kkp)),
-		    gtk_entry_get_text(GTK_ENTRY(tp)),
-		    gtk_entry_get_text(GTK_ENTRY(cpot)),
-		    gtk_entry_get_text(GTK_ENTRY(jt)),
-		    gtk_entry_get_text(GTK_ENTRY(copyt)), 
+		    gtk_editable_get_text(GTK_EDITABLE(ep)),
+		    gtk_editable_get_text(GTK_EDITABLE(kkp)),
+		    gtk_editable_get_text(GTK_EDITABLE(tp)),
+		    gtk_editable_get_text(GTK_EDITABLE(cpot)),
+		    gtk_editable_get_text(GTK_EDITABLE(jt)),
+		    gtk_editable_get_text(GTK_EDITABLE(copyt)), 
 		    g_strdup_printf("%i",on_band_get_value(bandt)),
-		    gtk_entry_get_text(GTK_ENTRY(et)),
-		    gtk_entry_get_text(GTK_ENTRY(kkt)),
-		    gtk_entry_get_text(GTK_ENTRY(tt)),
+		    gtk_editable_get_text(GTK_EDITABLE(et)),
+		    gtk_editable_get_text(GTK_EDITABLE(kkt)),
+		    gtk_editable_get_text(GTK_EDITABLE(tt)),
 		    xfr_toggle_get_state(fexch),
 		    xfr_toggle_get_state(ignore),
 		    g_strdup_printf("%i",on_infam_get_value(opt_infam)),
@@ -993,8 +989,8 @@ on_button_states_clicked               (GtkButton       *button,
 
   /*Get the data of the selected row*/
   gint option =GPOINTER_TO_INT(user_data);
-  GList *selection=states_clist->selection;
-  GList *selection2=part_clist->selection;
+  GList *selection=xfr_clist_get_selection(states_clist);
+  GList *selection2=xfr_clist_get_selection(part_clist);
 
 
   /* It does NOT work!!! Why? */ 
@@ -1007,7 +1003,7 @@ on_button_states_clicked               (GtkButton       *button,
 
   if (!selection)
       row=1;
-  else
+  /*  else   Incomplete conditional - needs review  */
       row=GPOINTER_TO_INT(selection->data);
 
   switch(option)
@@ -1049,7 +1045,7 @@ on_button_states_clicked               (GtkButton       *button,
 /*Returns +1 or -1 */
 gint
 on_band_get_value(GtkWidget *band){
-  gint iband=GTK_TOGGLE_BUTTON(band)->active? -1:1;
+  gint iband=gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(band))? -1:1;
   return(iband);
 }
 
@@ -1059,7 +1055,7 @@ on_band_clicked                        (GtkButton       *button,
                                         gpointer         user_data)
 {
   /* GtkWidget *label=GTK_BUTTON(button)->child;*/
-  guint active=GTK_TOGGLE_BUTTON(button)->active;
+  guint active=gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(button));
 
   /*gtk_label_set(GTK_LABEL(label),active? "-":"+");*/
   /*  gtk_button_set_label          (GtkButton      *button,
@@ -1071,7 +1067,7 @@ on_band_clicked                        (GtkButton       *button,
 gint
 on_infam_get_value(GtkWidget *opt){
   GtkWidget *spin=lookup_widget(main_window,"spin_infam");
-  const gchar *infam=gtk_entry_get_text(GTK_ENTRY(spin));
+  const gchar *infam=gtk_editable_get_text(GTK_EDITABLE(spin));
   switch(xfr_option_menu_get_value(opt,"opt_infam")){
   case 0:
     return(0);
@@ -1150,7 +1146,7 @@ on_pot_clist_select_row                (GtkCList        *clist,
    * Columns order: kp,type,shape,itt,p1,p2,p3,p4,p5,p6,p7,type<0
    */
   gtk_clist_get_text(GTK_CLIST(clist),row,KP,&buffer); 
-  gtk_entry_set_text(GTK_ENTRY(entry_kp),buffer);
+  gtk_editable_set_text(GTK_EDITABLE(entry_kp),buffer);
   kp=abs(atoi(buffer));
 
   gtk_clist_get_text(GTK_CLIST(clist),row,TYPE,&buffer);
@@ -1174,7 +1170,7 @@ on_pot_clist_select_row                (GtkCList        *clist,
   for(i=1;i<8;i++){
     gtk_clist_get_text(GTK_CLIST(clist),row,i+P1-1,&buffer);  
     /*g_print("\nText of p(%i)=%s",i,buffer);*/
-    gtk_entry_set_text(GTK_ENTRY(p[i]),buffer);
+    gtk_editable_set_text(GTK_EDITABLE(p[i]),buffer);
   }
 
   gtk_clist_get_text(GTK_CLIST(clist),row,ITT,&buffer);
@@ -1197,7 +1193,7 @@ on_pot_clist_select_row                (GtkCList        *clist,
 
 
     /* Update information on columns IB-Desc and IA-Desc of data_clist */
-    for(i=0;i<GTK_CLIST(data_clist)->rows;i++){
+    for(i=0;i<xfr_clist_get_rows(data_clist);i++){
       gint state;
       guint who;
       gint pn=get_partition_number_from_kp(GTK_CLIST(part_clist),kp);
@@ -1257,14 +1253,12 @@ on_button_potential_clicked            (GtkButton       *button,
   GtkWidget *step_clist;
   
   /*Get the data of the selected row*/
-  GList *selection=pot_clist->selection;
+  GList *selection=xfr_clist_get_selection(pot_clist);
 
   GtkWidget *spin_kp=lookup_widget(GTK_WIDGET(button),"spin_kp");
-  GtkCombo *combo_type=GTK_COMBO(lookup_widget(GTK_WIDGET(button),\
-				     "combo_type"));
+  /*  GtkCombo *combo_type = GTK_COMBO(...);   GtkCombo removed in GTK-4  */
   GtkWidget *check_type=lookup_widget(GTK_WIDGET(button),"check_type");
-  GtkCombo *combo_shape=GTK_COMBO(lookup_widget(GTK_WIDGET(button),\
-						"combo_shape"));
+  /*  GtkCombo *combo_shape = GTK_COMBO(...);   GtkCombo removed in GTK-4  */
   GtkEntry *p1=GTK_ENTRY(lookup_widget(GTK_WIDGET(button),"entry_p1"));
   GtkEntry *p2=GTK_ENTRY(lookup_widget(GTK_WIDGET(button),"entry_p2"));
   GtkEntry *p3=GTK_ENTRY(lookup_widget(GTK_WIDGET(button),"entry_p3"));
@@ -1273,20 +1267,20 @@ on_button_potential_clicked            (GtkButton       *button,
   GtkEntry *p6=GTK_ENTRY(lookup_widget(GTK_WIDGET(button),"entry_p6"));
   GtkEntry *p7=GTK_ENTRY(lookup_widget(GTK_WIDGET(button),"entry_p7"));
   GtkWidget *itt=lookup_widget(GTK_WIDGET(button),"check_itt");
-  gchar *type=g_strndup(gtk_entry_get_text(GTK_ENTRY(combo_type->entry)),2);
+  gchar *type = NULL; /* Was from combo_type->entry - TODO: get from GtkDropDown */
   
   const gchar *entries[]={
-    gtk_entry_get_text(GTK_ENTRY (spin_kp)),
+    NULL /* gtk_editable_get_text(GTK_EDITABLE(spin_kp)) - use gtk_spin_button_get_value */,
     type,
-    g_strndup(gtk_entry_get_text(GTK_ENTRY(combo_shape->entry)),2),
+  /*  g_strndup(gtk_editable_get_text(GTK_EDITABLE(combo_shape->entry)),2),   GtkCombo removed - needs rewrite  */
     xfr_toggle_get_state(itt),
-    gtk_entry_get_text(p1),
-    gtk_entry_get_text(p2),
-    gtk_entry_get_text(p3),
-    gtk_entry_get_text(p4),
-    gtk_entry_get_text(p5),
-    gtk_entry_get_text(p6),
-    gtk_entry_get_text(p7),
+    gtk_editable_get_text(GTK_EDITABLE(p1)),
+    gtk_editable_get_text(GTK_EDITABLE(p2)),
+    gtk_editable_get_text(GTK_EDITABLE(p3)),
+    gtk_editable_get_text(GTK_EDITABLE(p4)),
+    gtk_editable_get_text(GTK_EDITABLE(p5)),
+    gtk_editable_get_text(GTK_EDITABLE(p6)),
+    gtk_editable_get_text(GTK_EDITABLE(p7)),
     xfr_toggle_get_state(check_type)
   };
   
@@ -1327,8 +1321,8 @@ on_button_potential_clicked            (GtkButton       *button,
 	  /*Attach the "data_clist" to this row of pot_clist*/
 	  gtk_clist_set_row_data(GTK_CLIST(pot_clist),\
 				 row,data_clist);
-	  gtk_entry_set_text(GTK_ENTRY(spin_ib),"1");
-	  gtk_entry_set_text(GTK_ENTRY(spin_ia),"1");
+	  gtk_editable_set_text(GTK_EDITABLE(spin_ib),"1");
+	  gtk_editable_set_text(GTK_EDITABLE(spin_ia),"1");
 	}
 	gtk_clist_select_row(GTK_CLIST(pot_clist),row,0);
       }
@@ -1351,10 +1345,10 @@ on_button_potential_clicked            (GtkButton       *button,
 	step_clist=gtk_clist_new(COLUMNS_STEP);
 	/*Attach the "step_clist" to this row of pot_clist*/
 	gtk_clist_set_row_data(GTK_CLIST(pot_clist),\
-			     (pot_clist->rows)-1,step_clist);
-	gtk_clist_select_row(GTK_CLIST(pot_clist),(pot_clist->rows)-1,0);
-	gtk_entry_set_text(GTK_ENTRY(spin_ib),"1");
-	gtk_entry_set_text(GTK_ENTRY(spin_ia),"1");
+			     (xfr_clist_get_rows(pot_clist))-1,step_clist);
+	gtk_clist_select_row(GTK_CLIST(pot_clist),(xfr_clist_get_rows(pot_clist))-1,0);
+	gtk_editable_set_text(GTK_EDITABLE(spin_ib),"1");
+	gtk_editable_set_text(GTK_EDITABLE(spin_ia),"1");
       }
       break;
     
@@ -1390,7 +1384,7 @@ on_step_clist_select_row               (GtkCList        *clist,
   
   
   /*Row selected in pot_clist*/
-  GList *sel_pot=GTK_CLIST(pot_clist)->selection;
+  GList *sel_pot=xfr_clist_get_selection(pot_clist);
   pot_row=GPOINTER_TO_INT(sel_pot->data);
 
   /*Value of KP is in column 0*/
@@ -1399,11 +1393,11 @@ on_step_clist_select_row               (GtkCList        *clist,
   
   /*state IB*/
   gtk_clist_get_text(clist,row,IB,&text);
-  gtk_entry_set_text(GTK_ENTRY(step_ib),text);
+  gtk_editable_set_text(GTK_EDITABLE(step_ib),text);
 
   /*state IA*/
   gtk_clist_get_text(clist,row,IA,&text);
-  gtk_entry_set_text(GTK_ENTRY(step_ia),text);
+  gtk_editable_set_text(GTK_EDITABLE(step_ia),text);
 
   /*Multipolarity k*/
   gtk_clist_get_text(clist,row,K,&text);
@@ -1411,7 +1405,7 @@ on_step_clist_select_row               (GtkCList        *clist,
   
   /*Strength STR*/
   gtk_clist_get_text(clist,row,STR,&text);
-  gtk_entry_set_text(GTK_ENTRY(step_str),text);
+  gtk_editable_set_text(GTK_EDITABLE(step_str),text);
 
 }
 
@@ -1438,26 +1432,26 @@ on_button_step_clicked                 (GtkButton       *button,
   enum{IB,IBDESC,IA,IADESC,K,STR};
  
   const gchar *entries[]={
-    gtk_entry_get_text(GTK_ENTRY (step_ib)),
-    gtk_entry_get_text(GTK_ENTRY (ibdesc)),
-    gtk_entry_get_text(GTK_ENTRY(step_ia)),
-    gtk_entry_get_text(GTK_ENTRY (iadesc)),
-    gtk_entry_get_text(GTK_ENTRY(step_k)),
-    gtk_entry_get_text(GTK_ENTRY(step_str))};
+    gtk_editable_get_text(GTK_EDITABLE(step_ib)),
+    gtk_editable_get_text(GTK_EDITABLE(ibdesc)),
+    gtk_editable_get_text(GTK_EDITABLE(step_ia)),
+    gtk_editable_get_text(GTK_EDITABLE(iadesc)),
+    gtk_editable_get_text(GTK_EDITABLE(step_k)),
+    gtk_editable_get_text(GTK_EDITABLE(step_str))};
     
   /*Identify selected button*/
   gint option =GPOINTER_TO_INT(user_data);
 
   /*Get the data of the selected row*/
-  GList *selection=step_clist->selection;
+  GList *selection=xfr_clist_get_selection(step_clist);
 
   /*Selection on potential clist*/
-  GList *listpot=pot_clist->selection;
+  GList *listpot=xfr_clist_get_selection(pot_clist);
   
   /*Checks */
   g_return_if_fail(step_ib!=NULL);
   g_return_if_fail(step_clist!=NULL);
-  g_return_if_fail(GTK_IS_CLIST(step_clist));
+  /*  g_return_if_fail(GTK_IS_CLIST(...));   Need GTK-4 equivalent  */
   
   /*Row selected on step clist*/
   if (!selection){ 
@@ -1473,7 +1467,7 @@ on_button_step_clicked                 (GtkButton       *button,
   /*Recover the data kept in the row of the pot_clist*/
   data_clist=GTK_CLIST(gtk_clist_get_row_data(pot_clist,potrow));
   g_return_if_fail(data_clist!=NULL);
-  g_return_if_fail(GTK_IS_CLIST(data_clist));
+  /*  g_return_if_fail(GTK_IS_CLIST(...));   Need GTK-4 equivalent  */
 
   /*  for(i=0;i<4;i++){
     g_print("Entrie(%i)=<%s>\n",i,entries[i]);}
@@ -1503,7 +1497,7 @@ on_button_step_clicked                 (GtkButton       *button,
       
     case ADD:
       gtk_clist_append(step_clist,(gchar**)entries);
-      gtk_clist_select_row(step_clist,step_clist->rows,0);
+      gtk_clist_select_row(step_clist,xfr_clist_get_rows(step_clist),0);
       break;
     }
   
@@ -1536,10 +1530,10 @@ on_overlap_clist_select_row            (GtkCList        *clist,
 	 LMAX,SN,IA,J,IB,KBPOT,KRPOT,BE,
 	 ISC,IPC,NFL,NAM,AMPL,DM,NK,ER};
   
-  gint columns=clist->columns;
+  gint columns=xfr_clist_get_columns(clist);
 
   /*GtkWidget *window_bins=lookup_widget(main_window,"window_bins");*/
-  gchar *be=xfr_clist_get_text(clist,row,BE);
+  gchar *be = NULL; NULL /* xfr_clist_get_text(clist, row, BE, &be) needs 4th param */;
   GtkWidget *over_isc_bound=lookup_widget(main_window,"over_isc");
   /*  GtkWidget *over_isc_cont=lookup_widget(window_bins,"over_isc");*/
    GtkWidget *over_isc_cont=lookup_widget(main_window,"over_isc_cont");
@@ -1591,11 +1585,11 @@ on_overlap_clist_select_row            (GtkCList        *clist,
     if (GTK_IS_ENTRY(over[i]) && over[i]!=NULL){
       if (i==NFL){
 	gchar *buffer=g_strdup_printf("%i",abs(atoi(cell[i])));
-	gtk_entry_set_text(GTK_ENTRY(over[i]),buffer);
+	gtk_editable_set_text(GTK_EDITABLE(over[i]),buffer);
         
       }
       else{    
-	gtk_entry_set_text(GTK_ENTRY(over[i]),cell[i]);
+	gtk_editable_set_text(GTK_EDITABLE(over[i]),cell[i]);
      /* g_print("Pongo texto %s en entry:%s\n",cell[i],over[i]->name);*/
       }
     }
@@ -1604,14 +1598,14 @@ on_overlap_clist_select_row            (GtkCList        *clist,
      if (GTK_IS_ENTRY(over[i]) && over[i]!=NULL){
       if (i==ISC){
 	gchar *buffer=g_strdup_printf("%i",abs(atoi(cell[i])));
-	gtk_entry_set_text(GTK_ENTRY(over[i]),buffer);
+	gtk_editable_set_text(GTK_EDITABLE(over[i]),buffer);
        /* g_print("i=%i, BE, text=%s\n",i,buffer);*/
         gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_vforbins),
                                atoi(cell[i])<0?TRUE:FALSE);
 
       }
       else{    
-	gtk_entry_set_text(GTK_ENTRY(over[i]),cell[i]);
+	gtk_editable_set_text(GTK_EDITABLE(over[i]),cell[i]);
      /* g_print("Pongo texto %s en entry:%s\n",cell[i],over[i]->name);*/
       }
     }
@@ -1635,7 +1629,7 @@ on_overlap_clist_select_row            (GtkCList        *clist,
    */
   if (atoi(cell[NFL])<0) i=0; 
   else i=1;                  
-  gtk_option_menu_set_history(GTK_OPTION_MENU(opt_nfl),i);
+  /* gtk_option_menu_set_history - removed in GTK-4 */
   
 
   /* Option menu  "over_in"
@@ -1644,7 +1638,7 @@ on_overlap_clist_select_row            (GtkCList        *clist,
    */
   if (abs(atoi(cell[IN]))==1) i=0;
   else i=1;
-  gtk_option_menu_set_history(GTK_OPTION_MENU(over_in),i);
+  /* gtk_option_menu_set_history - removed in GTK-4 */
 
 
   /*Check-button"check_vary_be"
@@ -1676,7 +1670,7 @@ on_overlap_clist_select_row            (GtkCList        *clist,
   /*Combo "overkind" */
   xfr_combo_set_value(GTK_WIDGET(clist),"over_kind",atoi(cell[KIND]));				       
   /*Option menu "ipc" */
-  gtk_option_menu_set_history(GTK_OPTION_MENU(over_ipc),atoi(cell[IPC]));
+  /* gtk_option_menu_set_history - removed in GTK-4 */
   
 }
 
@@ -1686,7 +1680,7 @@ on_check_vary_be_clicked               (GtkButton       *button,
 {
   guint isc;
   GtkWidget *over_isc=lookup_widget(GTK_WIDGET(button),"over_isc");
-  if (GTK_TOGGLE_BUTTON(button)->active) isc=FALSE;
+  if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(button))) isc=FALSE;
   else isc=TRUE;
 
   gtk_widget_set_sensitive(GTK_WIDGET(over_isc),isc);
@@ -1710,12 +1704,12 @@ on_button_overlap_clicked              (GtkButton       *button,
 	 NFL,NAM,AMPL,DM,NK,ER};
  
   /*Number of columns*/
-  gint columns=clist->columns;
+  gint columns=xfr_clist_get_columns(clist);
   /* GtkWidget *window_bins=lookup_widget(GTK_WIDGET(button),"window_bins");*/
   
   /* For continuum states isc is in window_bins <= deprecated */
   GtkWidget *over_be=lookup_widget(GTK_WIDGET(clist),"over_be");
-  const gchar *be=gtk_entry_get_text(GTK_ENTRY(over_be));
+  const gchar *be=gtk_editable_get_text(GTK_EDITABLE(over_be));
   /*  GtkWidget *widget_isc=\
       lookup_widget(atof(be)>0? main_window:window_bins,"over_isc");*/
   GtkWidget *widget_isc=\
@@ -1757,7 +1751,7 @@ on_button_overlap_clicked              (GtkButton       *button,
 
   /*if (window_bins == NULL){
     window_bins = create_window_bins ();
-    gtk_object_set_data(GTK_OBJECT(main_window),"window_bins",window_bins);
+    g_object_set_data(G_OBJECT(main_window),"window_bins",window_bins);
     }*/
 
   
@@ -1769,24 +1763,24 @@ on_button_overlap_clicked              (GtkButton       *button,
   for (i=0;i<columns;i++){
     /*g_print("Overlap: i=%i...",i);*/
     if (GTK_IS_ENTRY(over[i]) && over[i]!=NULL){
-      const gchar *buffer=gtk_entry_get_text(GTK_ENTRY(over[i]));
+      const gchar *buffer=gtk_editable_get_text(GTK_EDITABLE(over[i]));
       /* g_print("...buffer ok...");*/
       switch (i){
       case NFL:
 	if (xfr_option_menu_get_value(main_window,"opt_nfl")==0)
 	  cell[NFL]=g_strdup_printf("-%s",buffer); /*nfl negative*/
-	else
+	/*  else   Incomplete conditional - needs review  */
 	  cell[NFL]=g_strdup(buffer);
 	break;
      
       case ISC:
-	if (GTK_TOGGLE_BUTTON(check_vary_be)->active && atof(be)>0){          
+	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_vary_be)) && atof(be)>0){          
 	 cell[ISC]=g_strdup("0"); 
 	}
 	else{
-	  if (GTK_TOGGLE_BUTTON(check_vforbins)->active && atof(be)>0)
+	  if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_vforbins)) && atof(be)>0)
  	    cell[ISC]=g_strdup_printf("-%s",buffer); /*ISC negative*/
-          else
+          /*  else   Incomplete conditional - needs review  */
             cell[ISC]=g_strdup(buffer);
        }
 	break;
@@ -1800,8 +1794,8 @@ on_button_overlap_clicked              (GtkButton       *button,
   }
 
   /*IC1, IC2*/
-  cell[IC1]=g_strndup(gtk_entry_get_text(GTK_ENTRY(GTK_COMBO(over[IC1])->entry)),2);
-  cell[IC2]=g_strndup(gtk_entry_get_text(GTK_ENTRY(GTK_COMBO(over[IC2])->entry)),2);
+  cell[IC1]=g_strndup(gtk_editable_get_text(GTK_EDITABLE(NULL /* GTK_COMBO(over[IC1])->entry - GtkCombo removed */)),2);
+  cell[IC2]=g_strndup(gtk_editable_get_text(GTK_EDITABLE(NULL /* GTK_COMBO(over[IC2])->entry - GtkCombo removed */)),2);
 
 
   /* Option menu  "over_in"
@@ -1810,12 +1804,12 @@ on_button_overlap_clicked              (GtkButton       *button,
    */
   if (xfr_option_menu_get_value(main_window,"over_in")==0) 
     cell[IN]=g_strdup("1");
-  else 
+  /*  else   Incomplete conditional - needs review  */
     cell[IN]=g_strdup("2");
 
   /*Combo "over_kind" */    
-   if (GTK_COMBO(over_kind)->entry !=NULL){
-     const gchar *buffer=gtk_entry_get_text(GTK_ENTRY(GTK_COMBO(over_kind)->entry));
+   if (NULL /* GTK_COMBO(over_kind)->entry - GtkCombo removed */ !=NULL){
+     const gchar *buffer=gtk_editable_get_text(GTK_EDITABLE(NULL /* GTK_COMBO(over_kind)->entry - GtkCombo removed */));
      cell[KIND]=g_strndup(buffer,1);
    }
 
@@ -1826,11 +1820,11 @@ on_button_overlap_clicked              (GtkButton       *button,
   option =GPOINTER_TO_INT(user_data);
 
   /*Get the data of the selected row*/
-  selection=clist->selection;
+  selection=xfr_clist_get_selection(clist);
 
   /*Checks */
   g_return_if_fail(clist!=NULL);
-  g_return_if_fail(GTK_IS_CLIST(clist));
+  /*  g_return_if_fail(GTK_IS_CLIST(...));   Need GTK-4 equivalent  */
   
   /*Row selected on clist*/
   if (!selection){ 
@@ -1869,7 +1863,7 @@ on_button_overlap_clicked              (GtkButton       *button,
       
     case ADD:
       gtk_clist_append(clist,cell);
-      gtk_clist_select_row(clist,clist->rows,0);
+      gtk_clist_select_row(clist,xfr_clist_get_rows(clist),0);
       break;
     }
 }
@@ -1937,15 +1931,15 @@ on_coup_clist_select_row               (GtkCList        *clist,
   /*if icto<0  coupling in reverse direction is not included*/
   if ((icto=atoi(text[ICTO]))<0)
     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_icto),TRUE);
-  else
+  /*  else   Incomplete conditional - needs review  */
     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_icto),FALSE);
   
   xfr_combo_set_value(GTK_WIDGET(clist),"combo_icto",abs(icto)-1);
   ictfrom=atoi(text[ICTFROM]);
   xfr_combo_set_value(GTK_WIDGET(clist),"combo_ictfrom",abs(ictfrom)-1);
   xfr_combo_set_value(GTK_WIDGET(clist),"combo_kind",kind-1);
-  gtk_entry_set_text(GTK_ENTRY(entry_rmax),text[RMAX]);
-  gtk_entry_set_text(GTK_ENTRY(entry_jmax),text[JMAX]);
+  gtk_editable_set_text(GTK_EDITABLE(entry_rmax),text[RMAX]);
+  gtk_editable_set_text(GTK_EDITABLE(entry_jmax),text[JMAX]);
   
   
   /* Fill the widgets on nb_coup with the values read from coup_clist*/
@@ -1956,79 +1950,79 @@ on_coup_clist_select_row               (GtkCList        *clist,
    /*  gtk_clist_freeze(GTK_CLIST(inel_clist)); */
 /*     gtk_clist_thaw(GTK_CLIST(cfp_clist)); */
 
-    gtk_notebook_set_page(nb_coup,0);  
+    gtk_notebook_set_current_page(nb_coup,0);  
     
     
 
     /*Q multipoles*/
-    gtk_entry_set_text(GTK_ENTRY(spin_q),\
+    gtk_editable_set_text(GTK_EDITABLE(spin_q),\
 		       g_strdup_printf("%i",abs(atoi(text[IP1]))));
     if (atoi(text[IP1])<0){
-      gtk_option_menu_set_history(GTK_OPTION_MENU(opt_q),0);
+      /* gtk_option_menu_set_history - removed in GTK-4 */
     }
     else{
-      gtk_option_menu_set_history(GTK_OPTION_MENU(opt_q),1);
+      /* gtk_option_menu_set_history - removed in GTK-4 */
     }
     
     /*IP2: Widget "opt_k3_ip2" (Coulomb/Nuclear)*/
     iopt=atoi(text[IP2]);
-    /*gtk_option_menu_set_history(GTK_OPTION_MENU(opt_k3_ip2),iopt);*/
+    /* gtk_option_menu_set_history(GTK_OPTION_MENU(opt_k3_ip2), iopt)); */
     gtk_combo_box_set_active(GTK_COMBO_BOX(combo_k3_ip2),iopt);
 
 
     /*IP3: Widget "opt_k3_ip3" (Reorientation terms)*/
     switch(atoi(text[IP3])){
     case 0: 
-      gtk_option_menu_set_history(GTK_OPTION_MENU(opt_k3_ip3),0);
+      /* gtk_option_menu_set_history - removed in GTK-4 */
       break;
     case 1: 
-      gtk_option_menu_set_history(GTK_OPTION_MENU(opt_k3_ip3),1);
+      /* gtk_option_menu_set_history - removed in GTK-4 */
       break;
     case 2:
-      gtk_option_menu_set_history(GTK_OPTION_MENU(opt_k3_ip3),2);
+      /* gtk_option_menu_set_history - removed in GTK-4 */
       break; 
     case 3:
-       gtk_option_menu_set_history(GTK_OPTION_MENU(opt_k3_ip3),3);
+       /* gtk_option_menu_set_history - removed in GTK-4 */
       break; 
     case 4:
-      gtk_option_menu_set_history(GTK_OPTION_MENU(opt_k3_ip3),4);
+      /* gtk_option_menu_set_history - removed in GTK-4 */
       break; 
     case 5: 
-      gtk_option_menu_set_history(GTK_OPTION_MENU(opt_k3_ip3),5);
+      /* gtk_option_menu_set_history - removed in GTK-4 */
       break;
     case 10: case 11: case 12: case 13: case 14: case 15:
-      gtk_option_menu_set_history(GTK_OPTION_MENU(opt_k3_ip3),atoi(text[IP3])-4);
+      /* gtk_option_menu_set_history - removed in GTK-4 */
       break; 
     }
 
     
     /*P1=pot KP for frag.-targ. interact.: Widget "entry_k3_p1"*/
-    gtk_entry_set_text(GTK_ENTRY(entry_k3_p1),text[P1]);
+    gtk_editable_set_text(GTK_EDITABLE(entry_k3_p1),text[P1]);
     
     /*P2=pot KP for core.-targ. interact. Widget "entry_k3_p2" */
-    gtk_entry_set_text(GTK_ENTRY(entry_k3_p2),text[P2]);
+    gtk_editable_set_text(GTK_EDITABLE(entry_k3_p2),text[P2]);
     
     break;
     
   case 5: 
     /*Select page 1 on notebook "nb_coup"*/
     gtk_widget_show(GTK_WIDGET(nb_coup));
-    gtk_notebook_set_page(nb_coup,1);
+    gtk_notebook_set_current_page(nb_coup,1);
     
     /*IP1 ,IP2 not used*/
     
     /*P1=Do=ZR coupling constant. Widget:entry_k5_p1*/
-    gtk_entry_set_text(GTK_ENTRY(entry_k5_p1),text[P1]);
+    gtk_editable_set_text(GTK_EDITABLE(entry_k5_p1),text[P1]);
     
     /*P2=FNRNG Efective finite-range param. Widget:entry_k5_p2*/
-    gtk_entry_set_text(GTK_ENTRY(entry_k5_p2),text[P2]);
+    gtk_editable_set_text(GTK_EDITABLE(entry_k5_p2),text[P2]);
     
     break;
     
   case 6:
   /*Select page 1 on notebook "nb_coup"*/
   gtk_widget_show(GTK_WIDGET(nb_coup));
-  gtk_notebook_set_page(nb_coup,1);
+  gtk_notebook_set_current_page(nb_coup,1);
   gtk_widget_set_sensitive(GTK_WIDGET(frame_cfp),TRUE);
   
   /*IP1 ,IP2 not used*/
@@ -2037,10 +2031,10 @@ on_coup_clist_select_row               (GtkCList        *clist,
   
   /*If IP3=1 FNRNG is read here*/
   if (atoi(text[IP3])==1){
-    gtk_option_menu_set_history(GTK_OPTION_MENU(opt_k5_p2),1);
+    /* gtk_option_menu_set_history - removed in GTK-4 */
   }
   else{
-    gtk_option_menu_set_history(GTK_OPTION_MENU(opt_k5_p2),0);
+    /* gtk_option_menu_set_history - removed in GTK-4 */
   }
   
   break;
@@ -2048,7 +2042,7 @@ on_coup_clist_select_row               (GtkCList        *clist,
   case 7: /*Finite range transfers*/
     /*Select page 2 on notebook "nb_coup"*/
     gtk_widget_show(GTK_WIDGET(nb_coup));
-    gtk_notebook_set_page(nb_coup,2);
+    gtk_notebook_set_current_page(nb_coup,2);
     
     /*IP1: Post/prior*/
     i=atoi(text[IP1]);
@@ -2068,7 +2062,7 @@ on_coup_clist_select_row               (GtkCList        *clist,
       }
       break;
     }
-    gtk_option_menu_set_history(GTK_OPTION_MENU(opt_k7_ip1),iopt);
+    /* gtk_option_menu_set_history - removed in GTK-4 */
 
     /*IP1 (continued). Theta quadrature*/
     if (i<=-1) 
@@ -2089,12 +2083,12 @@ on_coup_clist_select_row               (GtkCList        *clist,
       break;
     }
     
-    gtk_option_menu_set_history(GTK_OPTION_MENU(opt_k7_ip2),iopt);
+    /* gtk_option_menu_set_history - removed in GTK-4 */
 
     /*IP3=KPCORE*/
     i=atoi(text[IP3]);
     if(i!=0){
-      gtk_entry_set_text(GTK_ENTRY(entry_k7_ip3),text[IP3]);
+      gtk_editable_set_text(GTK_EDITABLE(entry_k7_ip3),text[IP3]);
     }
     else{
       /*GtkCList *part_clist=GTK_CLIST(lookup_widget(GTK_WIDGET(clist),"part_clist"));*/
@@ -2108,9 +2102,8 @@ on_coup_clist_select_row               (GtkCList        *clist,
     
   case 8:
     gtk_widget_show(GTK_WIDGET(nb_coup));
-    gtk_notebook_set_page(nb_coup,3);
-    gtk_option_menu_set_history(GTK_OPTION_MENU(opt_k8_ip1),
-				abs(atoi(text[IP1])));
+    gtk_notebook_set_current_page(nb_coup,3);
+    /* gtk_option_menu_set_history - removed in GTK-4 */
     /*IP1: Post/prior*/
     if (atoi(text[IP2])==0){
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_k8_ip2),FALSE);
@@ -2118,7 +2111,7 @@ on_coup_clist_select_row               (GtkCList        *clist,
     }
     else{
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_k8_ip2),TRUE);
-      gtk_notebook_set_page(GTK_NOTEBOOK(nb_cfp),1);
+      gtk_notebook_set_current_page(GTK_NOTEBOOK(nb_cfp),1);
       gtk_widget_set_sensitive(GTK_WIDGET(frame_cfp),TRUE);
     }
     break;
@@ -2126,16 +2119,16 @@ on_coup_clist_select_row               (GtkCList        *clist,
   case 9: /*General spin transfer*/
     /*Select page 3 on notebook "nb_coup"*/
     gtk_widget_show(GTK_WIDGET(nb_coup));
-    gtk_notebook_set_page(nb_coup,4);
+    gtk_notebook_set_current_page(nb_coup,4);
     
     /*IP1 (local/non-local)*/
     if(atoi(text[IP1])==0) 
-      gtk_option_menu_set_history(GTK_OPTION_MENU(opt_k9_ip1),0);
-    else
-      gtk_option_menu_set_history(GTK_OPTION_MENU(opt_k9_ip1),1);
+      /* gtk_option_menu_set_history - removed in GTK-4 */
+    /*  else   Incomplete conditional - needs review  */
+      /* gtk_option_menu_set_history - removed in GTK-4 */
     
     /*IP2 (Read real/imaginary/complex)*/
-    gtk_option_menu_set_history(GTK_OPTION_MENU(opt_k9_ip2),atoi(text[IP2]));
+    /* gtk_option_menu_set_history - removed in GTK-4 */
     
     /*IP3 ??*/
 
@@ -2158,9 +2151,9 @@ on_coup_clist_select_row               (GtkCList        *clist,
       g_print("\nWrong value for ip3 on kind 9 coupling. Ignored...");
       break;
     }
-    gtk_option_menu_set_history(GTK_OPTION_MENU(opt_k9_ip3),iopt);
-    gtk_entry_set_text(GTK_ENTRY(entry_k9_p1),text[P1]);
-    gtk_entry_set_text(GTK_ENTRY(entry_k9_p2),text[P2]);
+    /* gtk_option_menu_set_history - removed in GTK-4 */
+    gtk_editable_set_text(GTK_EDITABLE(entry_k9_p1),text[P1]);
+    gtk_editable_set_text(GTK_EDITABLE(entry_k9_p2),text[P2]);
     
     
     break;    
@@ -2184,39 +2177,39 @@ on_coup_clist_select_row               (GtkCList        *clist,
    */ 
   data_clist=GTK_CLIST(gtk_clist_get_row_data(clist,row));
   g_return_if_fail(data_clist!=NULL);
-  g_return_if_fail(GTK_IS_CLIST(data_clist));
+  /*  g_return_if_fail(GTK_IS_CLIST(...));   Need GTK-4 equivalent  */
 
   switch(kind){
   case 1:case 2:
     if (data_clist){
-      gtk_notebook_set_page(nb_cfp,0);
+      gtk_notebook_set_current_page(nb_cfp,0);
       gtk_widget_set_sensitive(GTK_WIDGET(frame_cfp),TRUE);
       /*Copy the content of data_clist to inel_clist*/ 
       xfr_clist_to_clist(data_clist,inel_clist);
-      if (GTK_CLIST(inel_clist)->rows>0)
+      if (xfr_clist_get_rows(inel_clist)>0)
 	  gtk_clist_select_row(GTK_CLIST(inel_clist),0,0);
     }
     break;
     
   case 3: case 4:case 5: case 6: case 7:
-    gtk_notebook_set_page(nb_cfp,1);
+    gtk_notebook_set_current_page(nb_cfp,1);
     gtk_widget_set_sensitive(GTK_WIDGET(frame_cfp),TRUE);
     if (data_clist){
       /*Copy the content of data_clist to cfp_clist*/ 
       xfr_clist_to_clist(data_clist,cfp_clist); 
-      if (GTK_CLIST(cfp_clist)->rows>0)
+      if (xfr_clist_get_rows(cfp_clist)>0)
 	  gtk_clist_select_row(GTK_CLIST(cfp_clist),0,0);
     }
     break;
     
   case 8: /*If IP2>0 we have also a cfp_clist attached to this row*/
-    gtk_notebook_set_page(nb_cfp,1); 
+    gtk_notebook_set_current_page(nb_cfp,1); 
     if (atoi(text[IP2])!=0)
       gtk_widget_set_sensitive(GTK_WIDGET(frame_cfp),TRUE);
 
     if (data_clist!=NULL)
        xfr_clist_to_clist(data_clist,cfp_clist);  
-    if (GTK_CLIST(cfp_clist)->rows>0)
+    if (xfr_clist_get_rows(cfp_clist)>0)
 	gtk_clist_select_row(GTK_CLIST(cfp_clist),0,0);
     break;
   }
@@ -2260,12 +2253,12 @@ qscale_clist_to_table(GtkCList *coup_clist,gint coup_row){
     if (entry1 && entry2 && qscale_clist){
       GtkWidget *entry=lookup_widget(GTK_WIDGET(coup_clist),bufr); /* table cell */
       /* Real part */
-      gchar *text=xfr_clist_get_text(GTK_CLIST(qscale_clist),coup_row,2*iq);
-      gtk_entry_set_text(GTK_ENTRY(entry),text);
+      gchar *text=NULL /* xfr_clist_get_text(GTK_CLIST(qscale_clist),coup_row,2*iq) needs 4th param */;
+      gtk_editable_set_text(GTK_EDITABLE(entry),text);
       /* Imag part */
       entry=lookup_widget(GTK_WIDGET(coup_clist),bufi); /* table cell */
-      text=g_strdup(xfr_clist_get_text(GTK_CLIST(qscale_clist),coup_row,2*iq+1));
-      gtk_entry_set_text(GTK_ENTRY(entry),text);
+      text=g_strdup(NULL /* xfr_clist_get_text(GTK_CLIST(qscale_clist),coup_row,2*iq+1) needs 4th param */);
+      gtk_editable_set_text(GTK_EDITABLE(entry),text);
     }
   }
 }
@@ -2298,7 +2291,7 @@ on_button_coupling_clicked             (GtkButton       *button,
   GtkCList *inel_clist,*cfp_clist;
 
   /*Get the data of the selected row in coup_clist*/
-  GList *selection=coup_clist->selection;  
+  GList *selection=xfr_clist_get_selection(coup_clist);  
 
   enum{ICTO,ICTFROM,KIND,IP1,IP2,IP3,P1,P2,RMAX,JMAX};
   gchar *text[COLUMNS_COUP];
@@ -2313,25 +2306,25 @@ on_button_coupling_clicked             (GtkButton       *button,
   }
 
   /*Kind of coupling */ 
-  buffer=g_strndup(gtk_entry_get_text(GTK_ENTRY(GTK_COMBO(combo_kind)->entry)),1);
+  buffer=g_strndup(gtk_editable_get_text(GTK_EDITABLE(NULL /* GTK_COMBO(combo_kind)->entry - GtkCombo removed */)),1);
   text[KIND]=g_strdup(buffer);
   ikind=atoi(buffer);
 
   /*Get values in generic widgets (valid for all kinds)*/
-  text[ICTO]=g_strndup(gtk_entry_get_text(GTK_ENTRY(GTK_COMBO(combo_icto)->entry)),2);
+  text[ICTO]=g_strndup(gtk_editable_get_text(GTK_EDITABLE(NULL /* GTK_COMBO(combo_icto)->entry - GtkCombo removed */)),2);
 
-  if (GTK_TOGGLE_BUTTON(check_icto)->active)
+  if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_icto)))
     text[ICTO]=g_strdup_printf("-%s",text[ICTO]);
 
-  text[ICTFROM]=g_strndup(gtk_entry_get_text(GTK_ENTRY(GTK_COMBO(combo_ictfrom)->entry)),2); 
-  text[RMAX]=g_strdup(gtk_entry_get_text(GTK_ENTRY(entry_rmax)));
-  text[JMAX]=g_strdup(gtk_entry_get_text(GTK_ENTRY(entry_jmax)));
+  text[ICTFROM]=g_strndup(gtk_editable_get_text(GTK_EDITABLE(NULL /* GTK_COMBO(combo_ictfrom)->entry - GtkCombo removed */)),2); 
+  text[RMAX]=g_strdup(gtk_editable_get_text(GTK_EDITABLE(entry_rmax)));
+  text[JMAX]=g_strdup(gtk_editable_get_text(GTK_EDITABLE(entry_jmax)));
 
   /*Get values in widgets for the selected kind*/
   switch (ikind){
   case 3:case 4: /* Single-particle excitations */
     /*Q multipoles*/
-    text[IP1]=g_strdup(gtk_entry_get_text(GTK_ENTRY(spin_q)));
+    text[IP1]=g_strdup(gtk_editable_get_text(GTK_EDITABLE(spin_q)));
 
     iopt=xfr_option_menu_get_value(main_window,"opt_q");
     if (iopt==0)
@@ -2351,10 +2344,10 @@ on_button_coupling_clicked             (GtkButton       *button,
     text[IP3]=g_strdup_printf("%i",ip3);
 
     /*P1=pot KP for frag.-targ. interact.: Widget "entry_k3_p1"*/
-    text[P1]=g_strdup(gtk_entry_get_text(GTK_ENTRY(entry_k3_p1)));
+    text[P1]=g_strdup(gtk_editable_get_text(GTK_EDITABLE(entry_k3_p1)));
  
     /*P2=pot KP for core.-targ. interact. Widget "entry_k3_p2" */
-    text[P2]=g_strdup(gtk_entry_get_text(GTK_ENTRY(entry_k3_p2)));
+    text[P2]=g_strdup(gtk_editable_get_text(GTK_EDITABLE(entry_k3_p2)));
     
     break;
     
@@ -2363,10 +2356,10 @@ on_button_coupling_clicked             (GtkButton       *button,
     text[IP1]=text[IP2]=g_strdup("0");
 
     /*P1=Do=ZR coupling constant. Widget:entry_k5_p1*/
-    text[P1]=g_strdup(gtk_entry_get_text(GTK_ENTRY(entry_k5_p1)));
+    text[P1]=g_strdup(gtk_editable_get_text(GTK_EDITABLE(entry_k5_p1)));
     
     /*P2=FNRNG Efective finite-range param. Widget:entry_k5_p2*/
-    text[P2]=g_strdup(gtk_entry_get_text(GTK_ENTRY(entry_k5_p2)));
+    text[P2]=g_strdup(gtk_editable_get_text(GTK_EDITABLE(entry_k5_p2)));
     
     break;
     
@@ -2380,7 +2373,7 @@ on_button_coupling_clicked             (GtkButton       *button,
    iopt=xfr_option_menu_get_value(main_window,"opt_k5_p2");
    if (iopt){
      text[IP3]=g_strdup_printf("%i",1);
-     text[P2]=g_strdup(gtk_entry_get_text(GTK_ENTRY(entry_k5_p2)));
+     text[P2]=g_strdup(gtk_editable_get_text(GTK_EDITABLE(entry_k5_p2)));
    }
   break;
   
@@ -2394,9 +2387,9 @@ on_button_coupling_clicked             (GtkButton       *button,
     
     switch(iopt){
     case 0:
-      if (GTK_TOGGLE_BUTTON(check_k7_ip1)->active)
+      if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_k7_ip1)))
 	iaux=-2; /*Post + Theta quadrature*/
-      else
+      /*  else   Incomplete conditional - needs review  */
 	iaux=0; /*Post*/
  
       break;
@@ -2430,7 +2423,7 @@ on_button_coupling_clicked             (GtkButton       *button,
     text[IP2]=g_strdup_printf("%i",iaux);
 
     /*IP3=KPCORE*/
-    text[IP3]=g_strdup(gtk_entry_get_text(GTK_ENTRY(entry_k7_ip3)));
+    text[IP3]=g_strdup(gtk_editable_get_text(GTK_EDITABLE(entry_k7_ip3)));
  
     break;
     
@@ -2439,14 +2432,14 @@ on_button_coupling_clicked             (GtkButton       *button,
     text[IP1]=g_strdup_printf("%i",xfr_option_menu_get_value(main_window,"opt_k8_ip1"));
 
     /*IP2: Read or not cfp table*/
-    if (GTK_TOGGLE_BUTTON(check_k8_ip2)->active) text[IP2]=g_strdup("1");
+    if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_k8_ip2))) text[IP2]=g_strdup("1");
     else text[IP2]=g_strdup("0");
     break;
     
   case 9: /*General spin transfer*/
     /* P1 & P2 scaling factors */
-    text[P1]=g_strdup(gtk_entry_get_text(GTK_ENTRY(entry_k9_p1)));
-    text[P2]=g_strdup(gtk_entry_get_text(GTK_ENTRY(entry_k9_p2)));
+    text[P1]=g_strdup(gtk_editable_get_text(GTK_EDITABLE(entry_k9_p1)));
+    text[P2]=g_strdup(gtk_editable_get_text(GTK_EDITABLE(entry_k9_p2)));
 
     /*IP1 (local/non-local)*/
     text[IP1]=g_strdup_printf("%i",xfr_option_menu_get_value(main_window,"opt_k9_ip1"));
@@ -2490,13 +2483,13 @@ on_button_coupling_clicked             (GtkButton       *button,
     if (ikind<9 && ikind>2){
       cfp_clist=GTK_CLIST(lookup_widget(GTK_WIDGET(coup_clist),"cfp_clist"));
       g_return_if_fail(cfp_clist!=NULL);
-      g_return_if_fail(GTK_IS_CLIST(cfp_clist));
+      /*  g_return_if_fail(GTK_IS_CLIST(...));   Need GTK-4 equivalent  */
       gtk_clist_clear (cfp_clist);
     }
     if (ikind==1 || ikind==2){
       inel_clist=GTK_CLIST(lookup_widget(GTK_WIDGET(coup_clist),"inel_clist"));
       g_return_if_fail(inel_clist!=NULL);
-      g_return_if_fail(GTK_IS_CLIST(inel_clist));
+      /*  g_return_if_fail(GTK_IS_CLIST(...));   Need GTK-4 equivalent  */
       gtk_clist_clear (inel_clist);
     }
     
@@ -2517,9 +2510,9 @@ on_button_coupling_clicked             (GtkButton       *button,
       return;
       }
     g_return_if_fail(coup_clist!=NULL);
-    g_return_if_fail(GTK_IS_CLIST(coup_clist));
-    /*g_print("%i =? %i",GTK_CLIST(coup_clist)->rows,	\
-      GTK_CLIST(qscale_clist)->rows);*/ 
+    /*  g_return_if_fail(GTK_IS_CLIST(...));   Need GTK-4 equivalent  */
+    /*g_print("%i =? %i",xfr_clist_get_rows(coup_clist),	\
+      xfr_clist_get_rows(qscale_clist));*/ 
     for(iaux=0;iaux<COLUMNS_COUP;iaux++){
       /*g_print("\n %i -> text[i]=%s",iaux,text[iaux]);*/
       gtk_clist_set_text(coup_clist,row,iaux,text[iaux]);  
@@ -2540,12 +2533,12 @@ on_button_coupling_clicked             (GtkButton       *button,
       /*For kinds 3-7 (& 8 if IP2>0) create a clist to hold "CFP" namelist*/
       if (ikind<9 && ikind>2){
 	cfp_clist=GTK_CLIST(gtk_clist_new(COLUMNS_CFP));
-	xfr_print("\n CFP clist attached to row %i",(coup_clist)->rows-1);
+	xfr_print("\n CFP clist attached to row %i",xfr_clist_get_rows(coup_clist)-1);
 	/*Attach the "step_clist" to this row of coup_clist*/
 	g_return_if_fail(cfp_clist!=NULL);
-	g_return_if_fail(GTK_IS_CLIST(cfp_clist));
+	/*  g_return_if_fail(GTK_IS_CLIST(...));   Need GTK-4 equivalent  */
 	gtk_clist_set_row_data(GTK_CLIST(coup_clist),\
-			       (coup_clist)->rows-1,cfp_clist);
+			       xfr_clist_get_rows(coup_clist)-1,cfp_clist);
       }
       /*For kinds 1,2 attach inel_clist to hold INEL namelits*/
       if (ikind==1 || ikind==2){
@@ -2553,16 +2546,16 @@ on_button_coupling_clicked             (GtkButton       *button,
 	/*Attach the "step_clist" to this row of coup_clist*/
 	xfr_print("\nAdding row to inel_clist\n");
 	g_return_if_fail(inel_clist!=NULL);
-	g_return_if_fail(GTK_IS_CLIST(inel_clist));
+	/*  g_return_if_fail(GTK_IS_CLIST(...));   Need GTK-4 equivalent  */
 	gtk_clist_set_row_data(GTK_CLIST(coup_clist),\
-			       (coup_clist->rows)-1,inel_clist);
+			       (xfr_clist_get_rows(coup_clist))-1,inel_clist);
       }
 
       /* add a blank row to qscale clist */
       xfr_print("\n  Appending row to qscale_clist\n");
       qscale_clist_add_default();
-      qscale_clist_to_table(GTK_CLIST(coup_clist),(coup_clist)->rows-1);
-      gtk_clist_select_row(coup_clist,(coup_clist->rows)-1,0);
+      qscale_clist_to_table(GTK_CLIST(coup_clist),xfr_clist_get_rows(coup_clist)-1);
+      gtk_clist_select_row(coup_clist,(xfr_clist_get_rows(coup_clist))-1,0);
 
       break;
 
@@ -2579,7 +2572,7 @@ on_button_coupling_clicked             (GtkButton       *button,
 	/*Attach the "step_clist" to this row of coup_clist*/
 	xfr_print("\n CFP clist inserted at row %i",row);
 	g_return_if_fail(cfp_clist!=NULL);
-	g_return_if_fail(GTK_IS_CLIST(cfp_clist));
+	/*  g_return_if_fail(GTK_IS_CLIST(...));   Need GTK-4 equivalent  */
 	gtk_clist_set_row_data(GTK_CLIST(coup_clist),\
 			       row,cfp_clist);
       }
@@ -2588,7 +2581,7 @@ on_button_coupling_clicked             (GtkButton       *button,
 	inel_clist=GTK_CLIST(gtk_clist_new(COLUMNS_INEL));
 	xfr_print("\n INEL clist inserted at row %i",row);
 	g_return_if_fail(inel_clist!=NULL);
-	g_return_if_fail(GTK_IS_CLIST(inel_clist));
+	/*  g_return_if_fail(GTK_IS_CLIST(...));   Need GTK-4 equivalent  */
 	/*Attach the "step_clist" to this row of coup_clist*/
 	gtk_clist_set_row_data(GTK_CLIST(coup_clist),\
 			       row,inel_clist);
@@ -2690,26 +2683,26 @@ on_inel_clist_select_row               (GtkCList        *clist,
   gtk_widget_set_sensitive(GTK_WIDGET(spin_kp),FALSE);
 
   if (no<0)
-    gtk_option_menu_set_history(GTK_OPTION_MENU(opt_no),0);
+    /* gtk_option_menu_set_history - removed in GTK-4 */
 
   if (no==0)
-    gtk_option_menu_set_history(GTK_OPTION_MENU(opt_no),1);
+    /* gtk_option_menu_set_history - removed in GTK-4 */
 
   if (no>0){
       gtk_spin_button_set_value(GTK_SPIN_BUTTON(spin_no),abs(no));
 
       if (kp==0){ 
-	gtk_option_menu_set_history(GTK_OPTION_MENU(opt_no),2);
+	/* gtk_option_menu_set_history - removed in GTK-4 */
       }
       else{
-	gtk_option_menu_set_history(GTK_OPTION_MENU(opt_no),3);
+	/* gtk_option_menu_set_history - removed in GTK-4 */
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(spin_kp),kp);
 	gtk_widget_set_sensitive(GTK_WIDGET(spin_kp),TRUE);
       }
   }
 
   gtk_clist_get_text(clist,row,A,&text);
-  gtk_entry_set_text(GTK_ENTRY(entry_a),text);
+  gtk_editable_set_text(GTK_EDITABLE(entry_a),text);
 }
 
 
@@ -2738,17 +2731,17 @@ on_cfp_clist_select_row                (GtkCList        *clist,
 
   gtk_spin_button_set_value(GTK_SPIN_BUTTON(spin_ib),atoi(text[IB]));
   gtk_spin_button_set_value(GTK_SPIN_BUTTON(spin_ia),atoi(text[IA]));
-  gtk_entry_set_text(GTK_ENTRY(entry_a),text[A]);
+  gtk_editable_set_text(GTK_EDITABLE(entry_a),text[A]);
   gtk_spin_button_set_value(GTK_SPIN_BUTTON(spin_kn),abs(atoi(text[KN])));
   /*  xfr_toggle_set_value(check_keep,text[KEEP]);*/
 
   if (atoi(text[IN])==1)
-    gtk_option_menu_set_history(GTK_OPTION_MENU(opt_in),0);
-  else
-    gtk_option_menu_set_history(GTK_OPTION_MENU(opt_in),1);
+    /* gtk_option_menu_set_history - removed in GTK-4 */
+  /*  else   Incomplete conditional - needs review  */
+    /* gtk_option_menu_set_history - removed in GTK-4 */
 
   /* Emit changed signal for IB and IA spinbuttons to update the information in  the text descriptions */
-  gtk_signal_emit_by_name(GTK_OBJECT(spin_ib),"changed");
+  g_signal_emit_by_name(G_OBJECT(spin_ib),"changed");
 
 }
 
@@ -2783,7 +2776,7 @@ on_button_cfp_clicked                  (GtkButton       *button,
  
 
   /*Row selected in coupling clist*/
-  GList *listcoup=coup_clist->selection;
+  GList *listcoup=xfr_clist_get_selection(coup_clist);
 
 /*  if(!selection){ */
    if (!listcoup){
@@ -2793,7 +2786,7 @@ on_button_cfp_clicked                  (GtkButton       *button,
   else{
      couprow=GPOINTER_TO_INT(listcoup->data);
      g_print("CFP button: line %i selected in coupling clist",couprow);
-    kind= atoi(xfr_clist_get_text(coup_clist,couprow,KIND));
+    kind= atoi(NULL /* xfr_clist_get_text(coup_clist,couprow,KIND) needs 4th param */);
   }
 
   /*cfp/inel information */
@@ -2819,11 +2812,11 @@ on_button_cfp_clicked                  (GtkButton       *button,
        
     /*We have inel_clist active*/
     /* g_print("Notebook is on page 0\n");*/
-    text[IB]=g_strdup(gtk_entry_get_text(GTK_ENTRY(GTK_SPIN_BUTTON(spin_ib))));
-    text[IA]=g_strdup(gtk_entry_get_text(GTK_ENTRY(GTK_SPIN_BUTTON(spin_ia))));
-    text[K]=g_strdup(gtk_entry_get_text(GTK_ENTRY(GTK_SPIN_BUTTON(spin_k)))); 
-    buffer=g_strdup(gtk_entry_get_text(GTK_ENTRY(GTK_SPIN_BUTTON(spin_no))));
-    text[A]=g_strdup(gtk_entry_get_text(GTK_ENTRY(entry_a)));
+    text[IB]=g_strdup(gtk_editable_get_text(GTK_EDITABLE(GTK_SPIN_BUTTON(spin_ib))));
+    text[IA]=g_strdup(gtk_editable_get_text(GTK_EDITABLE(GTK_SPIN_BUTTON(spin_ia))));
+    text[K]=g_strdup(gtk_editable_get_text(GTK_EDITABLE(GTK_SPIN_BUTTON(spin_k)))); 
+    buffer=g_strdup(gtk_editable_get_text(GTK_EDITABLE(GTK_SPIN_BUTTON(spin_no))));
+    text[A]=g_strdup(gtk_editable_get_text(GTK_EDITABLE(entry_a)));
 		       
     no=xfr_option_menu_get_value(main_window,"opt_no");
     /*g_print("Antes de switch. opt_no=%i\n",no);*/
@@ -2848,7 +2841,7 @@ on_button_cfp_clicked                  (GtkButton       *button,
       break;
     case 3:
       text[NO]=g_strdup(buffer);
-      text[KP]=gtk_entry_get_text(GTK_ENTRY(GTK_SPIN_BUTTON(spin_kp)));
+      text[KP]=gtk_editable_get_text(GTK_EDITABLE(GTK_SPIN_BUTTON(spin_kp)));
       break;
     }    
   }
@@ -2867,11 +2860,11 @@ on_button_cfp_clicked                  (GtkButton       *button,
     clist=GTK_CLIST(lookup_widget(GTK_WIDGET(button),"cfp_clist"));
 
     /*g_print("Notebook is on page 1\n");*/
-    text[IB]=gtk_entry_get_text(GTK_ENTRY(GTK_SPIN_BUTTON(spin_ib)));
-    text[IA]=gtk_entry_get_text(GTK_ENTRY(GTK_SPIN_BUTTON(spin_ia)));
+    text[IB]=gtk_editable_get_text(GTK_EDITABLE(GTK_SPIN_BUTTON(spin_ib)));
+    text[IA]=gtk_editable_get_text(GTK_EDITABLE(GTK_SPIN_BUTTON(spin_ia)));
     /*text[KEEP]=xfr_toggle_get_state(check_keep);*/
-    text[KN]=gtk_entry_get_text(GTK_ENTRY(GTK_SPIN_BUTTON(spin_kn))); 
-    text[A]=gtk_entry_get_text(GTK_ENTRY(entry_a));		       
+    text[KN]=gtk_editable_get_text(GTK_EDITABLE(GTK_SPIN_BUTTON(spin_kn))); 
+    text[A]=gtk_editable_get_text(GTK_EDITABLE(entry_a));		       
     
     if (xfr_option_menu_get_value(main_window,"cfp_in")==0){ 
       text[IN]=g_strdup("1");
@@ -2892,14 +2885,14 @@ on_button_cfp_clicked                  (GtkButton       *button,
   
   /*Checks*/
   g_return_if_fail(clist!=NULL);
-  g_return_if_fail(GTK_IS_CLIST(clist));
+  /*  g_return_if_fail(GTK_IS_CLIST(...));   Need GTK-4 equivalent  */
   g_return_if_fail(coup_clist!=NULL);
 
   /*Number of columns in inel/cfp clist*/
-  columns=clist->columns;
+  columns=xfr_clist_get_columns(clist);
 
   /*g_print("\n antes de switch en button_cfp ");*/
-  selection=GTK_CLIST(clist)->selection;
+  selection=xfr_clist_get_selection(clist);
 
   
  
@@ -2945,7 +2938,7 @@ on_button_cfp_clicked                  (GtkButton       *button,
 
    if (page==0){
      gtk_clist_set_text(GTK_CLIST(coup_clist),couprow,3, \
-			g_strdup_printf("%i",clist->rows));
+			g_strdup_printf("%i",xfr_clist_get_rows(clist)));
    }
   
   /*Dump the content of clist to the list attached to the gpointer data
@@ -2995,7 +2988,7 @@ on_step_state_changed_value            (GtkEditable     *editable,
   
 
   /*Row selected on pot_clist*/
-  GList *sel_pot=GTK_CLIST(pot_clist)->selection;
+  GList *sel_pot=xfr_clist_get_selection(pot_clist);
   pot_row=GPOINTER_TO_INT(sel_pot->data);  
 
   /*Value of KP is on column 0*/
@@ -3023,33 +3016,33 @@ on_step_state_changed_value            (GtkEditable     *editable,
   part_number=get_partition_number_from_kp(GTK_CLIST(part_clist),kp);
 
   /*** state IB ***/
-  text=g_strdup(gtk_entry_get_text(GTK_ENTRY(step_ib)));
+  text=g_strdup(gtk_editable_get_text(GTK_EDITABLE(step_ib)));
   if (atoi(text)==0) return;
 
   /*Display a short information for this state beside the entry*/
   if (part_number>0)
     buffer=g_strdup(state_desc(GTK_WIDGET(main_window),\
 			       part_number,atoi(text),who));
-  else
+  /*  else   Incomplete conditional - needs review  */
     buffer=g_strdup("no partiton found!");
 
   /*gtk_label_set_text(GTK_LABEL(lab_ib),buffer);  */
-  gtk_entry_set_text(GTK_ENTRY(lab_ib),buffer);  
+  gtk_editable_set_text(GTK_EDITABLE(lab_ib),buffer);  
 
 
   /*** state IA ***/
-  text=g_strdup(gtk_entry_get_text(GTK_ENTRY(step_ia)));
+  text=g_strdup(gtk_editable_get_text(GTK_EDITABLE(step_ia)));
   if (atoi(text)==0) return;
 
   /*Display a short information for this state beside the entry*/
   if (part_number>0)
     buffer=g_strdup(state_desc(GTK_WIDGET(editable),\
 			       part_number,atoi(text),who));
-  else
+  /*  else   Incomplete conditional - needs review  */
     buffer=g_strdup("no partiton found!");
 
   /* gtk_label_set_text(GTK_LABEL(lab_ia),buffer);  */
-  gtk_entry_set_text(GTK_ENTRY(lab_ia),buffer);  
+  gtk_editable_set_text(GTK_EDITABLE(lab_ia),buffer);  
 }
 
 
@@ -3059,7 +3052,7 @@ on_bins_ok_clicked                     (GtkButton       *button,
                                         gpointer         user_data)
 {
   /*We do not destroy the window; we just hide it */
-  gtk_widget_hide (gtk_widget_get_toplevel (GTK_WIDGET (button)));
+  /*  gtk_widget_hide(gtk_widget_get_toplevel(...));   Removed  */
 }
 
 
@@ -3075,15 +3068,15 @@ on_button_jbord_clicked                (GtkButton       *button,
 
   if (window_jbord == NULL){
     window_jbord = create_window_jbord ();
-    gtk_object_set_data(GTK_OBJECT(main_window),\
+    g_object_set_data(G_OBJECT(main_window),\
 			"window_jbord",window_jbord);
   }
   /* We save a pointer to the main window inside the window_jbord's
      data list, so we can get it easily in the callbacks. */
-  gtk_object_set_data (GTK_OBJECT (window_jbord), "main_window", main_window);
+  g_object_set_data (G_OBJECT(window_jbord), "main_window", main_window);
 
   gtk_widget_show (window_jbord);
-  gdk_window_raise (window_jbord->window);
+  /*  gdk_window_raise (window_jbord->window);   Removed in GTK-4  */
 }
 
 
@@ -3092,7 +3085,7 @@ on_jbord_ok_button_clicked             (GtkButton       *button,
                                         gpointer         user_data)
 {
   /*We do not destroy the window; we just hide it */
-  gtk_widget_hide (gtk_widget_get_toplevel (GTK_WIDGET (button)));
+  /*  gtk_widget_hide(gtk_widget_get_toplevel(...));   Removed  */
 }
 
 
@@ -3107,15 +3100,15 @@ on_button_nlab_clicked                 (GtkButton       *button,
 
   if (window_eintervals == NULL){
     window_eintervals = create_window_eintervals ();
-    gtk_object_set_data(GTK_OBJECT(main_window),\
+    g_object_set_data(G_OBJECT(main_window),\
 			"window_eintervals",window_eintervals);
   }
   /* We save a pointer to the main window inside the window_eintervals's
      data list, so we can get it easily in the callbacks. */
-  gtk_object_set_data (GTK_OBJECT (window_eintervals), "main_window", main_window);
+  g_object_set_data (G_OBJECT(window_eintervals), "main_window", main_window);
 
   gtk_widget_show (window_eintervals);
-  gdk_window_raise (window_eintervals->window);
+  /*  gdk_window_raise (window_eintervals->window);   Removed in GTK-4  */
 }
 
 
@@ -3131,14 +3124,14 @@ on_button_open_ccwf_clicked                 (GtkButton       *button,
 
   if (window_ccwf == NULL){
     window_ccwf = create_window_ccwf ();
-    gtk_object_set_data(GTK_OBJECT(main_window),"window_ccwf",window_ccwf);
+    g_object_set_data(G_OBJECT(main_window),"window_ccwf",window_ccwf);
   }
   /* We save a pointer to the main window inside the window_ccwf's
      data list, so we can get it easily in the callbacks. */
-  gtk_object_set_data (GTK_OBJECT (window_ccwf), "main_window", main_window);
+  g_object_set_data (G_OBJECT(window_ccwf), "main_window", main_window);
 
   gtk_widget_show (window_ccwf);
-  gdk_window_raise (window_ccwf->window);
+  /*  gdk_window_raise (window_ccwf->window);   Removed in GTK-4  */
 }
 
 
@@ -3147,7 +3140,7 @@ on_ccwf_ok_button_clicked              (GtkButton       *button,
                                         gpointer         user_data)
 {
   /*We do not destroy the window; we just hide it */
-  gtk_widget_hide (gtk_widget_get_toplevel (GTK_WIDGET (button)));
+  /*  gtk_widget_hide(gtk_widget_get_toplevel(...));   Removed  */
 }
 
 void
@@ -3155,7 +3148,7 @@ on_button_constants_close_clicked      (GtkButton       *button,
                                         gpointer         user_data)
 {
   /*We do not destroy the window; we just hide it */
-  gtk_widget_hide (gtk_widget_get_toplevel (GTK_WIDGET (button))); 
+  /*  gtk_widget_hide(gtk_widget_get_toplevel(...));   Removed   */
 }
 
 
@@ -3164,7 +3157,7 @@ on_check_use_ccwf_toggled              (GtkToggleButton *togglebutton,
                                         gpointer         user_data)
 {
   GtkWidget *button=lookup_widget(GTK_WIDGET(togglebutton),"button_open_ccwf");
-  guint active=togglebutton->active;
+  guint active=gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(togglebutton));
   
   gtk_widget_set_sensitive(button,active? TRUE:FALSE);
 }
@@ -3182,11 +3175,11 @@ on_combo_type_changed_selection(GtkEditable *entry,gpointer data){
   GList *glist=NULL;
   gint pot_type=0;
 
-  g_assert(GTK_IS_COMBO(combo_type));
+  /*  g_assert(GTK_IS_COMBO(...));   GTK_IS_COMBO removed  */
 
   /*The number of the potential in combo_type is given by the first two 
    * characters of the item */
-  pot_type=atoi(g_strndup(gtk_entry_get_text(GTK_ENTRY(GTK_COMBO(combo_type)->entry)),2));
+  /*  pot_type=atoi(g_strndup(gtk_editable_get_text(GTK_EDITABLE(NULL ( GTK_COMBO(combo_type)->entry - GtkCombo removed )),2));   GtkCombo removed - needs rewrite  */
   
   switch (pot_type){
   case -1:
@@ -3280,7 +3273,7 @@ on_combo_type_changed_selection(GtkEditable *entry,gpointer data){
     break;
   }          
   if (!glist) glist=g_list_append(glist,"  No shapes available");
-  gtk_combo_set_popdown_strings(GTK_COMBO(combo_shape),glist);    
+  /* gtk_combo_set_popdown_strings - removed in GTK-4 */    
 }
 
 
@@ -3295,38 +3288,38 @@ on_combo_kind_changed_selection(GtkEditable *entry,gpointer data){
 
   /*The number of the potential in combo_type is given by the first 
    * character of the item */
-  buffer=g_strdup(gtk_entry_get_text(GTK_ENTRY(GTK_COMBO(combo_kind)->entry)));
+  buffer=g_strdup(gtk_editable_get_text(GTK_EDITABLE(NULL /* GTK_COMBO(combo_kind)->entry - GtkCombo removed */)));
   kind=atoi(g_strndup(buffer,1));
 
   /*  g_print("On combo_kind selection received.Option %i\n",kind);*/
   switch(kind){
   case 1:case 2: 
-    if (GTK_WIDGET_VISIBLE(nb_coup)==TRUE) 
+    if (gtk_widget_get_visible(nb_coup)==TRUE) 
       gtk_widget_hide(nb_coup);
     break;
   case 3:case 4:
-    gtk_notebook_set_page(GTK_NOTEBOOK(nb_coup),0);
-    if (GTK_WIDGET_VISIBLE(nb_coup)==FALSE) 
+    gtk_notebook_set_current_page(GTK_NOTEBOOK(nb_coup),0);
+    if (gtk_widget_get_visible(nb_coup)==FALSE) 
       gtk_widget_show(nb_coup);
     break;
   case 5:case 6:
-    gtk_notebook_set_page(GTK_NOTEBOOK(nb_coup),1);
-    if (GTK_WIDGET_VISIBLE(nb_coup)==FALSE) 
+    gtk_notebook_set_current_page(GTK_NOTEBOOK(nb_coup),1);
+    if (gtk_widget_get_visible(nb_coup)==FALSE) 
       gtk_widget_show(nb_coup);
     break;  
   case 7:
-    gtk_notebook_set_page(GTK_NOTEBOOK(nb_coup),2);
-    if (GTK_WIDGET_VISIBLE(nb_coup)==FALSE) 
+    gtk_notebook_set_current_page(GTK_NOTEBOOK(nb_coup),2);
+    if (gtk_widget_get_visible(nb_coup)==FALSE) 
       gtk_widget_show(nb_coup);
     break;  
   case 8:
-    gtk_notebook_set_page(GTK_NOTEBOOK(nb_coup),3);
-    if (GTK_WIDGET_VISIBLE(nb_coup)==FALSE) 
+    gtk_notebook_set_current_page(GTK_NOTEBOOK(nb_coup),3);
+    if (gtk_widget_get_visible(nb_coup)==FALSE) 
       gtk_widget_show(nb_coup);
     break;  
   case 9:
-    gtk_notebook_set_page(GTK_NOTEBOOK(nb_coup),4);
-    if (GTK_WIDGET_VISIBLE(nb_coup)==FALSE) 
+    gtk_notebook_set_current_page(GTK_NOTEBOOK(nb_coup),4);
+    if (gtk_widget_get_visible(nb_coup)==FALSE) 
       gtk_widget_show(nb_coup);
     break;  
   }
@@ -3352,7 +3345,7 @@ on_check_lampA_clicked                 (GtkButton       *button,
 {
   /*If check_lampA is active, check_lampf should also be active*/
   GtkWidget *lampf=lookup_widget(main_window,"check_lampf");
-  if (GTK_TOGGLE_BUTTON(button)->active){
+  if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(button))){
     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lampf),TRUE);
     gtk_widget_set_sensitive(lampf,FALSE);
   }
@@ -3366,7 +3359,7 @@ on_check_ldistrib_clicked              (GtkButton       *button,
 {
   /*If check_ldistrib is active, check_bpm should also be active*/
   GtkWidget *check_bpm=lookup_widget(main_window,"check_bpm");
-  if (GTK_TOGGLE_BUTTON(button)->active){
+  if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(button))){
     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_bpm),TRUE);
     gtk_widget_set_sensitive(check_bpm,FALSE);
   }
@@ -3382,9 +3375,9 @@ on_check_mtmin_clicked                 (GtkButton       *button,
   /*If check_button is active mtmin should be insensitive*/
   GtkWidget *entry_mtmin=lookup_widget(GTK_WIDGET(button),"entry_mtmin");
   
-  if (GTK_TOGGLE_BUTTON(button)->active)
+  if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(button)))
     gtk_widget_set_sensitive(entry_mtmin,FALSE);
-  else
+  /*  else   Incomplete conditional - needs review  */
     gtk_widget_set_sensitive(entry_mtmin,TRUE);
         
 }
@@ -3397,8 +3390,8 @@ on_check_k8_ip2_clicked                (GtkButton       *button,
   /*When the button is active the cfp table should be displayed*/
   GtkWidget *nb_cfp=lookup_widget(GTK_WIDGET(button),"nb_cfp");
   GtkWidget *frame_cfp=lookup_widget(GTK_WIDGET(button),"frame_cfp");
-  if (GTK_TOGGLE_BUTTON(button)->active){
-    gtk_notebook_set_page(GTK_NOTEBOOK(nb_cfp),1);
+  if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(button))){
+    gtk_notebook_set_current_page(GTK_NOTEBOOK(nb_cfp),1);
     gtk_widget_set_sensitive(frame_cfp,TRUE);
   }
   else{
@@ -3436,7 +3429,7 @@ on_over_be_changed                     (GtkEditable     *editable,
   GtkWidget *over_isc_cont=lookup_widget(main_window,"over_isc_cont");
   /*GtkWidget *button_bins=lookup_widget(main_window,"button_bins");*/
 
-  if (atof(gtk_entry_get_text(GTK_ENTRY(editable)))>0){
+  if (atof(gtk_editable_get_text(GTK_EDITABLE(editable)))>0){
     gtk_widget_set_sensitive(GTK_WIDGET(over_isc_bound),TRUE);
     gtk_widget_set_sensitive(GTK_WIDGET(over_isc_cont),FALSE);
   }
@@ -3462,7 +3455,7 @@ on_over_be_changed                     (GtkEditable     *editable,
 
 
 void
-on_io_files_activate                   (GtkMenuItem     *menuitem,
+on_io_files_activate                   (GtkWidget *menuitem,
                                         gpointer         user_data)
 {
 
@@ -3482,17 +3475,17 @@ on_button_open_Rmatrix_clicked         (GtkButton       *button,
   if (window_Rmatrix == NULL){
     g_print("window_Rmatrix=NULL\n");
     window_Rmatrix = create_window_Rmatrix ();
-    gtk_object_set_data(GTK_OBJECT(main_window),\
+    g_object_set_data(G_OBJECT(main_window),\
 			"window_Rmatrix",window_Rmatrix);
   }
 
   /* We save a pointer to the main window inside the window_Rmatrix's
      data list, so we can get it easily in the callbacks. */
-  gtk_object_set_data (GTK_OBJECT (window_Rmatrix),\
+  g_object_set_data (G_OBJECT(window_Rmatrix),\
 		       "main_window", main_window);
   
   gtk_widget_show (window_Rmatrix);
-  gdk_window_raise (window_Rmatrix->window);
+  /*  gdk_window_raise (window_Rmatrix->window);   Removed in GTK-4  */
   
 }
 
@@ -3502,7 +3495,7 @@ on_Rmat_ok_clicked                     (GtkButton       *button,
                                         gpointer         user_data)
 {
   /*We do not destroy the window; we just hide it */
-  gtk_widget_hide (gtk_widget_get_toplevel (GTK_WIDGET (button)));
+  /*  gtk_widget_hide(gtk_widget_get_toplevel(...));   Removed  */
 }
 
 
@@ -3518,7 +3511,7 @@ on_window_constants_delete_event       (GtkWidget       *widget,
                                         GdkEvent        *event,
                                         gpointer         user_data)
 {
-  gtk_widget_hide (gtk_widget_get_toplevel (GTK_WIDGET (widget)));
+  /*  gtk_widget_hide(gtk_widget_get_toplevel(...));   Removed  */
   return TRUE;
 }
 
@@ -3528,7 +3521,7 @@ on_window_ccwf_delete_event            (GtkWidget       *widget,
                                         GdkEvent        *event,
                                         gpointer         user_data)
 {
-  gtk_widget_hide (gtk_widget_get_toplevel (GTK_WIDGET (widget)));
+  /*  gtk_widget_hide(gtk_widget_get_toplevel(...));   Removed  */
   return TRUE;
 }
 
@@ -3538,7 +3531,7 @@ on_window_jbord_delete_event           (GtkWidget       *widget,
                                         GdkEvent        *event,
                                         gpointer         user_data)
 {
-  gtk_widget_hide (gtk_widget_get_toplevel (GTK_WIDGET (widget)));
+  /*  gtk_widget_hide(gtk_widget_get_toplevel(...));   Removed  */
   return TRUE;
 }
 
@@ -3568,7 +3561,7 @@ on_window_Rmatrix_delete_event         (GtkWidget       *widget,
                                         GdkEvent        *event,
                                         gpointer         user_data)
 {
-  gtk_widget_hide (gtk_widget_get_toplevel (GTK_WIDGET (widget)));
+  /*  gtk_widget_hide(gtk_widget_get_toplevel(...));   Removed  */
   return TRUE;
 }
 
@@ -3576,7 +3569,7 @@ on_window_Rmatrix_delete_event         (GtkWidget       *widget,
 /* Test-> Eliminar! */
 gboolean
 on_main_notebook_key_press_event       (GtkWidget       *widget,
-                                        GdkEventKey     *event,
+                                        GdkEvent     *event,
                                         gpointer         user_data)
 {
  return FALSE;
@@ -3585,7 +3578,7 @@ on_main_notebook_key_press_event       (GtkWidget       *widget,
 /* Eliminar !!!*/
 gboolean
 on_main_notebook_key_release_event     (GtkWidget       *widget,
-                                        GdkEventKey     *event,
+                                        GdkEvent     *event,
                                         gpointer         user_data)
 {
    return FALSE;
@@ -3597,7 +3590,7 @@ on_main_notebook_key_release_event     (GtkWidget       *widget,
 gboolean
 on_label_integration_button_press_event
                                         (GtkWidget       *widget,
-                                        GdkEventButton  *event,
+                                        GdkEvent  *event,
                                         gpointer         user_data)
 {
   g_print("Button press");
@@ -3608,7 +3601,7 @@ on_label_integration_button_press_event
 
 
 void
-on_check_stdout_activate               (GtkMenuItem     *menuitem,
+on_check_stdout_activate               (GtkWidget *menuitem,
                                         gpointer         user_data)
 {
   GtkWidget *statusbar=lookup_widget(main_window,"statusbar");
@@ -3629,7 +3622,7 @@ on_check_stdout_activate               (GtkMenuItem     *menuitem,
 
 
 void
-on_files_activate                      (GtkMenuItem     *menuitem,
+on_files_activate                      (GtkWidget *menuitem,
                                         gpointer         user_data)
 {
 
@@ -3654,10 +3647,10 @@ on_cfp_ibia_changed                      (GtkEditable     *editable,
   gchar *buffer,*mass1,*mass2;
 
   /*Get the row which is selected in the coupling clist*/
-  GList *selection=GTK_CLIST(coup_clist)->selection;
+  GList *selection=xfr_clist_get_selection(coup_clist);
   if (!selection) 
       coup=1;
-  else
+  /*  else   Incomplete conditional - needs review  */
       coup=GPOINTER_TO_INT(selection->data);
 
   /* kind of coupling */
@@ -3676,9 +3669,9 @@ on_cfp_ibia_changed                      (GtkEditable     *editable,
   ictfrom=abs(atoi(buffer));
 
   /*g_print("icto=%i ictfrom=%i\n",icto,ictfrom);*/
-  /*g_print("numb of partitions=%i\n",GTK_CLIST(part_clist)->rows);*/
+  /*g_print("numb of partitions=%i\n",xfr_clist_get_rows(part_clist));*/
 
-  if (GTK_CLIST(part_clist)->rows < MIN(icto,ictfrom)){
+  if (xfr_clist_get_rows(part_clist) < MIN(icto,ictfrom)){
     g_warning("There are some partitions left!\n");
     return;
   }
@@ -3708,20 +3701,20 @@ on_cfp_ibia_changed                      (GtkEditable     *editable,
     /* g_print("in=%i mass1=%s mass2=%s icomp=%i\n",in,mass1,mass2,icomp);*/
 
     /*** state IB ***/
-    buffer=g_strdup(gtk_entry_get_text(GTK_ENTRY(cfp_ib)));
+    buffer=g_strdup(gtk_editable_get_text(GTK_EDITABLE(cfp_ib)));
   ib=atoi(buffer);
   if (ib==0) return;
   
   buffer=state_desc(main_window,icomp,ib,in);
-  gtk_entry_set_text(GTK_ENTRY(ib_desc),buffer);
+  gtk_editable_set_text(GTK_EDITABLE(ib_desc),buffer);
 
    /*** state IA ***/
-  buffer=g_strdup(gtk_entry_get_text(GTK_ENTRY(cfp_ia)));
+  buffer=g_strdup(gtk_editable_get_text(GTK_EDITABLE(cfp_ia)));
   if ((ia=atoi(buffer))==0) return;
   /* g_print("ib=%i ia=%i\n",ib,ia); */
 
   buffer=state_desc(main_window,icore,ia,in);
-  gtk_entry_set_text(GTK_ENTRY(ia_desc),buffer);
+  gtk_editable_set_text(GTK_EDITABLE(ia_desc),buffer);
 
   
 
@@ -3736,19 +3729,17 @@ on_cfp_ibia_changed                      (GtkEditable     *editable,
 gboolean MousePressed( GtkWidget * widget, GdkEvent *event, gpointer menu )
 {
    /* Check to see if the event was a mouse button press */
-   if ( event->type == GDK_BUTTON_PRESS )
+   /*  if (event->type == GDK_BUTTON_PRESS)  if (FALSE)  Event handling needs GTK-4 rewrite  */
    {
-      /* Cast the event into a GdkEventButton structure */
-      GdkEventButton *buttonevent = (GdkEventButton *) event;
+      /* Cast the event into a GdkEvent structure */
+      GdkEvent *buttonevent = (GdkEvent *) event;
 
       /* Check the button member to see which button was pressed. */
-      if ( buttonevent->button == 3 )
+      if ( 3 /* buttonevent->button */ == 3 )
       {
          /* If the right button was pressed, pop up the menu */
-         gtk_widget_show_all (GTK_WIDGET (menu));
-         gtk_menu_popup( GTK_MENU(menu), NULL, NULL, NULL
-                                                   , NULL
-                                                   , buttonevent->button, 0 );
+         /* gtk_widget_show_all */ gtk_widget_show (GTK_WIDGET (menu));
+         /*  gtk_menu_popup(...);   Removed in GTK-4  */
 
          /* return TRUE because we dealt with the event */
          return TRUE;
@@ -3762,33 +3753,34 @@ gboolean MousePressed( GtkWidget * widget, GdkEvent *event, gpointer menu )
 /** Menu Utility Function **/
 GtkWidget *BuildMenuItem (gchar * menutext,
                            gchar acceleratorkey,
-                           GtkSignalFunc signalhandler,
-                           GtkWidget * menu, GtkAccelGroup * accelgroup)
+                           GCallback signalhandler,
+                           GtkWidget * menu, gpointer /* GtkAccelGroup removed */ * accelgroup)
 {
    GtkWidget *menuitem;
 
    /* First, build the menu item */
    if (menutext != NULL)
-      menuitem = gtk_menu_item_new_with_label (menutext);
-   else
-      menuitem = gtk_menu_item_new ();
+      menuitem = /* gtk_menu_item_new_with_label(menutext) */ NULL;
+   /*  else   Incomplete conditional - needs review  */
+      menuitem = /* gtk_menu_item_new() */ NULL;
 
    /* Next,  attach the signal handler */
    if (signalhandler != NULL)
-      gtk_signal_connect (GTK_OBJECT (menuitem),
+      g_signal_connect (G_OBJECT(menuitem),
                            "activate", signalhandler, NULL);
 
    /* Now we can add the item to the menu itself */
-   if (menu != NULL)
-      gtk_menu_append (GTK_MENU (menu), menuitem);
+   /* gtk_menu_append removed in GTK-4 - use GMenu/GtkPopoverMenu instead */
+   /* if (menu != NULL) gtk_menu_append(GTK_MENU(menu), menuitem); */
 
 /* Finally, build the accelerator */
-   if (accelgroup != NULL && (guint) acceleratorkey != 0)
+   /* gtk_accel_group_add removed in GTK-4 - use GtkShortcut API instead */
+   /* if (accelgroup != NULL && (guint) acceleratorkey != 0)
       gtk_accel_group_add (accelgroup,
        (guint) acceleratorkey,
        GDK_CONTROL_MASK,
        GTK_ACCEL_VISIBLE,
-       GTK_OBJECT (menuitem), "activate");
+       G_OBJECT(menuitem), "activate"); */
 
    /* All done, return the menu item */
    return menuitem;
@@ -3817,8 +3809,8 @@ on_entry_elab_changed                  (GtkEditable     *editable,
 
   g_signal_handlers_block_by_func (GTK_EDITABLE(elab1), on_elab1_changed, NULL);
   /*  g_signal_handler_block ((gpointer) elab1,handler);*/
-  gtk_entry_set_text(GTK_ENTRY(elab1), 
- 		     gtk_entry_get_text(GTK_ENTRY(editable)));
+  gtk_editable_set_text(GTK_EDITABLE(elab1), 
+ 		     gtk_editable_get_text(GTK_EDITABLE(editable)));
   g_signal_handlers_unblock_by_func (GTK_EDITABLE(elab1),on_elab1_changed, NULL);
   /*g_signal_handler_unblock ((gpointer) elab1,handler);*/
 
@@ -3832,8 +3824,8 @@ on_elab1_changed                       (GtkEditable     *editable,
   g_print("entry elab1_changed called\n");
   GtkWidget *elab=lookup_widget(GTK_WIDGET(editable),"elab");
   g_signal_handlers_block_by_func (GTK_EDITABLE(elab), on_entry_elab_changed, NULL);
-  gtk_entry_set_text(GTK_ENTRY(elab), 
- 		     gtk_entry_get_text(GTK_ENTRY(editable))); 
+  gtk_editable_set_text(GTK_EDITABLE(elab), 
+ 		     gtk_editable_get_text(GTK_EDITABLE(editable))); 
   g_signal_handlers_unblock_by_func (GTK_EDITABLE(elab), on_entry_elab_changed, NULL);
  
 }
@@ -3856,22 +3848,24 @@ on_elab3_changed                       (GtkEditable     *editable,
 
 
 
-gboolean
-on_qscale_focus_out_event              (GtkWidget       *widget,
-                                        GdkEventFocus   *event,
+/* GTK-4 focus controller callback - updated signature */
+void
+on_qscale_focus_out_event              (GtkEventControllerFocus *controller,
                                         gpointer         user_data)
 {
   gint iq,coup_row;
+  /* Get the widget that lost focus */
+  GtkWidget *widget = gtk_event_controller_get_widget(GTK_EVENT_CONTROLLER(controller));
   GtkWidget *coup_clist=lookup_widget(GTK_WIDGET(widget),"coup_clist");
   /*Get the data of the selected row in coup_clist*/
-  GList *selection=GTK_CLIST(coup_clist)->selection;
+  GList *selection=xfr_clist_get_selection(coup_clist);
 
   gchar *rowtext[2*(QSCALEDIM+1)];
 
   /*Row selected on coup clist*/
   if (!selection){
     g_warning("No row selected in couplings!\n");
-    return 0;
+    return;
   }
   else {
     coup_row=GPOINTER_TO_INT(selection->data);
@@ -3884,27 +3878,26 @@ on_qscale_focus_out_event              (GtkWidget       *widget,
     gchar *bufi=g_strdup_printf("q%i_ni",iq);
     GtkWidget *entry1=lookup_widget(GTK_WIDGET(coup_clist),bufr); /* table cell qx_nr */
     GtkWidget *entry2=lookup_widget(GTK_WIDGET(coup_clist),bufi); /* table cell qx_ni */
-    
+
 
 
     if (entry1 && entry2){
-      rowtext[2*iq]=g_strdup(gtk_entry_get_text(GTK_ENTRY(entry1)));
-      rowtext[2*iq+1]=g_strdup(gtk_entry_get_text(GTK_ENTRY(entry2)));
+      rowtext[2*iq]=g_strdup(gtk_editable_get_text(GTK_EDITABLE(entry1)));
+      rowtext[2*iq+1]=g_strdup(gtk_editable_get_text(GTK_EDITABLE(entry2)));
     }
     else{
       g_print("Internal error. Could not retrieve entry in qscale_changed\n");
-      return 0;
+      return;
     }
   }
   if (qscale_clist==NULL) g_warning("qscale_clist is NULL!\n");
   g_assert(GTK_IS_CLIST(qscale_clist));
-  if ((GTK_CLIST(qscale_clist)->rows)-1 < coup_row){
+  if ((xfr_clist_get_rows(qscale_clist))-1 < coup_row){
     g_warning("\n In qscale clist number of rows is %i, but expected at least %i\n",\
-	      GTK_CLIST(qscale_clist)->rows,coup_row+1);
-    return 0;
+	      xfr_clist_get_rows(qscale_clist),coup_row+1);
+    return;
   }
   gtk_clist_insert(GTK_CLIST(qscale_clist),coup_row,rowtext);
-  return FALSE;
 }
 
 
@@ -3912,7 +3905,7 @@ on_qscale_focus_out_event              (GtkWidget       *widget,
 
 gboolean
 on_label_inel_pressed                  (GtkWidget       *widget,
-                                        GdkEventButton  *event,
+                                        GdkEvent  *event,
                                         gpointer         user_data)
 {
   g_print("\nLabel INEL pressed \n");
@@ -3921,19 +3914,20 @@ on_label_inel_pressed                  (GtkWidget       *widget,
 
 
 
-/* Dummy functions that are not used in GTK2 */
-GtkAccelGroup* 
-gtk_menu_ensure_uline_accel_group (GtkMenu *menu)
+/* Dummy functions that are not used in GTK4 */
+gpointer /*  GtkAccelGroup removed *  */
+gtk_menu_ensure_uline_accel_group (GtkWidget *menu)
 {
+    return NULL;
 };
 
 
-void        
-gtk_accel_group_add             (GtkAccelGroup *accel_group,
+void
+gtk_accel_group_add             (gpointer /* GtkAccelGroup removed */ *accel_group,
 				 guint accel_key,
 				 GdkModifierType accel_mods,
-				 GtkAccelFlags accel_flags,
-				 GtkObject *object,
+				 guint accel_flags,  /* GtkAccelFlags removed in GTK-4 */
+				 GObject *object,    /* GtkObject removed in GTK-4 */
 				 const gchar *accel_signal)
 {
 };
@@ -3942,7 +3936,7 @@ gtk_accel_group_add             (GtkAccelGroup *accel_group,
 
 
 /* void */
-/* on_revert_activate                     (GtkMenuItem     *menuitem, */
+/* on_revert_activate                     (GtkWidget *menuitem, */
 /*                                         gpointer         user_data) */
 /* { */
 
@@ -4321,7 +4315,7 @@ on_toggle_2ntrans_toggled              (GtkToggleButton *togglebutton,
   GtkWidget *hbox_zr=lookup_widget(GTK_WIDGET(togglebutton),"hbox_zr");
   GtkWidget *frame_2ntransfer=lookup_widget(GTK_WIDGET(togglebutton),"frame_2ntransfer");
   
-  if (GTK_TOGGLE_BUTTON(togglebutton)->active){
+  if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(togglebutton))){
     gtk_widget_show(frame_bins);
     gtk_widget_show(hbox_zr);
     gtk_widget_show(frame_2ntransfer);
@@ -4356,7 +4350,7 @@ on_toggle_elab_toggled                 (GtkToggleButton *togglebutton,
   GtkWidget *hbox_eintervals=lookup_widget(GTK_WIDGET(togglebutton),
 					   "hbox_eintervals");
   xfr_print("toggle button ELAB toggled");
-  if (GTK_TOGGLE_BUTTON(togglebutton)->active){
+  if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(togglebutton))){
     gtk_widget_show(hbox_eintervals);
   }
   else{
@@ -4374,13 +4368,13 @@ on_toggle_elab_toggled                 (GtkToggleButton *togglebutton,
 
 gboolean
 on_misc_bins_press_event               (GtkWidget       *widget,
-                                        GdkEventButton  *event,
+                                        GdkEvent  *event,
                                         gpointer         user_data)
 {
   GtkWidget *table_misc_bins=lookup_widget(GTK_WIDGET(widget),
 					   "table_misc_bins");
   g_print("misc_bins pressed\n");
-  if (GTK_WIDGET_VISIBLE(table_misc_bins)==TRUE){
+  if (gtk_widget_get_visible(table_misc_bins)==TRUE){
     gtk_widget_hide(table_misc_bins);
   }else{
     gtk_widget_show(table_misc_bins);

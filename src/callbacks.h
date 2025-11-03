@@ -20,6 +20,7 @@
 */
 
 #include <gtk/gtk.h>
+#include "clist_compat.h"
 
 enum {ZERO,
       REPLACE,
@@ -47,38 +48,38 @@ enum {
 
 
 void
-on_file_activate                       (GtkMenuItem     *menuitem,
+on_file_activate                       (GtkWidget       *menuitem,
                                         gpointer         user_data);
 
 void
-on_Open_activate                       (GtkMenuItem     *menuitem,
+on_Open_activate                       (GtkWidget       *menuitem,
                                         gpointer         user_data);
 
 void
-on_Save_activate                       (GtkMenuItem     *menuitem,
+on_Save_activate                       (GtkWidget       *menuitem,
                                         gpointer         user_data);
 
 void
-on_Save_as_activate                    (GtkMenuItem     *menuitem,
+on_Save_as_activate                    (GtkWidget       *menuitem,
                                         gpointer         user_data);
 
 void
-on_Exit_activate                       (GtkMenuItem     *menuitem,
+on_Exit_activate                       (GtkWidget       *menuitem,
                                         gpointer         user_data);
 
 void
 on_confirm_exit(GtkWidget *button,gpointer data);
 
 void
-on_Edit_activate                       (GtkMenuItem     *menuitem,
+on_Edit_activate                       (GtkWidget       *menuitem,
                                         gpointer         user_data);
 
 void
-on_Show_input_activate                 (GtkMenuItem     *menuitem,
+on_Show_input_activate                 (GtkWidget       *menuitem,
                                         gpointer         user_data);
 
 void
-on_run_activate                        (GtkMenuItem     *menuitem,
+on_run_activate                        (GtkWidget       *menuitem,
                                         gpointer         user_data);
 
 
@@ -380,15 +381,15 @@ add_extra_signals(GtkWidget *mainwindow);
 
 
 void
-on_Run_options_activate                (GtkMenuItem     *menuitem,
+on_Run_options_activate                (GtkWidget     *menuitem,
                                         gpointer         user_data);
 
 void
-on_Run_activate                        (GtkMenuItem     *menuitem,
+on_Run_activate                        (GtkWidget     *menuitem,
                                         gpointer         user_data);
 
 void
-on_General_params_activate             (GtkMenuItem     *menuitem,
+on_General_params_activate             (GtkWidget     *menuitem,
                                         gpointer         user_data);
 
 void
@@ -410,25 +411,25 @@ on_check_k8_ip2_clicked                (GtkButton       *button,
                                         gpointer         user_data);
 
 void
-on_New_activate                        (GtkMenuItem     *menuitem,
+on_New_activate                        (GtkWidget       *menuitem,
                                         gpointer         user_data);
 
 void
-on_About_activate                      (GtkMenuItem     *menuitem,
+on_About_activate                      (GtkWidget       *menuitem,
                                         gpointer         user_data);
 
 void
-on_Version_activate                    (GtkMenuItem     *menuitem,                                     
+on_Version_activate                    (GtkWidget       *menuitem,
 					gpointer         user_data);
 
 
 
 void
-on_import_activate                     (GtkMenuItem     *menuitem,
+on_import_activate                     (GtkWidget       *menuitem,
                                         gpointer         user_data);
 
 void
-on_print_activate                     (GtkMenuItem     *menuitem,
+on_print_activate                     (GtkWidget       *menuitem,
                                         gpointer         user_data);
 
 
@@ -457,7 +458,7 @@ on_band_clicked                        (GtkButton       *button,
 
 
 void
-on_main_window_destroy                 (GtkObject       *object,
+on_main_window_destroy                 (GObject       *object,
                                         gpointer         user_data);
 
 void
@@ -469,31 +470,31 @@ on_window_nlab_ok_clicked              (GtkButton       *button,
                                         gpointer         user_data);
 
 void
-on_New_activate                        (GtkMenuItem     *menuitem,
+on_New_activate                        (GtkWidget       *menuitem,
                                         gpointer         user_data);
 
 void
-on_import_activate                     (GtkMenuItem     *menuitem,
+on_import_activate                     (GtkWidget       *menuitem,
                                         gpointer         user_data);
 
 void
-on_Run_options_activate                (GtkMenuItem     *menuitem,
+on_Run_options_activate                (GtkWidget       *menuitem,
                                         gpointer         user_data);
 
 void
-on_Run_activate                        (GtkMenuItem     *menuitem,
+on_Run_activate                        (GtkWidget       *menuitem,
                                         gpointer         user_data);
 
 void
-on_General_params_activate             (GtkMenuItem     *menuitem,
+on_General_params_activate             (GtkWidget       *menuitem,
                                         gpointer         user_data);
 
 void
-on_About_activate                      (GtkMenuItem     *menuitem,
+on_About_activate                      (GtkWidget       *menuitem,
                                         gpointer         user_data);
 
 void
-on_Version_activate                    (GtkMenuItem     *menuitem,
+on_Version_activate                    (GtkWidget       *menuitem,
                                         gpointer         user_data);
 
 void
@@ -679,7 +680,7 @@ on_over_be_changed                     (GtkEditable     *editable,
                                         gpointer         user_data);
 
 void
-on_io_files_activate                   (GtkMenuItem     *menuitem,
+on_io_files_activate                   (GtkWidget       *menuitem,
                                         gpointer         user_data);
 
 
@@ -689,7 +690,7 @@ gint
 timeout_callback(gpointer data);
 
 void
-on_revert_activate                     (GtkMenuItem     *menuitem,
+on_revert_activate                     (GtkWidget     *menuitem,
                                         gpointer         user_data);
 
 void
@@ -703,11 +704,11 @@ on_Rmat_ok_clicked                     (GtkButton       *button,
 
 
 void
-on_window_Rmatrix_destroy              (GtkObject       *object,
+on_window_Rmatrix_destroy              (GObject       *object,
                                         gpointer         user_data);
 
 void
-on_window_bins_destroy                 (GtkObject       *object,
+on_window_bins_destroy                 (GObject       *object,
                                         gpointer         user_data);
 
 gboolean
@@ -747,28 +748,28 @@ on_window_Rmatrix_delete_event         (GtkWidget       *widget,
 
 gboolean
 on_main_notebook_key_press_event       (GtkWidget       *widget,
-                                        GdkEventKey     *event,
+                                        GdkEvent     *event,
                                         gpointer         user_data);
 
 gboolean
 on_main_notebook_key_release_event     (GtkWidget       *widget,
-                                        GdkEventKey     *event,
+                                        GdkEvent     *event,
                                         gpointer         user_data);
 
 gboolean
 on_label_integration_button_press_event(GtkWidget       *widget,
-                                        GdkEventButton  *event,
+                                        GdkEvent  *event,
                                         gpointer         user_data);
 
 void
-on_check_stdout_activate               (GtkMenuItem     *menuitem,
+on_check_stdout_activate               (GtkWidget       *menuitem,
                                         gpointer         user_data);
 
 
 
 
 void
-on_files_activate                      (GtkMenuItem     *menuitem,
+on_files_activate                      (GtkWidget       *menuitem,
                                         gpointer         user_data);
 
 
@@ -779,8 +780,8 @@ on_cfp_ibia_changed                    (GtkEditable     *editable,
 GtkWidget 
 *BuildMenuItem (gchar * menutext,
                            gchar acceleratorkey,
-                           GtkSignalFunc signalhandler,
-			  GtkWidget * menu, GtkAccelGroup * accelgroup);
+                           GCallback signalhandler,
+			  GtkWidget * menu, gpointer * accelgroup);
 
 
 gboolean 
@@ -821,7 +822,7 @@ on_elab3_changed                       (GtkEditable     *editable,
                                         gpointer         user_data);
 
 void
-on_kill_current_activate               (GtkMenuItem     *menuitem,
+on_kill_current_activate               (GtkWidget       *menuitem,
                                         gpointer         user_data);
 
 void
@@ -829,39 +830,39 @@ on_qscale_changed                      (GtkEditable     *editable,
                                         gpointer         user_data);
 
 
-gboolean
-on_qscale_focus_out_event              (GtkWidget       *widget,
-                                        GdkEventFocus   *event,
+/* GTK-4 focus controller callback - updated signature */
+void
+on_qscale_focus_out_event              (GtkEventControllerFocus *controller,
                                         gpointer         user_data);
 
 gboolean
 on_label_inel_pressed                  (GtkWidget       *widget,
-                                        GdkEventButton  *event,
+                                        GdkEvent  *event,
                                         gpointer         user_data);
 
 
 
 void
-on_revert_activate2                    (GtkMenuItem     *menuitem,
+on_revert_activate2                    (GtkWidget       *menuitem,
                                         gpointer         user_data);
 
 
 
-/* Missing functions in GTK2 */
-GtkAccelGroup* 
-gtk_menu_ensure_uline_accel_group (GtkMenu *menu);
+/* Missing functions in GTK4 */
+gpointer
+gtk_menu_ensure_uline_accel_group (GtkWidget *menu);
 
 
 void        
-gtk_accel_group_add             (GtkAccelGroup *accel_group,
+gtk_accel_group_add             (gpointer *accel_group,
 				 guint accel_key,
 				 GdkModifierType accel_mods,
-				 GtkAccelFlags accel_flags,
-				 GtkObject *object,
+				 guint accel_flags,
+				 GObject *object,
 				 const gchar *accel_signal);
 
 void
-on_revert_activate                     (GtkMenuItem     *menuitem,
+on_revert_activate                     (GtkWidget       *menuitem,
                                         gpointer         user_data);
 
 void
@@ -1080,5 +1081,5 @@ on_toggle_elab_toggled                 (GtkToggleButton *togglebutton,
 
 gboolean
 on_misc_bins_press_event               (GtkWidget       *widget,
-                                        GdkEventButton  *event,
+                                        GdkEvent  *event,
                                         gpointer         user_data);
