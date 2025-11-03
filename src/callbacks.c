@@ -1658,38 +1658,38 @@ on_overlap_clist_select_row            (GtkCList        *clist,
 
   GtkWidget *widget_isc=atof(be)>0? over_isc_bound:over_isc_cont;
 
-  GtkWidget *over[]={lookup_widget(GTK_WIDGET(clist),"over_kn1"),
-		     lookup_widget(GTK_WIDGET(clist),"over_kn2"),
+  GtkWidget *over[]={lookup_widget(main_window,"over_kn1"),
+		     lookup_widget(main_window,"over_kn2"),
 		     lookup_widget(GTK_WIDGET(clist),"combo_ic1"),
 		     lookup_widget(GTK_WIDGET(clist),"combo_ic2"),
-		     lookup_widget(GTK_WIDGET(clist),"over_in"),
-		     lookup_widget(GTK_WIDGET(clist),"over_kind"),
-		     lookup_widget(GTK_WIDGET(clist),"over_ch1"),
-		     lookup_widget(GTK_WIDGET(clist),"over_nn"),
-		     lookup_widget(GTK_WIDGET(clist),"over_l"),
-		     lookup_widget(GTK_WIDGET(clist),"over_lmax"),
-		     lookup_widget(GTK_WIDGET(clist),"over_sn"),
-		     lookup_widget(GTK_WIDGET(clist),"over_ia"),
-		     lookup_widget(GTK_WIDGET(clist),"over_j"),
-		     lookup_widget(GTK_WIDGET(clist),"over_ib"),
-		     lookup_widget(GTK_WIDGET(clist),"over_kbpot"),
-		     lookup_widget(GTK_WIDGET(clist),"over_krpot"),
-		     lookup_widget(GTK_WIDGET(clist),"over_be"),
+		     lookup_widget(main_window,"over_in"),
+		     lookup_widget(main_window,"over_kind"),
+		     lookup_widget(main_window,"over_ch1"),
+		     lookup_widget(main_window,"over_nn"),
+		     lookup_widget(main_window,"over_l"),
+		     lookup_widget(main_window,"over_lmax"),
+		     lookup_widget(main_window,"over_sn"),
+		     lookup_widget(main_window,"over_ia"),
+		     lookup_widget(main_window,"over_j"),
+		     lookup_widget(main_window,"over_ib"),
+		     lookup_widget(main_window,"over_kbpot"),
+		     lookup_widget(main_window,"over_krpot"),
+		     lookup_widget(main_window,"over_be"),
 		     widget_isc,
-		     lookup_widget(GTK_WIDGET(clist),"over_ipc"),
-		     lookup_widget(GTK_WIDGET(clist),"over_nfl"),
-		     lookup_widget(GTK_WIDGET(clist),"over_nam"),
-		     lookup_widget(GTK_WIDGET(clist),"over_ampl"),
-		     lookup_widget(GTK_WIDGET(clist),"over_dm"),
-		     lookup_widget(GTK_WIDGET(clist),"over_nk"),
-		     lookup_widget(GTK_WIDGET(clist),"over_er")};
+		     lookup_widget(main_window,"over_ipc"),
+		     lookup_widget(main_window,"over_nfl"),
+		     lookup_widget(main_window,"over_nam"),
+		     lookup_widget(main_window,"over_ampl"),
+		     lookup_widget(main_window,"over_dm"),
+		     lookup_widget(main_window,"over_nk"),
+		     lookup_widget(main_window,"over_er")};
   
   
   GtkWidget *opt_nfl=lookup_widget(GTK_WIDGET(clist),"opt_nfl");
-  GtkWidget *over_in=lookup_widget(GTK_WIDGET(clist),"over_in");
+  GtkWidget *over_in=lookup_widget(main_window,"over_in");
   GtkWidget *check_vary_be=lookup_widget(GTK_WIDGET(clist),"check_vary_be");
-  /*GtkWidget *over_kind=lookup_widget(GTK_WIDGET(clist),"over_kind");*/
-  GtkWidget *over_ipc=lookup_widget(GTK_WIDGET(clist),"over_ipc");
+  /*GtkWidget *over_kind=lookup_widget(main_window,"over_kind");*/
+  GtkWidget *over_ipc=lookup_widget(main_window,"over_ipc");
     GtkWidget *check_vforbins=lookup_widget(GTK_WIDGET(clist),"check_vforbins");
 
 
@@ -1826,44 +1826,44 @@ on_button_overlap_clicked              (GtkButton       *button,
   /* GtkWidget *window_bins=lookup_widget(GTK_WIDGET(button),"window_bins");*/
   
   /* For continuum states isc is in window_bins <= deprecated */
-  GtkWidget *over_be=lookup_widget(GTK_WIDGET(clist),"over_be");
+  GtkWidget *over_be=lookup_widget(main_window,"over_be");
   const gchar *be=gtk_editable_get_text(GTK_EDITABLE(over_be));
   /*  GtkWidget *widget_isc=\
       lookup_widget(atof(be)>0? main_window:window_bins,"over_isc");*/
   GtkWidget *widget_isc=\
     lookup_widget(main_window,atof(be)>0? "over_isc":"over_isc_cont");
 
-  GtkWidget *over[]={lookup_widget(GTK_WIDGET(clist),"over_kn1"),
-		     lookup_widget(GTK_WIDGET(clist),"over_kn2"),
+  GtkWidget *over[]={lookup_widget(main_window,"over_kn1"),
+		     lookup_widget(main_window,"over_kn2"),
 		     lookup_widget(GTK_WIDGET(clist),"combo_ic1"),
 		     lookup_widget(GTK_WIDGET(clist),"combo_ic2"),
-		     lookup_widget(GTK_WIDGET(clist),"over_in"),
-		     lookup_widget(GTK_WIDGET(clist),"over_kind"),
-		     lookup_widget(GTK_WIDGET(clist),"over_ch1"),
-		     lookup_widget(GTK_WIDGET(clist),"over_nn"),
-		     lookup_widget(GTK_WIDGET(clist),"over_l"),
-		     lookup_widget(GTK_WIDGET(clist),"over_lmax"),
-		     lookup_widget(GTK_WIDGET(clist),"over_sn"),
-		     lookup_widget(GTK_WIDGET(clist),"over_ia"),
-		     lookup_widget(GTK_WIDGET(clist),"over_j"),
-		     lookup_widget(GTK_WIDGET(clist),"over_ib"),
-		     lookup_widget(GTK_WIDGET(clist),"over_kbpot"),
-		     lookup_widget(GTK_WIDGET(clist),"over_krpot"),
+		     lookup_widget(main_window,"over_in"),
+		     lookup_widget(main_window,"over_kind"),
+		     lookup_widget(main_window,"over_ch1"),
+		     lookup_widget(main_window,"over_nn"),
+		     lookup_widget(main_window,"over_l"),
+		     lookup_widget(main_window,"over_lmax"),
+		     lookup_widget(main_window,"over_sn"),
+		     lookup_widget(main_window,"over_ia"),
+		     lookup_widget(main_window,"over_j"),
+		     lookup_widget(main_window,"over_ib"),
+		     lookup_widget(main_window,"over_kbpot"),
+		     lookup_widget(main_window,"over_krpot"),
 		     over_be,
 		     widget_isc,
-		     lookup_widget(GTK_WIDGET(clist),"over_ipc"),
-		     lookup_widget(GTK_WIDGET(clist),"over_nfl"),
-		     lookup_widget(GTK_WIDGET(clist),"over_nam"),
-		     lookup_widget(GTK_WIDGET(clist),"over_ampl"),
-		     lookup_widget(GTK_WIDGET(clist),"over_dm"),
-		     lookup_widget(GTK_WIDGET(clist),"over_nk"),
-		     lookup_widget(GTK_WIDGET(clist),"over_er")};
+		     lookup_widget(main_window,"over_ipc"),
+		     lookup_widget(main_window,"over_nfl"),
+		     lookup_widget(main_window,"over_nam"),
+		     lookup_widget(main_window,"over_ampl"),
+		     lookup_widget(main_window,"over_dm"),
+		     lookup_widget(main_window,"over_nk"),
+		     lookup_widget(main_window,"over_er")};
   
   
   /*  GtkWidget *opt_nfl=lookup_widget(GTK_WIDGET(clist),"opt_nfl");*/
   GtkWidget *check_vary_be=lookup_widget(GTK_WIDGET(clist),"check_vary_be");
   GtkWidget *check_vforbins=lookup_widget(GTK_WIDGET(clist),"check_vforbins");
-  GtkWidget *over_kind=lookup_widget(GTK_WIDGET(clist),"over_kind");
+  GtkWidget *over_kind=lookup_widget(main_window,"over_kind");
   
   gchar *cell[columns];
 
