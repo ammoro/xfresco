@@ -82,6 +82,10 @@ void
 on_run_activate                        (GtkWidget       *menuitem,
                                         gpointer         user_data);
 
+void
+on_open_filesel_response               (GtkDialog       *dialog,
+                                        gint             response_id,
+                                        gpointer         user_data);
 
 gboolean
 on_open_filesel_delete_ev              (GtkWidget       *widget,
@@ -370,12 +374,10 @@ on_open_filesel_cancel_button_clicked  (GtkButton       *button,
                                         gpointer         user_data);
 
 void
-on_save_filesel_ok_button_clicked      (GtkButton       *button,
+on_save_filesel_response               (GtkDialog       *dialog,
+                                        gint             response_id,
                                         gpointer         user_data);
 
-void
-on_save_filesel_cancel_button_clicked  (GtkButton       *button,
-                                        gpointer         user_data);
 void
 add_extra_signals(GtkWidget *mainwindow);
 
@@ -667,13 +669,9 @@ on_jbord_ok_button_clicked             (GtkButton       *button,
                                         gpointer         user_data);
 
 void
-on_save_filesel_ok_button_clicked      (GtkButton       *button,
+on_save_filesel_response               (GtkDialog       *dialog,
+                                        gint             response_id,
                                         gpointer         user_data);
-
-void
-on_save_filesel_cancel_button_clicked  (GtkButton       *button,
-                                        gpointer         user_data);
-
 
 void
 on_over_be_changed                     (GtkEditable     *editable,

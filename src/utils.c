@@ -47,44 +47,39 @@ extern GtkWidget *main_window;
 void
 glade_util_show_message_box (gchar * message)
 {
-  GtkWidget *dialog, *label, *button;
+  GtkWidget *dialog, *label, *button, *content_area;
 
   dialog = gtk_dialog_new ();
-  /* gtk_window_position removed in GTK-3 */
+  gtk_window_set_title (GTK_WINDOW (dialog), "Message");
+  gtk_window_set_modal (GTK_WINDOW (dialog), TRUE);
+  gtk_window_set_transient_for (GTK_WINDOW (dialog), GTK_WINDOW (main_window));
 
-  /* gtk_window_position (GTK_WINDOW (dialog), GTK_WIN_POS_CENTER); */
-  /* gtk_container_border_width removed in GTK-3 - use CSS margins */
+  /* Get the content area of the dialog */
+  content_area = gtk_dialog_get_content_area (GTK_DIALOG (dialog));
 
-  /* gtk_container_border_width (GTK_CONTAINER (dialog), 5); */
-
+  /* Create and add label with padding */
   label = gtk_label_new (message);
-  /* gtk_misc_set_padding removed in GTK-4 - use CSS padding */
+  gtk_widget_set_margin_top (label, 20);
+  gtk_widget_set_margin_bottom (label, 20);
+  gtk_widget_set_margin_start (label, 20);
+  gtk_widget_set_margin_end (label, 20);
+  gtk_widget_set_visible (label, TRUE);
+  gtk_box_append (GTK_BOX (content_area), label);
 
-  /* gtk_misc_set_padding (GTK_MISC (label), 20, 20); */
-  /* gtk_box_pack_start removed in GTK-4 - use gtk_box_append */
-  /* gtk_box_pack_start (GTK_BOX (gtk_dialog_get_content_area(GTK_DIALOG(dialog))), label, */
-  /* TRUE, TRUE, 0); */
-  gtk_widget_show (label);
-
+  /* Create and add OK button */
   button = gtk_button_new_with_label ("OK");
-  /* gtk_widget_set_usize removed in GTK-2 - use gtk_widget_set_size_request */
+  gtk_widget_set_size_request (button, 80, -1);
+  gtk_widget_set_margin_bottom (button, 14);
+  gtk_widget_set_visible (button, TRUE);
+  gtk_box_append (GTK_BOX (content_area), button);
 
-  /* gtk_widget_set_usize (button, 80, -1); */
-  /* gtk_box_pack_start removed in GTK-4 - use gtk_box_append */
-  /* gtk_box_pack_start (GTK_BOX (gtk_dialog_get_content_area(GTK_DIALOG(dialog))), button, */
-  /* FALSE, FALSE, 14); */
-  /* GTK_WIDGET_SET_FLAGS removed in GTK-3 */
-
-  /* GTK_WIDGET_SET_FLAGS (button, GTK_CAN_DEFAULT); */
-  /* gtk_widget_grab_default removed in GTK-4 - use gtk_window_set_default_widget */
-
-  /* gtk_widget_grab_default (button); */
-  gtk_widget_show (button);
-
+  /* Set button as default and connect signal */
+  gtk_window_set_default_widget (GTK_WINDOW (dialog), button);
   g_signal_connect_object(G_OBJECT (button), "clicked",
 			     G_CALLBACK (gtk_window_destroy), G_OBJECT(dialog), 0);
-  gtk_widget_show (dialog);
 
+  /* Show the dialog */
+  gtk_window_present (GTK_WINDOW (dialog));
 }
 
 
@@ -118,72 +113,56 @@ glade_util_create_dialog_with_buttons (const gchar * message,
 				       GCallback signal_handlers[],
 				       gpointer data)
 {
-  GtkWidget *dialog, *hbox, *label, *button, *bbox;
+  GtkWidget *dialog, *hbox, *label, *button, *bbox, *content_area;
   int i;
 
   dialog = gtk_dialog_new ();
-  /* gtk_window_set_position removed in GTK-3 */
+  gtk_window_set_modal (GTK_WINDOW (dialog), TRUE);
+  gtk_window_set_transient_for (GTK_WINDOW (dialog), GTK_WINDOW (main_window));
 
-  /* gtk_window_set_position (GTK_WINDOW (dialog), GTK_WIN_POS_CENTER); */
-  /* gtk_container_set_border_width removed in GTK-3 - use CSS margins */
+  /* Get the content area */
+  content_area = gtk_dialog_get_content_area (GTK_DIALOG (dialog));
 
-  /* gtk_container_set_border_width (GTK_CONTAINER (dialog), 5); */
-
+  /* Create horizontal box with margins */
   hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
-  /* gtk_container_set_border_width removed in GTK-3 - use CSS margins */
+  gtk_widget_set_margin_top (hbox, 20);
+  gtk_widget_set_margin_bottom (hbox, 20);
+  gtk_widget_set_margin_start (hbox, 20);
+  gtk_widget_set_margin_end (hbox, 20);
+  gtk_widget_set_visible (hbox, TRUE);
+  gtk_box_append (GTK_BOX (content_area), hbox);
 
-  /* gtk_container_set_border_width (GTK_CONTAINER (hbox), 20); */
-  /* gtk_box_pack_start removed in GTK-4 - use gtk_box_append */
-  /* gtk_box_pack_start (GTK_BOX (gtk_dialog_get_content_area(GTK_DIALOG(dialog))), hbox, */
-  /* TRUE, TRUE, 0); */
-  gtk_widget_show (hbox);
-
+  /* Create and add label */
   label = gtk_label_new (message);
-  /* gtk_box_pack_start removed in GTK-4 - use gtk_box_append */
-  /* gtk_box_pack_start (GTK_BOX (hbox), label, TRUE, TRUE, 0); */
-  gtk_widget_show (label);
+  gtk_widget_set_visible (label, TRUE);
+  gtk_box_append (GTK_BOX (hbox), label);
 
-  /* GtkButtonBox removed in GTK-4 - use GtkBox with orientation */
-
-
+  /* Create button box */
   bbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
-  /* gtk_button_box_set_layout removed in GTK-4 */
-
-  /* gtk_button_box_set_layout (GTK_BUTTON_BOX (bbox), GTK_BUTTONBOX_END); */
   gtk_box_set_spacing (GTK_BOX (bbox), 10);
-  /* gtk_box_pack_start removed in GTK-4 - use gtk_box_append */
-  /* gtk_box_pack_start (GTK_BOX (gtk_dialog_get_content_area(GTK_DIALOG(dialog))), bbox, */
-  /* FALSE, TRUE, 0); */
-  gtk_widget_show (bbox);
+  gtk_widget_set_halign (bbox, GTK_ALIGN_END);
+  gtk_widget_set_visible (bbox, TRUE);
+  gtk_box_append (GTK_BOX (content_area), bbox);
 
   for (i = 0; i < nbuttons; i++)
     {
-      /* button = gtk_button_new_with_label (_(buttons[i]));*/
       button = gtk_button_new_with_label (buttons[i]);
-      /* gtk_container_add removed in GTK-4 - use specific methods */
-
+      gtk_widget_set_visible (button, TRUE);
       gtk_box_append(GTK_BOX(bbox), button);
-      /* GTK_WIDGET_SET_FLAGS removed in GTK-3 */
 
-      /* GTK_WIDGET_SET_FLAGS (button, GTK_CAN_DEFAULT); */
+      /* Set default button */
       if (i == default_button - 1) {
-	/* gtk_widget_grab_default removed in GTK-4 - use gtk_window_set_default_widget */
-
-	/* gtk_widget_grab_default (button); */
+	gtk_window_set_default_widget (GTK_WINDOW (dialog), button);
 	gtk_widget_grab_focus (button);
       }
-      gtk_widget_show (button);
 
+      /* Connect signal handlers */
       if (signal_handlers[i])
 	g_signal_connect (G_OBJECT (button), "clicked", signal_handlers[i],
 			    data);
-      
+
       g_signal_connect_object(G_OBJECT (button), "clicked",
 				 G_CALLBACK (gtk_window_destroy), G_OBJECT(dialog), 0);
-
-      /* g_signal_connect (G_OBJECT (dialog), "key_press_event", */
-/* 			  G_CALLBACK (glade_util_check_key_is_esc), */
-/* 			  GINT_TO_POINTER (GladeEscDestroys)); */
     }
   return dialog;
 }

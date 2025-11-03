@@ -183,8 +183,10 @@ create_popup(){
   GtkWidget *pot_clist, *menu_pot;
   pot_clist=lookup_widget(main_window,"pot_clist");
 
-  /* Poput menu attatched to pot_clist */
-   menu_pot = NULL; /* gtk_menu_new() - GTK-4 menus need reimplementation */
+  /* Popup menu attached to pot_clist */
+  /* DISABLED: GTK-4 menus need reimplementation with GtkPopoverMenu */
+  /*
+   menu_pot = NULL;
    menuitem=BuildMenuItem ( "Delete", 0, NULL,menu_pot, NULL );
    g_signal_connect(G_OBJECT(menuitem),
 		      "activate",
@@ -200,14 +202,16 @@ create_popup(){
 		      "activate",
 		      G_CALLBACK(popup_movedown),
 		      NULL);
+  */
 
-  
 
-  /* Catch ANY event that occurs on the pot_clist - we'll narrow it down 
+
+  /* Catch ANY event that occurs on the pot_clist - we'll narrow it down
     in the handler */
-    g_signal_connect( G_OBJECT( pot_clist ), "event"
-                                           , G_CALLBACK ( MousePressed )
-                                           , G_OBJECT( menu_pot ) );
+  /* DISABLED: GTK-4 deprecated 'event' signal - menus need reimplementation with GtkPopoverMenu */
+  /* g_signal_connect( G_OBJECT( pot_clist ), "event" */
+  /*                                        , G_CALLBACK ( MousePressed ) */
+  /*                                        , G_OBJECT( menu_pot ) ); */
 
 }
 
@@ -307,13 +311,12 @@ on_Open_activate                       (GtkWidget *menuitem,
   /*Create file selector if it hasn't been created yet*/
   if (open_filesel == NULL)
     open_filesel = create_open_filesel ();
-  
+
   /*Attach main_window to it*/
   g_object_set_data (G_OBJECT(open_filesel),\
 		       "main_window", main_window);
-  
-  gtk_widget_show (open_filesel);
-  /*  gdk_window_raise (open_filesel->window);   Removed in GTK-4  */
+
+  gtk_window_present (GTK_WINDOW(open_filesel));  /* GTK-4: use gtk_window_present instead of gtk_widget_show */
 }
 
 void
@@ -324,12 +327,11 @@ on_import_activate                     (GtkWidget *menuitem,
 
   if (open_filesel == NULL)
     open_filesel = create_open_filesel ();
-  
+
   /*Attach main_window to it*/
   g_object_set_data (G_OBJECT(open_filesel), "main_window", main_window);
-  
-  gtk_widget_show (open_filesel);
-  /*  gdk_window_raise (open_filesel->window);   Removed in GTK-4  */
+
+  gtk_window_present (GTK_WINDOW(open_filesel));  /* GTK-4: use gtk_window_present instead of gtk_widget_show */
   return;
 }
 
@@ -435,6 +437,60 @@ on_run_activate                      (GtkWidget *menuitem,
  ***************************************************************************/
 
 void
+on_open_filesel_response               (GtkDialog       *dialog,
+                                        gint             response_id,
+                                        gpointer         user_data)
+{
+  GtkWidget *main_window;
+  GFile *file;
+  gchar *filename;
+  gchar *buffer;
+  guint itest;
+  gchar *echotest;
+
+  if (response_id == GTK_RESPONSE_ACCEPT) {
+    main_window = g_object_get_data (G_OBJECT (dialog), "main_window");
+    file = gtk_file_chooser_get_file (GTK_FILE_CHOOSER (dialog));
+
+    if (file) {
+      filename = g_file_get_path (file);
+      g_print("\nOpening file %s...\n", filename);
+
+      switch(open_mode){
+      case OPEN_NAMELIST:
+        real_open_file (main_window, filename);
+        break;
+
+      case IMPORT_OLD:
+        /* Convert selected file to namelist style */
+        g_print("ok\n");
+        current_filename=g_strdup_printf("%s-nl",filename);
+        buffer=g_strdup_printf("fr2nl<%s>%s",filename,current_filename);
+        echotest=g_strdup_printf("echo %s",buffer);
+
+        itest=system(echotest);
+        if (system(buffer)!=itest)
+          g_print("**ERROR**:fr2nl failed!!\n");
+        else
+          real_open_file(main_window,current_filename);
+        g_free(buffer);
+        g_free(echotest);
+        break;
+
+      case OPEN_NEW:
+        break;
+      }
+
+      g_free (filename);
+      g_object_unref (file);
+    }
+  }
+
+  /* Hide dialog instead of destroying it for better performance on re-open */
+  gtk_widget_set_visible (GTK_WIDGET (dialog), FALSE);
+}
+
+void
 on_open_filesel_ok_button_clicked      (GtkButton       *button,
                                         gpointer         user_data)
 {
@@ -522,28 +578,34 @@ on_Save_as_activate                    (GtkWidget *menuitem,
 }
 
 void
-on_save_filesel_ok_button_clicked      (GtkButton       *button,
+on_save_filesel_response               (GtkDialog       *dialog,
+                                        gint             response_id,
                                         gpointer         user_data)
 {
-  GtkWidget *filesel, *main_window;
-  const gchar *filename;
+  GtkWidget *main_window;
+  GFile *file;
+  gchar *filename;
 
-  filesel = NULL; /* gtk_widget_get_toplevel removed */
-  main_window = g_object_get_data (G_OBJECT (filesel), "main_window");
-  gtk_widget_hide (filesel);
-  filename = NULL /* gtk_file_selection_get_filename - use GtkFileChooserDialog in GTK-4 */;
-  current_filename=g_strdup(filename);
-  real_save_file (main_window, filename);
-  /* g_free(filename);*/
+  if (response_id == GTK_RESPONSE_ACCEPT) {
+    main_window = g_object_get_data (G_OBJECT (dialog), "main_window");
+    file = gtk_file_chooser_get_file (GTK_FILE_CHOOSER (dialog));
+
+    if (file) {
+      filename = g_file_get_path (file);
+      g_print("\nSaving file %s...\n", filename);
+
+      current_filename = g_strdup(filename);
+      real_save_file (main_window, filename);
+
+      g_free (filename);
+      g_object_unref (file);
+    }
+  }
+
+  /* Hide dialog instead of destroying it for better performance on re-open */
+  gtk_widget_set_visible (GTK_WIDGET (dialog), FALSE);
 }
 
-
-void
-on_save_filesel_cancel_button_clicked  (GtkButton       *button,
-                                        gpointer         user_data)
-{
-  /*  gtk_widget_hide(gtk_widget_get_toplevel(...));   Removed  */
-}
 
 
 void
@@ -596,10 +658,66 @@ void
 on_Show_input_activate                 (GtkWidget *menuitem,
                                         gpointer         user_data)
 {
-  /*gchar *command=g_strdup_printf("less %s",current_filename);*/
-  glade_util_show_message_box("Not implemented yet. Sorry!");
-  /*system(command);*/
-  return;
+  GtkWidget *dialog, *scrolled, *text_view, *content_area;
+  GtkTextBuffer *buffer;
+  gchar *contents;
+  gsize length;
+  GError *error = NULL;
+
+  if (current_filename == NULL) {
+    glade_util_show_message_box("No file is currently loaded.");
+    return;
+  }
+
+  /* Read the file contents */
+  if (!g_file_get_contents(current_filename, &contents, &length, &error)) {
+    gchar *msg = g_strdup_printf("Error reading file:\n%s",
+                                 error ? error->message : "Unknown error");
+    glade_util_show_message_box(msg);
+    g_free(msg);
+    if (error) g_error_free(error);
+    return;
+  }
+
+  /* Create dialog */
+  dialog = gtk_dialog_new();
+  gtk_window_set_title(GTK_WINDOW(dialog), current_filename);
+  gtk_window_set_default_size(GTK_WINDOW(dialog), 800, 600);
+  gtk_window_set_modal(GTK_WINDOW(dialog), TRUE);
+  gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(main_window));
+
+  /* Get content area */
+  content_area = gtk_dialog_get_content_area(GTK_DIALOG(dialog));
+
+  /* Create scrolled window */
+  scrolled = gtk_scrolled_window_new();
+  gtk_widget_set_vexpand(scrolled, TRUE);
+  gtk_widget_set_hexpand(scrolled, TRUE);
+  gtk_widget_set_visible(scrolled, TRUE);
+  gtk_box_append(GTK_BOX(content_area), scrolled);
+
+  /* Create text view */
+  text_view = gtk_text_view_new();
+  gtk_text_view_set_editable(GTK_TEXT_VIEW(text_view), FALSE);
+  gtk_text_view_set_monospace(GTK_TEXT_VIEW(text_view), TRUE);
+  gtk_widget_set_visible(text_view, TRUE);
+  gtk_scrolled_window_set_child(GTK_SCROLLED_WINDOW(scrolled), text_view);
+
+  /* Set text buffer */
+  buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_view));
+  gtk_text_buffer_set_text(buffer, contents, length);
+  g_free(contents);
+
+  /* Add Close button */
+  GtkWidget *close_btn = gtk_button_new_with_label("Close");
+  gtk_widget_set_visible(close_btn, TRUE);
+  gtk_box_append(GTK_BOX(content_area), close_btn);
+  g_signal_connect_swapped(close_btn, "clicked",
+                            G_CALLBACK(gtk_window_destroy),
+                            dialog);
+
+  /* Show dialog */
+  gtk_window_present(GTK_WINDOW(dialog));
 }
 
 
@@ -1794,8 +1912,8 @@ on_button_overlap_clicked              (GtkButton       *button,
   }
 
   /*IC1, IC2*/
-  cell[IC1]=g_strndup(gtk_editable_get_text(GTK_EDITABLE(NULL /* GTK_COMBO(over[IC1])->entry - GtkCombo removed */)),2);
-  cell[IC2]=g_strndup(gtk_editable_get_text(GTK_EDITABLE(NULL /* GTK_COMBO(over[IC2])->entry - GtkCombo removed */)),2);
+  cell[IC1]=g_strndup(""  /* FIXED: was gtk_editable_get_text(GTK_EDITABLE(NULL)) - GtkCombo removed */,2);
+  cell[IC2]=g_strndup(""  /* FIXED: was gtk_editable_get_text(GTK_EDITABLE(NULL)) - GtkCombo removed */,2);
 
 
   /* Option menu  "over_in"
@@ -1809,7 +1927,7 @@ on_button_overlap_clicked              (GtkButton       *button,
 
   /*Combo "over_kind" */    
    if (NULL /* GTK_COMBO(over_kind)->entry - GtkCombo removed */ !=NULL){
-     const gchar *buffer=gtk_editable_get_text(GTK_EDITABLE(NULL /* GTK_COMBO(over_kind)->entry - GtkCombo removed */));
+     const gchar *buffer=""  /* FIXED: was gtk_editable_get_text(GTK_EDITABLE(NULL)) - GtkCombo removed */;
      cell[KIND]=g_strndup(buffer,1);
    }
 
@@ -2306,17 +2424,17 @@ on_button_coupling_clicked             (GtkButton       *button,
   }
 
   /*Kind of coupling */ 
-  buffer=g_strndup(gtk_editable_get_text(GTK_EDITABLE(NULL /* GTK_COMBO(combo_kind)->entry - GtkCombo removed */)),1);
+  buffer=g_strndup(""  /* FIXED: was gtk_editable_get_text(GTK_EDITABLE(NULL)) - GtkCombo removed */,1);
   text[KIND]=g_strdup(buffer);
   ikind=atoi(buffer);
 
   /*Get values in generic widgets (valid for all kinds)*/
-  text[ICTO]=g_strndup(gtk_editable_get_text(GTK_EDITABLE(NULL /* GTK_COMBO(combo_icto)->entry - GtkCombo removed */)),2);
+  text[ICTO]=g_strndup(""  /* FIXED: was gtk_editable_get_text(GTK_EDITABLE(NULL)) - GtkCombo removed */,2);
 
   if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_icto)))
     text[ICTO]=g_strdup_printf("-%s",text[ICTO]);
 
-  text[ICTFROM]=g_strndup(gtk_editable_get_text(GTK_EDITABLE(NULL /* GTK_COMBO(combo_ictfrom)->entry - GtkCombo removed */)),2); 
+  text[ICTFROM]=g_strndup(""  /* FIXED: was gtk_editable_get_text(GTK_EDITABLE(NULL)) - GtkCombo removed */,2); 
   text[RMAX]=g_strdup(gtk_editable_get_text(GTK_EDITABLE(entry_rmax)));
   text[JMAX]=g_strdup(gtk_editable_get_text(GTK_EDITABLE(entry_jmax)));
 
@@ -3288,7 +3406,7 @@ on_combo_kind_changed_selection(GtkEditable *entry,gpointer data){
 
   /*The number of the potential in combo_type is given by the first 
    * character of the item */
-  buffer=g_strdup(gtk_editable_get_text(GTK_EDITABLE(NULL /* GTK_COMBO(combo_kind)->entry - GtkCombo removed */)));
+  buffer=g_strdup(""  /* FIXED: was gtk_editable_get_text(GTK_EDITABLE(NULL)) - GtkCombo removed */);
   kind=atoi(g_strndup(buffer,1));
 
   /*  g_print("On combo_kind selection received.Option %i\n",kind);*/

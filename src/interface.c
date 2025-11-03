@@ -19,6 +19,9 @@
 #include "interface.h"
 #include "support.h"
 
+/* Extern declaration for global main window */
+extern GtkWidget *main_window;
+
 #define GLADE_HOOKUP_OBJECT(component,widget,name) \
   g_object_set_data_full (G_OBJECT (component), name, \
     g_object_ref (widget), (GDestroyNotify) g_object_unref)
@@ -1129,7 +1132,9 @@ create_main_window (void)
   GtkWidget *statusbar;
 
   main_window = gtk_window_new ();
+  if (GTK_IS_WIDGET(main_window)) {
   gtk_widget_set_size_request (main_window, 900, 700); /* added missing args */
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
   gtk_window_set_title (GTK_WINDOW (main_window), _("XFresco 2.2"));
 
@@ -1140,9 +1145,164 @@ create_main_window (void)
   /* GtkMenuBar - TODO: Rewrite with GtkPopoverMenuBar */
 
 
-  /* menubar = gtk_menu_bar_new...; */ menubar = NULL;
-  /* gtk_widget_show (menubar); - NULL widget */
-  /* gtk_box_append (GTK_BOX (main_vbox), menubar); - NULL widget */
+  /* GTK-4 Menu using GtkMenuButton + GtkPopover (no GtkApplication needed) */
+  menubar = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+  gtk_widget_set_visible(menubar, TRUE);
+
+  /* File menu */
+  GtkWidget *file_btn = gtk_menu_button_new();
+  gtk_menu_button_set_label(GTK_MENU_BUTTON(file_btn), "File");
+  gtk_widget_set_visible(file_btn, TRUE);
+  gtk_box_append(GTK_BOX(menubar), file_btn);
+
+  GtkWidget *file_popover_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 2);
+  gtk_widget_set_margin_top(file_popover_box, 6);
+  gtk_widget_set_margin_bottom(file_popover_box, 6);
+  gtk_widget_set_margin_start(file_popover_box, 6);
+  gtk_widget_set_margin_end(file_popover_box, 6);
+  gtk_widget_set_visible(file_popover_box, TRUE);
+
+  GtkWidget *file_new_btn = gtk_button_new_with_label("New");
+  gtk_widget_set_visible(file_new_btn, TRUE);
+  gtk_box_append(GTK_BOX(file_popover_box), file_new_btn);
+
+  GtkWidget *file_open_btn = gtk_button_new_with_label("Open");
+  gtk_widget_set_visible(file_open_btn, TRUE);
+  gtk_box_append(GTK_BOX(file_popover_box), file_open_btn);
+
+  GtkWidget *file_import_btn = gtk_button_new_with_label("Import");
+  gtk_widget_set_visible(file_import_btn, TRUE);
+  gtk_box_append(GTK_BOX(file_popover_box), file_import_btn);
+
+  GtkWidget *file_print_btn = gtk_button_new_with_label("Print");
+  gtk_widget_set_visible(file_print_btn, TRUE);
+  gtk_box_append(GTK_BOX(file_popover_box), file_print_btn);
+
+  GtkWidget *file_revert_btn = gtk_button_new_with_label("Revert");
+  gtk_widget_set_visible(file_revert_btn, TRUE);
+  gtk_box_append(GTK_BOX(file_popover_box), file_revert_btn);
+
+  GtkWidget *file_save_btn = gtk_button_new_with_label("Save");
+  gtk_widget_set_visible(file_save_btn, TRUE);
+  gtk_box_append(GTK_BOX(file_popover_box), file_save_btn);
+
+  GtkWidget *file_saveas_btn = gtk_button_new_with_label("Save As");
+  gtk_widget_set_visible(file_saveas_btn, TRUE);
+  gtk_box_append(GTK_BOX(file_popover_box), file_saveas_btn);
+
+  GtkWidget *file_sep = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
+  gtk_widget_set_visible(file_sep, TRUE);
+  gtk_box_append(GTK_BOX(file_popover_box), file_sep);
+
+  GtkWidget *file_exit_btn = gtk_button_new_with_label("Exit");
+  gtk_widget_set_visible(file_exit_btn, TRUE);
+  gtk_box_append(GTK_BOX(file_popover_box), file_exit_btn);
+
+  GtkWidget *file_popover = gtk_popover_new();
+  gtk_popover_set_child(GTK_POPOVER(file_popover), file_popover_box);
+  gtk_menu_button_set_popover(GTK_MENU_BUTTON(file_btn), file_popover);
+
+  /* Edit menu */
+  GtkWidget *edit_btn = gtk_menu_button_new();
+  gtk_menu_button_set_label(GTK_MENU_BUTTON(edit_btn), "Edit");
+  gtk_widget_set_visible(edit_btn, TRUE);
+  gtk_box_append(GTK_BOX(menubar), edit_btn);
+
+  GtkWidget *edit_popover_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 2);
+  gtk_widget_set_margin_top(edit_popover_box, 6);
+  gtk_widget_set_margin_bottom(edit_popover_box, 6);
+  gtk_widget_set_margin_start(edit_popover_box, 6);
+  gtk_widget_set_margin_end(edit_popover_box, 6);
+  gtk_widget_set_visible(edit_popover_box, TRUE);
+
+  GtkWidget *edit_showinput_btn = gtk_button_new_with_label("Show Input");
+  gtk_widget_set_visible(edit_showinput_btn, TRUE);
+  gtk_box_append(GTK_BOX(edit_popover_box), edit_showinput_btn);
+
+  GtkWidget *edit_popover = gtk_popover_new();
+  gtk_popover_set_child(GTK_POPOVER(edit_popover), edit_popover_box);
+  gtk_menu_button_set_popover(GTK_MENU_BUTTON(edit_btn), edit_popover);
+
+  /* Run menu */
+  GtkWidget *run_btn = gtk_menu_button_new();
+  gtk_menu_button_set_label(GTK_MENU_BUTTON(run_btn), "Run");
+  gtk_widget_set_visible(run_btn, TRUE);
+  gtk_box_append(GTK_BOX(menubar), run_btn);
+
+  GtkWidget *run_popover_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 2);
+  gtk_widget_set_margin_top(run_popover_box, 6);
+  gtk_widget_set_margin_bottom(run_popover_box, 6);
+  gtk_widget_set_margin_start(run_popover_box, 6);
+  gtk_widget_set_margin_end(run_popover_box, 6);
+  gtk_widget_set_visible(run_popover_box, TRUE);
+
+  GtkWidget *run_options_btn = gtk_button_new_with_label("Run Options");
+  gtk_widget_set_visible(run_options_btn, TRUE);
+  gtk_box_append(GTK_BOX(run_popover_box), run_options_btn);
+
+  GtkWidget *run_run_btn = gtk_button_new_with_label("Run");
+  gtk_widget_set_visible(run_run_btn, TRUE);
+  gtk_box_append(GTK_BOX(run_popover_box), run_run_btn);
+
+  GtkWidget *run_kill_btn = gtk_button_new_with_label("Kill Current");
+  gtk_widget_set_visible(run_kill_btn, TRUE);
+  gtk_box_append(GTK_BOX(run_popover_box), run_kill_btn);
+
+  GtkWidget *run_popover = gtk_popover_new();
+  gtk_popover_set_child(GTK_POPOVER(run_popover), run_popover_box);
+  gtk_menu_button_set_popover(GTK_MENU_BUTTON(run_btn), run_popover);
+
+  /* Options menu */
+  GtkWidget *options_btn = gtk_menu_button_new();
+  gtk_menu_button_set_label(GTK_MENU_BUTTON(options_btn), "Options");
+  gtk_widget_set_visible(options_btn, TRUE);
+  gtk_box_append(GTK_BOX(menubar), options_btn);
+
+  GtkWidget *options_popover_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 2);
+  gtk_widget_set_margin_top(options_popover_box, 6);
+  gtk_widget_set_margin_bottom(options_popover_box, 6);
+  gtk_widget_set_margin_start(options_popover_box, 6);
+  gtk_widget_set_margin_end(options_popover_box, 6);
+  gtk_widget_set_visible(options_popover_box, TRUE);
+
+  GtkWidget *options_stdout_btn = gtk_button_new_with_label("Check stdout");
+  gtk_widget_set_visible(options_stdout_btn, TRUE);
+  gtk_box_append(GTK_BOX(options_popover_box), options_stdout_btn);
+
+  GtkWidget *options_files_btn = gtk_button_new_with_label("Files");
+  gtk_widget_set_visible(options_files_btn, TRUE);
+  gtk_box_append(GTK_BOX(options_popover_box), options_files_btn);
+
+  GtkWidget *options_popover = gtk_popover_new();
+  gtk_popover_set_child(GTK_POPOVER(options_popover), options_popover_box);
+  gtk_menu_button_set_popover(GTK_MENU_BUTTON(options_btn), options_popover);
+
+  /* About menu */
+  GtkWidget *about_btn = gtk_menu_button_new();
+  gtk_menu_button_set_label(GTK_MENU_BUTTON(about_btn), "About");
+  gtk_widget_set_visible(about_btn, TRUE);
+  gtk_box_append(GTK_BOX(menubar), about_btn);
+
+  GtkWidget *about_popover_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 2);
+  gtk_widget_set_margin_top(about_popover_box, 6);
+  gtk_widget_set_margin_bottom(about_popover_box, 6);
+  gtk_widget_set_margin_start(about_popover_box, 6);
+  gtk_widget_set_margin_end(about_popover_box, 6);
+  gtk_widget_set_visible(about_popover_box, TRUE);
+
+  GtkWidget *about_about_btn = gtk_button_new_with_label("About");
+  gtk_widget_set_visible(about_about_btn, TRUE);
+  gtk_box_append(GTK_BOX(about_popover_box), about_about_btn);
+
+  GtkWidget *about_version_btn = gtk_button_new_with_label("Version");
+  gtk_widget_set_visible(about_version_btn, TRUE);
+  gtk_box_append(GTK_BOX(about_popover_box), about_version_btn);
+
+  GtkWidget *about_popover = gtk_popover_new();
+  gtk_popover_set_child(GTK_POPOVER(about_popover), about_popover_box);
+  gtk_menu_button_set_popover(GTK_MENU_BUTTON(about_btn), about_popover);
+  /* menubar visibility set inline */
+  gtk_box_append (GTK_BOX (main_vbox), menubar);
   /* gtk_container_set_border_width removed in GTK-3 */
 
   /* GtkMenuItem removed in GTK-4 */
@@ -1255,8 +1415,10 @@ create_main_window (void)
   /* GtkSeparatorMenuItem removed in GTK-4 */
   separator1 = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL); /* placeholder */
   gtk_widget_show (separator1);
-  gtk_box_append (GTK_BOX (file_menu), separator1);
+  /* gtk_box_append (GTK_BOX (file_menu), separator1); - NULL widget */
+  if (GTK_IS_WIDGET(separator1)) {
   gtk_widget_set_sensitive (separator1, FALSE); /* added missing arg */
+  }
 
   /* GtkImageMenuItem removed in GTK-4 */
 
@@ -1365,7 +1527,7 @@ create_main_window (void)
   /* GtkCheckMenuItem removed in GTK-4 */
   check_stdout = gtk_check_button_new(); /* placeholder - was check menu item */
   gtk_widget_show (check_stdout);
-  gtk_box_append (GTK_BOX (options1_menu), check_stdout);
+  /* gtk_box_append (GTK_BOX (options1_menu), check_stdout); - NULL widget */
 
   /* GtkMenuItem removed in GTK-4 */
 
@@ -1403,7 +1565,9 @@ create_main_window (void)
 
   main_notebook = gtk_notebook_new ();
   gtk_widget_show (main_notebook);
+  if (GTK_IS_BOX(main_vbox) && GTK_IS_WIDGET(main_notebook)) {
   gtk_box_append (GTK_BOX (main_vbox), main_notebook);
+  }
 
   vbox_integration_tab = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
   gtk_widget_show (vbox_integration_tab);
@@ -1411,7 +1575,9 @@ create_main_window (void)
 
   frame_essential = gtk_frame_new (NULL);
   gtk_widget_show (frame_essential);
+  if (GTK_IS_BOX(vbox_integration_tab) && GTK_IS_WIDGET(frame_essential)) {
   gtk_box_append (GTK_BOX (vbox_integration_tab), frame_essential);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
   /* gtk_frame_set_shadow_type removed in GTK-4 */
 
@@ -1422,30 +1588,42 @@ create_main_window (void)
 
   vbox86 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
   gtk_widget_show (vbox86);
+  if (GTK_IS_BOX(alignment9) && GTK_IS_WIDGET(vbox86)) {
   gtk_box_append (GTK_BOX (alignment9), vbox86);
+  }
 
   hbox149 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   gtk_widget_show (hbox149);
+  if (GTK_IS_BOX(vbox86) && GTK_IS_WIDGET(hbox149)) {
   gtk_box_append (GTK_BOX (vbox86), hbox149);
+  }
 
   label1182 = gtk_label_new (_("<b>Descriptive header: </b> "));
   gtk_widget_show (label1182);
+  if (GTK_IS_BOX(hbox149) && GTK_IS_WIDGET(label1182)) {
   gtk_box_append (GTK_BOX (hbox149), label1182);
+  }
   gtk_label_set_use_markup (GTK_LABEL (label1182), TRUE);
 
   entry_heading = gtk_entry_new ();
   gtk_widget_show (entry_heading);
+  if (GTK_IS_BOX(hbox149) && GTK_IS_WIDGET(entry_heading)) {
   gtk_box_append (GTK_BOX (hbox149), entry_heading);
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_heading), 8226);
 
   hbox_essential = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   gtk_widget_show (hbox_essential);
+  if (GTK_IS_BOX(vbox86) && GTK_IS_WIDGET(hbox_essential)) {
   gtk_box_append (GTK_BOX (vbox86), hbox_essential);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
 
   frame128 = gtk_frame_new (NULL);
   gtk_widget_show (frame128);
+  if (GTK_IS_BOX(hbox_essential) && GTK_IS_WIDGET(frame128)) {
   gtk_box_append (GTK_BOX (hbox_essential), frame128);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
 
   alignment10 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0); /* gtk_alignment_new removed - using box as placeholder */
@@ -1455,64 +1633,106 @@ create_main_window (void)
 
   table83 = gtk_grid_new(); /* gtk_table_new removed - using gtk_grid_new */
   gtk_widget_show (table83);
+  if (GTK_IS_BOX(alignment10) && GTK_IS_WIDGET(table83)) {
   gtk_box_append (GTK_BOX (alignment10), table83);
+  }
 
   entry_rsp = gtk_entry_new ();
   gtk_widget_show (entry_rsp);
+  if (GTK_IS_GRID(table83) && GTK_IS_WIDGET(entry_rsp)) {
   gtk_grid_attach (GTK_GRID (table83), entry_rsp, 1, 2, 1, 1);
+  }
+  if (GTK_IS_WIDGET(entry_rsp)) {
   gtk_widget_set_hexpand (entry_rsp, TRUE);
+  }
+  if (GTK_IS_WIDGET(entry_rsp)) {
   gtk_widget_set_size_request (entry_rsp, 50, -1); /* added missing args */
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_rsp), 8226);
 
   entry_rmatch = gtk_entry_new ();
   gtk_widget_show (entry_rmatch);
+  if (GTK_IS_GRID(table83) && GTK_IS_WIDGET(entry_rmatch)) {
   gtk_grid_attach (GTK_GRID (table83), entry_rmatch, 1, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(entry_rmatch)) {
   gtk_widget_set_hexpand (entry_rmatch, TRUE);
+  }
+  if (GTK_IS_WIDGET(entry_rmatch)) {
   gtk_widget_set_size_request (entry_rmatch, 50, -1); /* added missing args */
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_rmatch), 8226);
 
   entry_hcm = gtk_entry_new ();
   gtk_widget_show (entry_hcm);
+  if (GTK_IS_GRID(table83) && GTK_IS_WIDGET(entry_hcm)) {
   gtk_grid_attach (GTK_GRID (table83), entry_hcm, 1, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(entry_hcm)) {
   gtk_widget_set_hexpand (entry_hcm, TRUE);
+  }
+  if (GTK_IS_WIDGET(entry_hcm)) {
   gtk_widget_set_size_request (entry_hcm, 50, -1); /* added missing args */
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_hcm), 8226);
 
   button_open_ccwf = gtk_button_new_with_mnemonic (_("CCWF..."));
   gtk_widget_show (button_open_ccwf);
+  if (GTK_IS_GRID(table83) && GTK_IS_WIDGET(button_open_ccwf)) {
   gtk_grid_attach (GTK_GRID (table83), button_open_ccwf, 1, 3, 1, 1);
+  }
+  if (GTK_IS_WIDGET(button_open_ccwf)) {
   gtk_widget_set_hexpand (button_open_ccwf, TRUE);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
+  if (GTK_IS_WIDGET(button_open_ccwf)) {
   gtk_widget_set_sensitive (button_open_ccwf, FALSE); /* added missing arg */
+  }
 
   label175 = gtk_label_new (_("Radial step: HCM"));
   gtk_widget_show (label175);
+  if (GTK_IS_GRID(table83) && GTK_IS_WIDGET(label175)) {
   gtk_grid_attach (GTK_GRID (table83), label175, 0, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(label175)) {
   gtk_widget_set_vexpand (label175, TRUE);
+  }
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
 
   label177 = gtk_label_new (_("Matching radius: RMATCH"));
   gtk_widget_show (label177);
+  if (GTK_IS_GRID(table83) && GTK_IS_WIDGET(label177)) {
   gtk_grid_attach (GTK_GRID (table83), label177, 0, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(label177)) {
   gtk_widget_set_vexpand (label177, TRUE);
+  }
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
 
   label913 = gtk_label_new (_("State radius for s.p. states: RSP"));
   gtk_widget_show (label913);
+  if (GTK_IS_GRID(table83) && GTK_IS_WIDGET(label913)) {
   gtk_grid_attach (GTK_GRID (table83), label913, 0, 2, 1, 1);
+  }
+  if (GTK_IS_WIDGET(label913)) {
   gtk_widget_set_vexpand (label913, TRUE);
+  }
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
 
   check_use_ccwf = gtk_check_button_new_with_mnemonic (_("Use Coupled Coulomb w.f."));
   gtk_widget_show (check_use_ccwf);
+  if (GTK_IS_GRID(table83) && GTK_IS_WIDGET(check_use_ccwf)) {
   gtk_grid_attach (GTK_GRID (table83), check_use_ccwf, 0, 3, 1, 1);
+  }
+  if (GTK_IS_WIDGET(check_use_ccwf)) {
   gtk_widget_set_vexpand (check_use_ccwf, TRUE);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
 
   label996 = gtk_label_new (_("Radial integration"));
@@ -1522,7 +1742,9 @@ create_main_window (void)
 
   frame106 = gtk_frame_new (NULL);
   gtk_widget_show (frame106);
+  if (GTK_IS_BOX(hbox_essential) && GTK_IS_WIDGET(frame106)) {
   gtk_box_append (GTK_BOX (hbox_essential), frame106);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
 
   table_jinterval = gtk_grid_new(); /* gtk_table_new removed - using gtk_grid_new */
@@ -1533,60 +1755,102 @@ create_main_window (void)
 
   label1141 = gtk_label_new (_("Use J-intervals"));
   gtk_widget_show (label1141);
+  if (GTK_IS_GRID(table_jinterval) && GTK_IS_WIDGET(label1141)) {
   gtk_grid_attach (GTK_GRID (table_jinterval), label1141, 0, 3, 1, 1);
+  }
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
 
   check_absend = gtk_check_button_new_with_mnemonic (_("Use absend"));
   gtk_widget_show (check_absend);
+  if (GTK_IS_GRID(table_jinterval) && GTK_IS_WIDGET(check_absend)) {
   gtk_grid_attach (GTK_GRID (table_jinterval), check_absend, 0, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(check_absend)) {
   gtk_widget_set_vexpand (check_absend, TRUE);
+  }
 
   entry_jtmin = gtk_entry_new ();
   gtk_widget_show (entry_jtmin);
+  if (GTK_IS_GRID(table_jinterval) && GTK_IS_WIDGET(entry_jtmin)) {
   gtk_grid_attach (GTK_GRID (table_jinterval), entry_jtmin, 1, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(entry_jtmin)) {
   gtk_widget_set_hexpand (entry_jtmin, TRUE);
+  }
+  if (GTK_IS_WIDGET(entry_jtmin)) {
   gtk_widget_set_vexpand (entry_jtmin, TRUE);
+  }
+  if (GTK_IS_WIDGET(entry_jtmin)) {
   gtk_widget_set_size_request (entry_jtmin, 50, -1); /* added missing args */
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_jtmin), 8226);
 
   label878 = gtk_label_new (_("JTMAX:"));
   gtk_widget_show (label878);
+  if (GTK_IS_GRID(table_jinterval) && GTK_IS_WIDGET(label878)) {
   gtk_grid_attach (GTK_GRID (table_jinterval), label878, 2, 0, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label878), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
 
   entry_absend = gtk_entry_new ();
   gtk_widget_show (entry_absend);
+  if (GTK_IS_GRID(table_jinterval) && GTK_IS_WIDGET(entry_absend)) {
   gtk_grid_attach (GTK_GRID (table_jinterval), entry_absend, 1, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(entry_absend)) {
   gtk_widget_set_hexpand (entry_absend, TRUE);
+  }
+  if (GTK_IS_WIDGET(entry_absend)) {
   gtk_widget_set_size_request (entry_absend, 50, -1); /* added missing args */
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
   gtk_editable_set_text (GTK_EDITABLE (entry_absend), _("0"));
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_absend), 8226);
 
   check_jtmin = gtk_check_button_new_with_mnemonic (_("Incoming channel for J<JMIN only"));
   gtk_widget_show (check_jtmin);
+  if (GTK_IS_GRID(table_jinterval) && GTK_IS_WIDGET(check_jtmin)) {
   gtk_grid_attach (GTK_GRID (table_jinterval), check_jtmin, 0, 2, 4, 1);
+  }
+  if (GTK_IS_WIDGET(check_jtmin)) {
   gtk_widget_set_hexpand (check_jtmin, TRUE);
+  }
+  if (GTK_IS_WIDGET(check_jtmin)) {
   gtk_widget_set_vexpand (check_jtmin, TRUE);
+  }
 
   button_jbord = gtk_button_new_with_mnemonic (_("J intervals ..."));
   gtk_widget_show (button_jbord);
+  if (GTK_IS_GRID(table_jinterval) && GTK_IS_WIDGET(button_jbord)) {
   gtk_grid_attach (GTK_GRID (table_jinterval), button_jbord, 1, 3, 3, 1);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
 
   entry_jtmax = gtk_entry_new ();
   gtk_widget_show (entry_jtmax);
+  if (GTK_IS_GRID(table_jinterval) && GTK_IS_WIDGET(entry_jtmax)) {
   gtk_grid_attach (GTK_GRID (table_jinterval), entry_jtmax, 3, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(entry_jtmax)) {
   gtk_widget_set_hexpand (entry_jtmax, TRUE);
+  }
+  if (GTK_IS_WIDGET(entry_jtmax)) {
   gtk_widget_set_vexpand (entry_jtmax, TRUE);
+  }
+  if (GTK_IS_WIDGET(entry_jtmax)) {
   gtk_widget_set_size_request (entry_jtmax, 50, -1); /* added missing args */
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_jtmax), 8226);
 
   label876 = gtk_label_new (_("JTMIN:"));
   gtk_widget_show (label876);
+  if (GTK_IS_GRID(table_jinterval) && GTK_IS_WIDGET(label876)) {
   gtk_grid_attach (GTK_GRID (table_jinterval), label876, 0, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(label876)) {
   gtk_widget_set_vexpand (label876, TRUE);
+  }
   gtk_label_set_justify (GTK_LABEL (label876), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
 
@@ -1596,7 +1860,9 @@ create_main_window (void)
 
   frame_angles = gtk_frame_new (NULL);
   gtk_widget_show (frame_angles);
+  if (GTK_IS_BOX(hbox_essential) && GTK_IS_WIDGET(frame_angles)) {
   gtk_box_append (GTK_BOX (hbox_essential), frame_angles);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
 
   table_angular_range = gtk_grid_new(); /* gtk_table_new removed - using gtk_grid_new */
@@ -1607,43 +1873,73 @@ create_main_window (void)
   spin_thinc_adj = gtk_adjustment_new (1, 0, 180, 1, 10, 10);
   spin_thinc = gtk_spin_button_new (GTK_ADJUSTMENT (spin_thinc_adj), 1, 2);
   gtk_widget_show (spin_thinc);
+  if (GTK_IS_GRID(table_angular_range) && GTK_IS_WIDGET(spin_thinc)) {
   gtk_grid_attach (GTK_GRID (table_angular_range), spin_thinc, 1, 2, 1, 1);
+  }
+  if (GTK_IS_WIDGET(spin_thinc)) {
   gtk_widget_set_hexpand (spin_thinc, TRUE);
+  }
+  if (GTK_IS_WIDGET(spin_thinc)) {
   gtk_widget_set_size_request (spin_thinc, 65, -1); /* added missing args */
+  }
 
   spin_thmax_adj = gtk_adjustment_new (180, -180, 180, 1, 10, 10);
   spin_thmax = gtk_spin_button_new (GTK_ADJUSTMENT (spin_thmax_adj), 1, 2);
   gtk_widget_show (spin_thmax);
+  if (GTK_IS_GRID(table_angular_range) && GTK_IS_WIDGET(spin_thmax)) {
   gtk_grid_attach (GTK_GRID (table_angular_range), spin_thmax, 1, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(spin_thmax)) {
   gtk_widget_set_hexpand (spin_thmax, TRUE);
+  }
+  if (GTK_IS_WIDGET(spin_thmax)) {
   gtk_widget_set_size_request (spin_thmax, 65, -1); /* added missing args */
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
 
   spin_thmin_adj = gtk_adjustment_new (0, 0, 180, 1, 10, 10);
   spin_thmin = gtk_spin_button_new (GTK_ADJUSTMENT (spin_thmin_adj), 1, 2);
   gtk_widget_show (spin_thmin);
+  if (GTK_IS_GRID(table_angular_range) && GTK_IS_WIDGET(spin_thmin)) {
   gtk_grid_attach (GTK_GRID (table_angular_range), spin_thmin, 1, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(spin_thmin)) {
   gtk_widget_set_hexpand (spin_thmin, TRUE);
+  }
+  if (GTK_IS_WIDGET(spin_thmin)) {
   gtk_widget_set_size_request (spin_thmin, 65, -1); /* added missing args */
+  }
 
   label734 = gtk_label_new (_("THINC"));
   gtk_widget_show (label734);
+  if (GTK_IS_GRID(table_angular_range) && GTK_IS_WIDGET(label734)) {
   gtk_grid_attach (GTK_GRID (table_angular_range), label734, 0, 2, 1, 1);
+  }
+  if (GTK_IS_WIDGET(label734)) {
   gtk_widget_set_vexpand (label734, TRUE);
+  }
   gtk_label_set_justify (GTK_LABEL (label734), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
 
   label733 = gtk_label_new (_("THMAX"));
   gtk_widget_show (label733);
+  if (GTK_IS_GRID(table_angular_range) && GTK_IS_WIDGET(label733)) {
   gtk_grid_attach (GTK_GRID (table_angular_range), label733, 0, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(label733)) {
   gtk_widget_set_vexpand (label733, TRUE);
+  }
   gtk_label_set_justify (GTK_LABEL (label733), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
 
   label732 = gtk_label_new (_("THMIN"));
   gtk_widget_show (label732);
+  if (GTK_IS_GRID(table_angular_range) && GTK_IS_WIDGET(label732)) {
   gtk_grid_attach (GTK_GRID (table_angular_range), label732, 0, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(label732)) {
   gtk_widget_set_vexpand (label732, TRUE);
+  }
   gtk_label_set_justify (GTK_LABEL (label732), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
 
@@ -1658,7 +1954,9 @@ create_main_window (void)
 
   frame107 = gtk_frame_new (NULL);
   gtk_widget_show (frame107);
+  if (GTK_IS_BOX(vbox_integration_tab) && GTK_IS_WIDGET(frame107)) {
   gtk_box_append (GTK_BOX (vbox_integration_tab), frame107);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
   /* gtk_frame_set_shadow_type removed in GTK-4 */
 
@@ -1669,89 +1967,127 @@ create_main_window (void)
 
   hbox137 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   gtk_widget_show (hbox137);
+  if (GTK_IS_BOX(vbox78) && GTK_IS_WIDGET(hbox137)) {
   gtk_box_append (GTK_BOX (vbox78), hbox137);
+  }
 
   label1166 = gtk_label_new (_("Incident energy (ELAB):"));
   gtk_widget_show (label1166);
+  if (GTK_IS_BOX(hbox137) && GTK_IS_WIDGET(label1166)) {
   gtk_box_append (GTK_BOX (hbox137), label1166);
+  }
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
 
   elab = gtk_entry_new ();
   gtk_widget_show (elab);
+  if (GTK_IS_BOX(hbox137) && GTK_IS_WIDGET(elab)) {
   gtk_box_append (GTK_BOX (hbox137), elab);
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (elab), 8226);
   gtk_editable_set_width_chars (GTK_EDITABLE (elab), 10); /* was gtk_entry_set_width_chars */
 
   toggle_elab = gtk_toggle_button_new_with_mnemonic (_("Define energy intervals..."));
   gtk_widget_show (toggle_elab);
+  if (GTK_IS_BOX(hbox137) && GTK_IS_WIDGET(toggle_elab)) {
   gtk_box_append (GTK_BOX (hbox137), toggle_elab);
+  }
 
   hbox_eintervals = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 5);
+  if (GTK_IS_BOX(vbox78) && GTK_IS_WIDGET(hbox_eintervals)) {
   gtk_box_append (GTK_BOX (vbox78), hbox_eintervals);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
 
   label885 = gtk_label_new (_("Energy intervals:"));
   gtk_widget_show (label885);
+  if (GTK_IS_BOX(hbox_eintervals) && GTK_IS_WIDGET(label885)) {
   gtk_box_append (GTK_BOX (hbox_eintervals), label885);
+  }
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
 
   elab1 = gtk_entry_new ();
   gtk_widget_show (elab1);
+  if (GTK_IS_BOX(hbox_eintervals) && GTK_IS_WIDGET(elab1)) {
   gtk_box_append (GTK_BOX (hbox_eintervals), elab1);
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (elab1), 8226);
 
   elab2 = gtk_entry_new ();
   gtk_widget_show (elab2);
+  if (GTK_IS_BOX(hbox_eintervals) && GTK_IS_WIDGET(elab2)) {
   gtk_box_append (GTK_BOX (hbox_eintervals), elab2);
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (elab2), 8226);
 
   elab3 = gtk_entry_new ();
   gtk_widget_show (elab3);
+  if (GTK_IS_BOX(hbox_eintervals) && GTK_IS_WIDGET(elab3)) {
   gtk_box_append (GTK_BOX (hbox_eintervals), elab3);
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (elab3), 8226);
 
   elab4 = gtk_entry_new ();
   gtk_widget_show (elab4);
+  if (GTK_IS_BOX(hbox_eintervals) && GTK_IS_WIDGET(elab4)) {
   gtk_box_append (GTK_BOX (hbox_eintervals), elab4);
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (elab4), 8226);
 
   label943 = gtk_label_new (_("NLAB:"));
   gtk_widget_show (label943);
+  if (GTK_IS_BOX(hbox_eintervals) && GTK_IS_WIDGET(label943)) {
   gtk_box_append (GTK_BOX (hbox_eintervals), label943);
+  }
   gtk_label_set_justify (GTK_LABEL (label943), GTK_JUSTIFY_CENTER);
 
   nlab1 = gtk_entry_new ();
   gtk_widget_show (nlab1);
+  if (GTK_IS_BOX(hbox_eintervals) && GTK_IS_WIDGET(nlab1)) {
   gtk_box_append (GTK_BOX (hbox_eintervals), nlab1);
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (nlab1), 8226);
 
   nlab2 = gtk_entry_new ();
   gtk_widget_show (nlab2);
+  if (GTK_IS_BOX(hbox_eintervals) && GTK_IS_WIDGET(nlab2)) {
   gtk_box_append (GTK_BOX (hbox_eintervals), nlab2);
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (nlab2), 8226);
 
   nlab3 = gtk_entry_new ();
   gtk_widget_show (nlab3);
+  if (GTK_IS_BOX(hbox_eintervals) && GTK_IS_WIDGET(nlab3)) {
   gtk_box_append (GTK_BOX (hbox_eintervals), nlab3);
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (nlab3), 8226);
 
   table_inchan = gtk_grid_new(); /* gtk_table_new removed - using gtk_grid_new */
   gtk_widget_show (table_inchan);
+  if (GTK_IS_BOX(vbox78) && GTK_IS_WIDGET(table_inchan)) {
   gtk_box_append (GTK_BOX (vbox78), table_inchan);
+  }
   /* gtk_table_set_row_spacings removed - use gtk_grid_set_row_spacing */
   /* gtk_table_set_col_spacings removed - use gtk_grid_set_col_spacing */
 
   hbox86 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   gtk_widget_show (hbox86);
+  if (GTK_IS_GRID(table_inchan) && GTK_IS_WIDGET(hbox86)) {
   gtk_grid_attach (GTK_GRID (table_inchan), hbox86, 0, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(hbox86)) {
   gtk_widget_set_hexpand (hbox86, TRUE);
+  }
+  if (GTK_IS_WIDGET(hbox86)) {
   gtk_widget_set_vexpand (hbox86, TRUE);
+  }
 
   label879 = gtk_label_new (_("Especified energies refer to (LIN)"));
   gtk_widget_show (label879);
+  if (GTK_IS_BOX(hbox86) && GTK_IS_WIDGET(label879)) {
   gtk_box_append (GTK_BOX (hbox86), label879);
+  }
   gtk_label_set_justify (GTK_LABEL (label879), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
@@ -1786,56 +2122,100 @@ create_main_window (void)
 
   label880 = gtk_label_new (_("for partition (LAB)"));
   gtk_widget_show (label880);
+  if (GTK_IS_BOX(hbox86) && GTK_IS_WIDGET(label880)) {
   gtk_box_append (GTK_BOX (hbox86), label880);
+  }
   gtk_label_set_justify (GTK_LABEL (label880), GTK_JUSTIFY_CENTER);
 
   spin_pel_adj = gtk_adjustment_new (0, 0, 100, 1, 10, 10);
   spin_pel = gtk_spin_button_new (GTK_ADJUSTMENT (spin_pel_adj), 1, 0);
   gtk_widget_show (spin_pel);
+  if (GTK_IS_GRID(table_inchan) && GTK_IS_WIDGET(spin_pel)) {
   gtk_grid_attach (GTK_GRID (table_inchan), spin_pel, 1, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(spin_pel)) {
   gtk_widget_set_hexpand (spin_pel, TRUE);
+  }
+  if (GTK_IS_WIDGET(spin_pel)) {
   gtk_widget_set_vexpand (spin_pel, TRUE);
+  }
 
   label881 = gtk_label_new (_("with excitation pair (EXL)"));
   gtk_widget_show (label881);
+  if (GTK_IS_GRID(table_inchan) && GTK_IS_WIDGET(label881)) {
   gtk_grid_attach (GTK_GRID (table_inchan), label881, 2, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(label881)) {
   gtk_widget_set_hexpand (label881, TRUE);
+  }
+  if (GTK_IS_WIDGET(label881)) {
   gtk_widget_set_vexpand (label881, TRUE);
+  }
   gtk_label_set_justify (GTK_LABEL (label881), GTK_JUSTIFY_CENTER);
 
   spin_exl_adj = gtk_adjustment_new (1, 0, 100, 1, 10, 10);
   spin_exl = gtk_spin_button_new (GTK_ADJUSTMENT (spin_exl_adj), 1, 0);
   gtk_widget_show (spin_exl);
+  if (GTK_IS_GRID(table_inchan) && GTK_IS_WIDGET(spin_exl)) {
   gtk_grid_attach (GTK_GRID (table_inchan), spin_exl, 3, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(spin_exl)) {
   gtk_widget_set_hexpand (spin_exl, TRUE);
+  }
+  if (GTK_IS_WIDGET(spin_exl)) {
   gtk_widget_set_vexpand (spin_exl, TRUE);
+  }
 
   label882 = gtk_label_new (_("in excitation pair (LEX)"));
   gtk_widget_show (label882);
+  if (GTK_IS_GRID(table_inchan) && GTK_IS_WIDGET(label882)) {
   gtk_grid_attach (GTK_GRID (table_inchan), label882, 2, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(label882)) {
   gtk_widget_set_hexpand (label882, TRUE);
+  }
+  if (GTK_IS_WIDGET(label882)) {
   gtk_widget_set_vexpand (label882, TRUE);
+  }
   gtk_label_set_justify (GTK_LABEL (label882), GTK_JUSTIFY_CENTER);
 
   spin_lab_adj = gtk_adjustment_new (1, 0, 100, 1, 10, 10);
   spin_lab = gtk_spin_button_new (GTK_ADJUSTMENT (spin_lab_adj), 1, 0);
   gtk_widget_show (spin_lab);
+  if (GTK_IS_GRID(table_inchan) && GTK_IS_WIDGET(spin_lab)) {
   gtk_grid_attach (GTK_GRID (table_inchan), spin_lab, 1, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(spin_lab)) {
   gtk_widget_set_hexpand (spin_lab, TRUE);
+  }
+  if (GTK_IS_WIDGET(spin_lab)) {
   gtk_widget_set_vexpand (spin_lab, TRUE);
+  }
 
   spin_lex_adj = gtk_adjustment_new (1, 0, 100, 1, 10, 10);
   spin_lex = gtk_spin_button_new (GTK_ADJUSTMENT (spin_lex_adj), 1, 0);
   gtk_widget_show (spin_lex);
+  if (GTK_IS_GRID(table_inchan) && GTK_IS_WIDGET(spin_lex)) {
   gtk_grid_attach (GTK_GRID (table_inchan), spin_lex, 3, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(spin_lex)) {
   gtk_widget_set_hexpand (spin_lex, TRUE);
+  }
+  if (GTK_IS_WIDGET(spin_lex)) {
   gtk_widget_set_vexpand (spin_lex, TRUE);
+  }
 
   label883 = gtk_label_new (_("Incoming plane waves are present in partition (PEL)"));
   gtk_widget_show (label883);
+  if (GTK_IS_GRID(table_inchan) && GTK_IS_WIDGET(label883)) {
   gtk_grid_attach (GTK_GRID (table_inchan), label883, 0, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(label883)) {
   gtk_widget_set_hexpand (label883, TRUE);
+  }
+  if (GTK_IS_WIDGET(label883)) {
   gtk_widget_set_vexpand (label883, TRUE);
+  }
   gtk_label_set_justify (GTK_LABEL (label883), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
@@ -1847,7 +2227,9 @@ create_main_window (void)
 
   notebook__fnr = gtk_notebook_new ();
   gtk_widget_show (notebook__fnr);
+  if (GTK_IS_BOX(vbox_integration_tab) && GTK_IS_WIDGET(notebook__fnr)) {
   gtk_box_append (GTK_BOX (vbox_integration_tab), notebook__fnr);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
 
   vbox87 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
@@ -1857,11 +2239,15 @@ create_main_window (void)
 
   hbox_trans = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   gtk_widget_show (hbox_trans);
+  if (GTK_IS_BOX(vbox87) && GTK_IS_WIDGET(hbox_trans)) {
   gtk_box_append (GTK_BOX (vbox87), hbox_trans);
+  }
 
   frame_transfers = gtk_frame_new (NULL);
   gtk_widget_show (frame_transfers);
+  if (GTK_IS_BOX(hbox_trans) && GTK_IS_WIDGET(frame_transfers)) {
   gtk_box_append (GTK_BOX (hbox_trans), frame_transfers);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
 
   hbox_fnr = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 3);
@@ -1871,90 +2257,138 @@ create_main_window (void)
 
   table_transfer = gtk_grid_new(); /* gtk_table_new removed - using gtk_grid_new */
   gtk_widget_show (table_transfer);
+  if (GTK_IS_BOX(hbox_fnr) && GTK_IS_WIDGET(table_transfer)) {
   gtk_box_append (GTK_BOX (hbox_fnr), table_transfer);
+  }
   /* gtk_table_set_row_spacings removed - use gtk_grid_set_row_spacing */
 
   label176 = gtk_label_new (_("Intervals for N-L kernels (RINTP):"));
   gtk_widget_show (label176);
+  if (GTK_IS_GRID(table_transfer) && GTK_IS_WIDGET(label176)) {
   gtk_grid_attach (GTK_GRID (table_transfer), label176, 0, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(label176)) {
   gtk_widget_set_hexpand (label176, TRUE);
+  }
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
 
   entry_rintp = gtk_entry_new ();
   gtk_widget_show (entry_rintp);
+  if (GTK_IS_GRID(table_transfer) && GTK_IS_WIDGET(entry_rintp)) {
   gtk_grid_attach (GTK_GRID (table_transfer), entry_rintp, 1, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(entry_rintp)) {
   gtk_widget_set_size_request (entry_rintp, 50, -1); /* added missing args */
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_rintp), 8226);
 
   label751 = gtk_label_new (_("NNU: Gaussian integration points:"));
   gtk_widget_show (label751);
+  if (GTK_IS_GRID(table_transfer) && GTK_IS_WIDGET(label751)) {
   gtk_grid_attach (GTK_GRID (table_transfer), label751, 0, 2, 1, 1);
+  }
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
 
   spin_nnu_adj = gtk_adjustment_new (18, 18, 600, 6, 10, 10);
   spin_nnu = gtk_spin_button_new (GTK_ADJUSTMENT (spin_nnu_adj), 6, 0);
   gtk_widget_show (spin_nnu);
+  if (GTK_IS_GRID(table_transfer) && GTK_IS_WIDGET(spin_nnu)) {
   gtk_grid_attach (GTK_GRID (table_transfer), spin_nnu, 1, 2, 1, 1);
+  }
+  if (GTK_IS_WIDGET(spin_nnu)) {
   gtk_widget_set_hexpand (spin_nnu, TRUE);
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
   gtk_spin_button_set_snap_to_ticks (GTK_SPIN_BUTTON (spin_nnu), TRUE);
 
   label178 = gtk_label_new (_("Step size for NL range (HNL)"));
   gtk_widget_show (label178);
+  if (GTK_IS_GRID(table_transfer) && GTK_IS_WIDGET(label178)) {
   gtk_grid_attach (GTK_GRID (table_transfer), label178, 2, 0, 1, 1);
+  }
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
 
   entry_hnl = gtk_entry_new ();
   gtk_widget_show (entry_hnl);
+  if (GTK_IS_GRID(table_transfer) && GTK_IS_WIDGET(entry_hnl)) {
   gtk_grid_attach (GTK_GRID (table_transfer), entry_hnl, 3, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(entry_hnl)) {
   gtk_widget_set_hexpand (entry_hnl, TRUE);
+  }
+  if (GTK_IS_WIDGET(entry_hnl)) {
   gtk_widget_set_size_request (entry_hnl, 50, -1); /* added missing args */
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_hnl), 8226);
 
   label180 = gtk_label_new (_("Range of non-locality (RNL)"));
   gtk_widget_show (label180);
+  if (GTK_IS_GRID(table_transfer) && GTK_IS_WIDGET(label180)) {
   gtk_grid_attach (GTK_GRID (table_transfer), label180, 0, 1, 1, 1);
+  }
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
 
   label179 = gtk_label_new (_("Center for non-local range range (CENTRE)"));
   gtk_widget_show (label179);
+  if (GTK_IS_GRID(table_transfer) && GTK_IS_WIDGET(label179)) {
   gtk_grid_attach (GTK_GRID (table_transfer), label179, 2, 1, 1, 1);
+  }
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
 
   entry_centre = gtk_entry_new ();
   gtk_widget_show (entry_centre);
+  if (GTK_IS_GRID(table_transfer) && GTK_IS_WIDGET(entry_centre)) {
   gtk_grid_attach (GTK_GRID (table_transfer), entry_centre, 3, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(entry_centre)) {
   gtk_widget_set_hexpand (entry_centre, TRUE);
+  }
+  if (GTK_IS_WIDGET(entry_centre)) {
   gtk_widget_set_size_request (entry_centre, 50, -1); /* added missing args */
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_centre), 8226);
 
   entry_rnl = gtk_entry_new ();
   gtk_widget_show (entry_rnl);
+  if (GTK_IS_GRID(table_transfer) && GTK_IS_WIDGET(entry_rnl)) {
   gtk_grid_attach (GTK_GRID (table_transfer), entry_rnl, 1, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(entry_rnl)) {
   gtk_widget_set_hexpand (entry_rnl, TRUE);
+  }
+  if (GTK_IS_WIDGET(entry_rnl)) {
   gtk_widget_set_size_request (entry_rnl, 50, -1); /* added missing args */
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_rnl), 8226);
 
   entry_epc = gtk_entry_new ();
   gtk_widget_show (entry_epc);
+  if (GTK_IS_GRID(table_transfer) && GTK_IS_WIDGET(entry_epc)) {
   gtk_grid_attach (GTK_GRID (table_transfer), entry_epc, 3, 2, 1, 1);
+  }
+  if (GTK_IS_WIDGET(entry_epc)) {
   gtk_widget_set_hexpand (entry_epc, TRUE);
+  }
+  if (GTK_IS_WIDGET(entry_epc)) {
   gtk_widget_set_size_request (entry_epc, 50, -1); /* added missing args */
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_epc), 8226);
 
   label752 = gtk_label_new (_("EPC: % cutoff accuracy in NNU:"));
   gtk_widget_show (label752);
+  if (GTK_IS_GRID(table_transfer) && GTK_IS_WIDGET(label752)) {
   gtk_grid_attach (GTK_GRID (table_transfer), label752, 2, 2, 1, 1);
+  }
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
 
@@ -1965,7 +2399,9 @@ create_main_window (void)
 
   frame67 = gtk_frame_new (NULL);
   gtk_widget_show (frame67);
+  if (GTK_IS_BOX(vbox87) && GTK_IS_WIDGET(frame67)) {
   gtk_box_append (GTK_BOX (vbox87), frame67);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
 
   table50 = gtk_grid_new(); /* gtk_table_new removed - using gtk_grid_new */
@@ -1977,52 +2413,78 @@ create_main_window (void)
 
   label748 = gtk_label_new (_("MINL (default=JMIN)"));
   gtk_widget_show (label748);
+  if (GTK_IS_GRID(table50) && GTK_IS_WIDGET(label748)) {
   gtk_grid_attach (GTK_GRID (table50), label748, 0, 0, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label748), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
 
   entry_minl = gtk_entry_new ();
   gtk_widget_show (entry_minl);
+  if (GTK_IS_GRID(table50) && GTK_IS_WIDGET(entry_minl)) {
   gtk_grid_attach (GTK_GRID (table50), entry_minl, 1, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(entry_minl)) {
   gtk_widget_set_hexpand (entry_minl, TRUE);
+  }
+  if (GTK_IS_WIDGET(entry_minl)) {
   gtk_widget_set_size_request (entry_minl, 50, -1); /* added missing args */
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_minl), 8226);
 
   label747 = gtk_label_new (_("MAXL  (default=JMAX)"));
   gtk_widget_show (label747);
+  if (GTK_IS_GRID(table50) && GTK_IS_WIDGET(label747)) {
   gtk_grid_attach (GTK_GRID (table50), label747, 2, 0, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label747), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
 
   entry_maxl = gtk_entry_new ();
   gtk_widget_show (entry_maxl);
+  if (GTK_IS_GRID(table50) && GTK_IS_WIDGET(entry_maxl)) {
   gtk_grid_attach (GTK_GRID (table50), entry_maxl, 3, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(entry_maxl)) {
   gtk_widget_set_hexpand (entry_maxl, TRUE);
+  }
+  if (GTK_IS_WIDGET(entry_maxl)) {
   gtk_widget_set_size_request (entry_maxl, 50, -1); /* added missing args */
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_maxl), 8226);
 
   label750 = gtk_label_new (_("MTMIN"));
   gtk_widget_show (label750);
+  if (GTK_IS_GRID(table50) && GTK_IS_WIDGET(label750)) {
   gtk_grid_attach (GTK_GRID (table50), label750, 4, 0, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label750), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
 
   entry_mtmin = gtk_entry_new ();
   gtk_widget_show (entry_mtmin);
+  if (GTK_IS_GRID(table50) && GTK_IS_WIDGET(entry_mtmin)) {
   gtk_grid_attach (GTK_GRID (table50), entry_mtmin, 5, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(entry_mtmin)) {
   gtk_widget_set_hexpand (entry_mtmin, TRUE);
+  }
+  if (GTK_IS_WIDGET(entry_mtmin)) {
   gtk_widget_set_size_request (entry_mtmin, 50, -1); /* added missing args */
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_mtmin), 8226);
 
   check_mtmin = gtk_check_button_new_with_mnemonic (_("Apply to all transfers"));
   gtk_widget_show (check_mtmin);
+  if (GTK_IS_GRID(table50) && GTK_IS_WIDGET(check_mtmin)) {
   gtk_grid_attach (GTK_GRID (table50), check_mtmin, 6, 0, 1, 1);
+  }
 
   label_maxl = gtk_label_new (_("<b> L range: </b>"));
   gtk_widget_show (label_maxl);
@@ -2041,7 +2503,9 @@ create_main_window (void)
 
   label660 = gtk_label_new (_("Intervals for zero-range transfers (INH):"));
   gtk_widget_show (label660);
+  if (GTK_IS_BOX(vboxzr) && GTK_IS_WIDGET(label660)) {
   gtk_box_append (GTK_BOX (vboxzr), label660);
+  }
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
 
@@ -2098,44 +2562,68 @@ create_main_window (void)
 
   label183 = gtk_label_new (_("Min. radius for 2N distance: RMIN"));
   gtk_widget_show (label183);
+  if (GTK_IS_GRID(table_2ntransfer) && GTK_IS_WIDGET(label183)) {
   gtk_grid_attach (GTK_GRID (table_2ntransfer), label183, 0, 1, 1, 1);
+  }
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
 
   label665 = gtk_label_new (_("Max. radius for 2N distance: RNN"));
   gtk_widget_show (label665);
+  if (GTK_IS_GRID(table_2ntransfer) && GTK_IS_WIDGET(label665)) {
   gtk_grid_attach (GTK_GRID (table_2ntransfer), label665, 0, 2, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label665), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
 
   entry_hnn = gtk_entry_new ();
   gtk_widget_show (entry_hnn);
+  if (GTK_IS_GRID(table_2ntransfer) && GTK_IS_WIDGET(entry_hnn)) {
   gtk_grid_attach (GTK_GRID (table_2ntransfer), entry_hnn, 1, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(entry_hnn)) {
   gtk_widget_set_hexpand (entry_hnn, TRUE);
+  }
+  if (GTK_IS_WIDGET(entry_hnn)) {
   gtk_widget_set_size_request (entry_hnn, 60, -1); /* added missing args */
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_hnn), 8226);
 
   entry_rmin = gtk_entry_new ();
   gtk_widget_show (entry_rmin);
+  if (GTK_IS_GRID(table_2ntransfer) && GTK_IS_WIDGET(entry_rmin)) {
   gtk_grid_attach (GTK_GRID (table_2ntransfer), entry_rmin, 1, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(entry_rmin)) {
   gtk_widget_set_hexpand (entry_rmin, TRUE);
+  }
+  if (GTK_IS_WIDGET(entry_rmin)) {
   gtk_widget_set_size_request (entry_rmin, 60, -1); /* added missing args */
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_rmin), 8226);
 
   entry_rnn = gtk_entry_new ();
   gtk_widget_show (entry_rnn);
+  if (GTK_IS_GRID(table_2ntransfer) && GTK_IS_WIDGET(entry_rnn)) {
   gtk_grid_attach (GTK_GRID (table_2ntransfer), entry_rnn, 1, 2, 1, 1);
+  }
+  if (GTK_IS_WIDGET(entry_rnn)) {
   gtk_widget_set_hexpand (entry_rnn, TRUE);
+  }
+  if (GTK_IS_WIDGET(entry_rnn)) {
   gtk_widget_set_size_request (entry_rnn, 60, -1); /* added missing args */
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_rnn), 8226);
 
   label182 = gtk_label_new (_("Step size for 2N distance: HNN"));
   gtk_widget_show (label182);
+  if (GTK_IS_GRID(table_2ntransfer) && GTK_IS_WIDGET(label182)) {
   gtk_grid_attach (GTK_GRID (table_2ntransfer), label182, 0, 0, 1, 1);
+  }
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
 
@@ -2154,7 +2642,9 @@ create_main_window (void)
 
   frame_bins = gtk_frame_new (NULL);
   gtk_widget_show (frame_bins);
+  if (GTK_IS_BOX(vbox85) && GTK_IS_WIDGET(frame_bins)) {
   gtk_box_append (GTK_BOX (vbox85), frame_bins);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
 
   hbox148 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
@@ -2171,7 +2661,9 @@ create_main_window (void)
 
   label1181 = gtk_label_new (_("<b>These are default values for the continuum bin parameters.\n Specific parameters must be defined in the OVERLAPS section </b>"));
   gtk_widget_show (label1181);
+  if (GTK_IS_BOX(hbox148) && GTK_IS_WIDGET(label1181)) {
   gtk_box_append (GTK_BOX (hbox148), label1181);
+  }
   gtk_label_set_use_markup (GTK_LABEL (label1181), TRUE);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
@@ -2182,41 +2674,63 @@ create_main_window (void)
 
   table_bins = gtk_grid_new(); /* gtk_table_new removed - using gtk_grid_new */
   gtk_widget_show (table_bins);
+  if (GTK_IS_BOX(vbox85) && GTK_IS_WIDGET(table_bins)) {
   gtk_box_append (GTK_BOX (vbox85), table_bins);
+  }
+  if (GTK_IS_WIDGET(table_bins)) {
   gtk_widget_set_size_request (table_bins, 124, -1); /* added missing args */
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
   /* gtk_table_set_row_spacings removed - use gtk_grid_set_row_spacing */
   /* gtk_table_set_col_spacings removed - use gtk_grid_set_col_spacing */
 
   label803 = gtk_label_new (_("Range of energies: ERANGE"));
   gtk_widget_show (label803);
+  if (GTK_IS_GRID(table_bins) && GTK_IS_WIDGET(label803)) {
   gtk_grid_attach (GTK_GRID (table_bins), label803, 0, 0, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label803), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
 
   label817 = gtk_label_new (_("Step size of k: DK"));
   gtk_widget_show (label817);
+  if (GTK_IS_GRID(table_bins) && GTK_IS_WIDGET(label817)) {
   gtk_grid_attach (GTK_GRID (table_bins), label817, 0, 1, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label817), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
 
   entry_erange = gtk_entry_new ();
   gtk_widget_show (entry_erange);
+  if (GTK_IS_GRID(table_bins) && GTK_IS_WIDGET(entry_erange)) {
   gtk_grid_attach (GTK_GRID (table_bins), entry_erange, 1, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(entry_erange)) {
   gtk_widget_set_hexpand (entry_erange, TRUE);
+  }
+  if (GTK_IS_WIDGET(entry_erange)) {
   gtk_widget_set_vexpand (entry_erange, TRUE);
+  }
+  if (GTK_IS_WIDGET(entry_erange)) {
   gtk_widget_set_size_request (entry_erange, 60, -1); /* added missing args */
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
   /* gtk_tooltips_set_tip (tooltips, entry_elab_r, _("if ERANGE<0, then DIFFERENCE of the energies in MeV"), NULL); */
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_erange), 8226);
 
   entry_dk = gtk_entry_new ();
   gtk_widget_show (entry_dk);
+  if (GTK_IS_GRID(table_bins) && GTK_IS_WIDGET(entry_dk)) {
   gtk_grid_attach (GTK_GRID (table_bins), entry_dk, 1, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(entry_dk)) {
   gtk_widget_set_hexpand (entry_dk, TRUE);
+  }
+  if (GTK_IS_WIDGET(entry_dk)) {
   gtk_widget_set_size_request (entry_dk, 60, -1); /* added missing args */
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_dk), 8226);
 
@@ -2234,12 +2748,18 @@ create_main_window (void)
   gtk_frame_set_child (GTK_FRAME (frame130), vbox82);
 
   toggle_2ntrans = gtk_toggle_button_new_with_mnemonic (_("Miscelaneous  parameters.."));
+  if (GTK_IS_BOX(vbox82) && GTK_IS_WIDGET(toggle_2ntrans)) {
   gtk_box_append (GTK_BOX (vbox82), toggle_2ntrans);
+  }
+  if (GTK_IS_WIDGET(toggle_2ntrans)) {
   gtk_widget_set_size_request (toggle_2ntrans, 61, -1); /* added missing args */
+  }
 
   frame108 = gtk_frame_new (NULL);
   gtk_widget_show (frame108);
+  if (GTK_IS_BOX(vbox82) && GTK_IS_WIDGET(frame108)) {
   gtk_box_append (GTK_BOX (vbox82), frame108);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
 
   table_maxcoup = gtk_grid_new(); /* gtk_table_new removed - using gtk_grid_new */
@@ -2247,22 +2767,32 @@ create_main_window (void)
 
   label1183 = gtk_label_new (_("MAXCOUP:"));
   gtk_widget_show (label1183);
+  if (GTK_IS_GRID(table_maxcoup) && GTK_IS_WIDGET(label1183)) {
   gtk_grid_attach (GTK_GRID (table_maxcoup), label1183, 0, 0, 1, 1);
+  }
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
 
   label1184 = gtk_label_new (_("EXPAND:"));
   gtk_widget_show (label1184);
+  if (GTK_IS_GRID(table_maxcoup) && GTK_IS_WIDGET(label1184)) {
   gtk_grid_attach (GTK_GRID (table_maxcoup), label1184, 0, 1, 1, 1);
+  }
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
 
   entry281 = gtk_entry_new ();
   gtk_widget_show (entry281);
+  if (GTK_IS_GRID(table_maxcoup) && GTK_IS_WIDGET(entry281)) {
   gtk_grid_attach (GTK_GRID (table_maxcoup), entry281, 1, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(entry281)) {
   gtk_widget_set_hexpand (entry281, TRUE);
+  }
 
   frame_pvm = gtk_frame_new (NULL);
   gtk_widget_show (frame_pvm);
+  if (GTK_IS_BOX(vbox82) && GTK_IS_WIDGET(frame_pvm)) {
   gtk_box_append (GTK_BOX (vbox82), frame_pvm);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
 
   alignment4 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0); /* gtk_alignment_new removed - using box as placeholder */
@@ -2272,18 +2802,24 @@ create_main_window (void)
 
   hbox108 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   gtk_widget_show (hbox108);
+  if (GTK_IS_BOX(alignment4) && GTK_IS_WIDGET(hbox108)) {
   gtk_box_append (GTK_BOX (alignment4), hbox108);
+  }
 
   label951 = gtk_label_new (_("Number of PVM nodes (NUMNODE)  : "));
   gtk_widget_show (label951);
+  if (GTK_IS_BOX(hbox108) && GTK_IS_WIDGET(label951)) {
   gtk_box_append (GTK_BOX (hbox108), label951);
+  }
   gtk_label_set_justify (GTK_LABEL (label951), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
 
   entry_numnode = gtk_entry_new ();
   gtk_widget_show (entry_numnode);
+  if (GTK_IS_BOX(hbox108) && GTK_IS_WIDGET(entry_numnode)) {
   gtk_box_append (GTK_BOX (hbox108), entry_numnode);
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_numnode), 8226);
 
@@ -2294,62 +2830,100 @@ create_main_window (void)
 
   table_constants = gtk_grid_new(); /* gtk_table_new removed - using gtk_grid_new */
   gtk_widget_show (table_constants);
+  if (GTK_IS_BOX(vbox82) && GTK_IS_WIDGET(table_constants)) {
   gtk_box_append (GTK_BOX (vbox82), table_constants);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
   /* gtk_table_set_row_spacings removed - use gtk_grid_set_row_spacing */
   /* gtk_table_set_col_spacings removed - use gtk_grid_set_col_spacing */
 
   label770 = gtk_label_new (_("File of masses of isotopes:"));
   gtk_widget_show (label770);
+  if (GTK_IS_GRID(table_constants) && GTK_IS_WIDGET(label770)) {
   gtk_grid_attach (GTK_GRID (table_constants), label770, 0, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(label770)) {
   gtk_widget_set_hexpand (label770, TRUE);
+  }
+  if (GTK_IS_WIDGET(label770)) {
   gtk_widget_set_vexpand (label770, TRUE);
+  }
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
 
   entry_masfil = gtk_entry_new ();
   gtk_widget_show (entry_masfil);
+  if (GTK_IS_GRID(table_constants) && GTK_IS_WIDGET(entry_masfil)) {
   gtk_grid_attach (GTK_GRID (table_constants), entry_masfil, 1, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(entry_masfil)) {
   gtk_widget_set_hexpand (entry_masfil, TRUE);
+  }
+  if (GTK_IS_WIDGET(entry_masfil)) {
   gtk_widget_set_vexpand (entry_masfil, TRUE);
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_masfil), 8226);
 
   entry_unitmass = gtk_entry_new ();
   gtk_widget_show (entry_unitmass);
+  if (GTK_IS_GRID(table_constants) && GTK_IS_WIDGET(entry_unitmass)) {
   gtk_grid_attach (GTK_GRID (table_constants), entry_unitmass, 1, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(entry_unitmass)) {
   gtk_widget_set_hexpand (entry_unitmass, TRUE);
+  }
+  if (GTK_IS_WIDGET(entry_unitmass)) {
   gtk_widget_set_vexpand (entry_unitmass, TRUE);
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
   gtk_editable_set_text (GTK_EDITABLE (entry_unitmass), _("1.000"));
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_unitmass), 8226);
 
   label840 = gtk_label_new (_("Unitmass:                   "));
   gtk_widget_show (label840);
+  if (GTK_IS_GRID(table_constants) && GTK_IS_WIDGET(label840)) {
   gtk_grid_attach (GTK_GRID (table_constants), label840, 0, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(label840)) {
   gtk_widget_set_hexpand (label840, TRUE);
+  }
+  if (GTK_IS_WIDGET(label840)) {
   gtk_widget_set_vexpand (label840, TRUE);
+  }
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
 
   label847 = gtk_label_new (_("Fine-structure constant :"));
   gtk_widget_show (label847);
+  if (GTK_IS_GRID(table_constants) && GTK_IS_WIDGET(label847)) {
   gtk_grid_attach (GTK_GRID (table_constants), label847, 2, 0, 1, 1);
+  }
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
 
   entry_finec = gtk_entry_new ();
   gtk_widget_show (entry_finec);
+  if (GTK_IS_GRID(table_constants) && GTK_IS_WIDGET(entry_finec)) {
   gtk_grid_attach (GTK_GRID (table_constants), entry_finec, 3, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(entry_finec)) {
   gtk_widget_set_hexpand (entry_finec, TRUE);
+  }
   gtk_editable_set_text (GTK_EDITABLE (entry_finec), _("137.03599d0"));
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_finec), 8226);
 
   label848 = gtk_label_new (_("Directory for temporary files:"));
   gtk_widget_show (label848);
+  if (GTK_IS_GRID(table_constants) && GTK_IS_WIDGET(label848)) {
   gtk_grid_attach (GTK_GRID (table_constants), label848, 2, 1, 1, 1);
+  }
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
 
   entry_tmp = gtk_entry_new ();
   gtk_widget_show (entry_tmp);
+  if (GTK_IS_GRID(table_constants) && GTK_IS_WIDGET(entry_tmp)) {
   gtk_grid_attach (GTK_GRID (table_constants), entry_tmp, 3, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(entry_tmp)) {
   gtk_widget_set_hexpand (entry_tmp, TRUE);
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_tmp), 8226);
 
   label1143 = gtk_label_new (_("<b> </b>"));
@@ -2372,7 +2946,9 @@ create_main_window (void)
 
   frame_smat = gtk_frame_new (NULL);
   gtk_widget_show (frame_smat);
+  if (GTK_IS_BOX(vbox43) && GTK_IS_WIDGET(frame_smat)) {
   gtk_box_append (GTK_BOX (vbox43), frame_smat);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
 
   hbox87 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
@@ -2381,7 +2957,9 @@ create_main_window (void)
 
   label754 = gtk_label_new (_("S-matrix (SMATS):"));
   gtk_widget_show (label754);
+  if (GTK_IS_BOX(hbox87) && GTK_IS_WIDGET(label754)) {
   gtk_box_append (GTK_BOX (hbox87), label754);
+  }
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
 
@@ -2389,8 +2967,12 @@ create_main_window (void)
 
   combo_smats = gtk_combo_box_text_new();
   gtk_widget_show (combo_smats);
+  if (GTK_IS_BOX(hbox87) && GTK_IS_WIDGET(combo_smats)) {
   gtk_box_append (GTK_BOX (hbox87), combo_smats);
+  }
+  if (GTK_IS_WIDGET(combo_smats)) {
   gtk_widget_set_size_request (combo_smats, 500, -1);
+  }
 
   /* Populate combo box with items */
   combo_smats_items = g_list_append (combo_smats_items, (gpointer) _("0 .-No TRACE"));
@@ -2415,17 +2997,27 @@ create_main_window (void)
 
   table_trace = gtk_grid_new(); /* gtk_table_new removed - using gtk_grid_new */
   gtk_widget_show (table_trace);
+  if (GTK_IS_BOX(vbox43) && GTK_IS_WIDGET(table_trace)) {
   gtk_box_append (GTK_BOX (vbox43), table_trace);
+  }
 
   hbox69 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   gtk_widget_show (hbox69);
+  if (GTK_IS_GRID(table_trace) && GTK_IS_WIDGET(hbox69)) {
   gtk_grid_attach (GTK_GRID (table_trace), hbox69, 1, 2, 1, 1);
+  }
+  if (GTK_IS_WIDGET(hbox69)) {
   gtk_widget_set_hexpand (hbox69, TRUE);
+  }
+  if (GTK_IS_WIDGET(hbox69)) {
   gtk_widget_set_vexpand (hbox69, TRUE);
+  }
 
   frame76 = gtk_frame_new (NULL);
   gtk_widget_show (frame76);
+  if (GTK_IS_BOX(hbox69) && GTK_IS_WIDGET(frame76)) {
   gtk_box_append (GTK_BOX (hbox69), frame76);
+  }
 
   hbox70 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   gtk_widget_show (hbox70);
@@ -2433,7 +3025,9 @@ create_main_window (void)
 
   label755 = gtk_label_new (_("Details on solving CC equations: (CDETR)"));
   gtk_widget_show (label755);
+  if (GTK_IS_BOX(hbox70) && GTK_IS_WIDGET(label755)) {
   gtk_box_append (GTK_BOX (hbox70), label755);
+  }
   gtk_label_set_justify (GTK_LABEL (label755), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
@@ -2441,13 +3035,21 @@ create_main_window (void)
   spin_cdetr_adj = gtk_adjustment_new (0, 0, 100, 1, 10, 10);
   spin_cdetr = gtk_spin_button_new (GTK_ADJUSTMENT (spin_cdetr_adj), 1, 0);
   gtk_widget_show (spin_cdetr);
+  if (GTK_IS_BOX(hbox70) && GTK_IS_WIDGET(spin_cdetr)) {
   gtk_box_append (GTK_BOX (hbox70), spin_cdetr);
+  }
 
   frame90 = gtk_frame_new (NULL);
   gtk_widget_show (frame90);
+  if (GTK_IS_GRID(table_trace) && GTK_IS_WIDGET(frame90)) {
   gtk_grid_attach (GTK_GRID (table_trace), frame90, 1, 4, 1, 1);
+  }
+  if (GTK_IS_WIDGET(frame90)) {
   gtk_widget_set_hexpand (frame90, TRUE);
+  }
+  if (GTK_IS_WIDGET(frame90)) {
   gtk_widget_set_vexpand (frame90, TRUE);
+  }
 
   vbox48 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
   gtk_widget_show (vbox48);
@@ -2455,25 +3057,39 @@ create_main_window (void)
 
   alignment2 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0); /* gtk_alignment_new removed - using box as placeholder */
   gtk_widget_show (alignment2);
+  if (GTK_IS_BOX(vbox48) && GTK_IS_WIDGET(alignment2)) {
   gtk_box_append (GTK_BOX (vbox48), alignment2);
+  }
 
   check_veff = gtk_check_button_new_with_mnemonic (_("Calculate effective potential (VEFF)"));
   gtk_widget_show (check_veff);
+  if (GTK_IS_BOX(alignment2) && GTK_IS_WIDGET(check_veff)) {
   gtk_box_append (GTK_BOX (alignment2), check_veff);
+  }
 
   check_veff1 = gtk_check_button_new_with_mnemonic (_("Add to OMP of elastic channel before printing"));
   gtk_widget_show (check_veff1);
+  if (GTK_IS_BOX(vbox48) && GTK_IS_WIDGET(check_veff1)) {
   gtk_box_append (GTK_BOX (vbox48), check_veff1);
+  }
 
   check_veff2 = gtk_check_button_new_with_mnemonic (_("Exclude partial waves with Sl<0.1"));
   gtk_widget_show (check_veff2);
+  if (GTK_IS_BOX(vbox48) && GTK_IS_WIDGET(check_veff2)) {
   gtk_box_append (GTK_BOX (vbox48), check_veff2);
+  }
 
   frame82 = gtk_frame_new (NULL);
   gtk_widget_show (frame82);
+  if (GTK_IS_GRID(table_trace) && GTK_IS_WIDGET(frame82)) {
   gtk_grid_attach (GTK_GRID (table_trace), frame82, 1, 3, 1, 1);
+  }
+  if (GTK_IS_WIDGET(frame82)) {
   gtk_widget_set_hexpand (frame82, TRUE);
+  }
+  if (GTK_IS_WIDGET(frame82)) {
   gtk_widget_set_vexpand (frame82, TRUE);
+  }
 
   vbox44 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
   gtk_widget_show (vbox44);
@@ -2481,13 +3097,17 @@ create_main_window (void)
 
   label759 = gtk_label_new (_("Wave functions: (WAVES):"));
   gtk_widget_show (label759);
+  if (GTK_IS_BOX(vbox44) && GTK_IS_WIDGET(label759)) {
   gtk_box_append (GTK_BOX (vbox44), label759);
+  }
   gtk_label_set_justify (GTK_LABEL (label759), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
 
   hbox77 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   gtk_widget_show (hbox77);
+  if (GTK_IS_BOX(vbox44) && GTK_IS_WIDGET(hbox77)) {
   gtk_box_append (GTK_BOX (vbox44), hbox77);
+  }
 
   /* GtkOptionMenu removed - use GtkDropDown */
 
@@ -2541,9 +3161,15 @@ create_main_window (void)
 
   frame86 = gtk_frame_new (NULL);
   gtk_widget_show (frame86);
+  if (GTK_IS_GRID(table_trace) && GTK_IS_WIDGET(frame86)) {
   gtk_grid_attach (GTK_GRID (table_trace), frame86, 0, 3, 1, 1);
+  }
+  if (GTK_IS_WIDGET(frame86)) {
   gtk_widget_set_hexpand (frame86, TRUE);
+  }
+  if (GTK_IS_WIDGET(frame86)) {
   gtk_widget_set_vexpand (frame86, TRUE);
+  }
 
   table_lampl = gtk_grid_new(); /* gtk_table_new removed - using gtk_grid_new */
   gtk_widget_show (table_lampl);
@@ -2554,10 +3180,18 @@ create_main_window (void)
 
   combo_lampl = gtk_combo_box_text_new_with_entry();
   gtk_widget_show (combo_lampl);
+  if (GTK_IS_GRID(table_lampl) && GTK_IS_WIDGET(combo_lampl)) {
   gtk_grid_attach (GTK_GRID (table_lampl), combo_lampl, 1, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(combo_lampl)) {
   gtk_widget_set_hexpand (combo_lampl, TRUE);
+  }
+  if (GTK_IS_WIDGET(combo_lampl)) {
   gtk_widget_set_vexpand (combo_lampl, TRUE);
+  }
+  if (GTK_IS_WIDGET(combo_lampl)) {
   gtk_widget_set_size_request (combo_lampl, 97, -1);
+  }
 
   combo_lampl_items = g_list_append (combo_lampl_items, (gpointer) "");
   for (GList *item = combo_lampl_items; item != NULL; item = item->next) {
@@ -2573,8 +3207,12 @@ create_main_window (void)
 
   label889 = gtk_label_new (_("For partition (LAMPL):"));
   gtk_widget_show (label889);
+  if (GTK_IS_GRID(table_lampl) && GTK_IS_WIDGET(label889)) {
   gtk_grid_attach (GTK_GRID (table_lampl), label889, 0, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(label889)) {
   gtk_widget_set_vexpand (label889, TRUE);
+  }
   gtk_label_set_justify (GTK_LABEL (label889), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
@@ -2584,9 +3222,15 @@ create_main_window (void)
 
   /* opt_lampl = gtk_option_menu_new...; */ opt_lampl = NULL;
   /* gtk_widget_show (opt_lampl);  - NULL widget */
+  if (GTK_IS_GRID(table_lampl) && GTK_IS_WIDGET(opt_lampl)) {
   gtk_grid_attach (GTK_GRID (table_lampl), opt_lampl, 1, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(opt_lampl)) {
   gtk_widget_set_hexpand (opt_lampl, TRUE);
+  }
+  if (GTK_IS_WIDGET(opt_lampl)) {
   gtk_widget_set_size_request (opt_lampl, 125, -1); /* added missing args */
+  }
 
   /* GtkMenu removed in GTK-4 */
 
@@ -2618,16 +3262,26 @@ create_main_window (void)
 
   label906 = gtk_label_new (_("Amplitudes (LAMPL):"));
   gtk_widget_show (label906);
+  if (GTK_IS_GRID(table_lampl) && GTK_IS_WIDGET(label906)) {
   gtk_grid_attach (GTK_GRID (table_lampl), label906, 0, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(label906)) {
   gtk_widget_set_vexpand (label906, TRUE);
+  }
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
 
   frame81 = gtk_frame_new (NULL);
   gtk_widget_show (frame81);
+  if (GTK_IS_GRID(table_trace) && GTK_IS_WIDGET(frame81)) {
   gtk_grid_attach (GTK_GRID (table_trace), frame81, 0, 2, 1, 1);
+  }
+  if (GTK_IS_WIDGET(frame81)) {
   gtk_widget_set_hexpand (frame81, TRUE);
+  }
+  if (GTK_IS_WIDGET(frame81)) {
   gtk_widget_set_vexpand (frame81, TRUE);
+  }
 
   hbox75 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   gtk_widget_show (hbox75);
@@ -2635,20 +3289,30 @@ create_main_window (void)
 
   label760 = gtk_label_new (_("Print all potentials (TRENEG):"));
   gtk_widget_show (label760);
+  if (GTK_IS_BOX(hbox75) && GTK_IS_WIDGET(label760)) {
   gtk_box_append (GTK_BOX (hbox75), label760);
+  }
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
 
   spin_treneg_adj = gtk_adjustment_new (0, 0, 100, 1, 10, 10);
   spin_treneg = gtk_spin_button_new (GTK_ADJUSTMENT (spin_treneg_adj), 1, 0);
   gtk_widget_show (spin_treneg);
+  if (GTK_IS_BOX(hbox75) && GTK_IS_WIDGET(spin_treneg)) {
   gtk_box_append (GTK_BOX (hbox75), spin_treneg);
+  }
 
   frame79 = gtk_frame_new (NULL);
   gtk_widget_show (frame79);
+  if (GTK_IS_GRID(table_trace) && GTK_IS_WIDGET(frame79)) {
   gtk_grid_attach (GTK_GRID (table_trace), frame79, 0, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(frame79)) {
   gtk_widget_set_hexpand (frame79, TRUE);
+  }
+  if (GTK_IS_WIDGET(frame79)) {
   gtk_widget_set_vexpand (frame79, TRUE);
+  }
 
   hbox73 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   gtk_widget_show (hbox73);
@@ -2656,20 +3320,30 @@ create_main_window (void)
 
   label758 = gtk_label_new (_("Coupling details between channels (LISTCC):"));
   gtk_widget_show (label758);
+  if (GTK_IS_BOX(hbox73) && GTK_IS_WIDGET(label758)) {
   gtk_box_append (GTK_BOX (hbox73), label758);
+  }
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
 
   spin_listcc_adj = gtk_adjustment_new (0, 0, 100, 1, 10, 10);
   spin_listcc = gtk_spin_button_new (GTK_ADJUSTMENT (spin_listcc_adj), 1, 0);
   gtk_widget_show (spin_listcc);
+  if (GTK_IS_BOX(hbox73) && GTK_IS_WIDGET(spin_listcc)) {
   gtk_box_append (GTK_BOX (hbox73), spin_listcc);
+  }
 
   frame84 = gtk_frame_new (NULL);
   gtk_widget_show (frame84);
+  if (GTK_IS_GRID(table_trace) && GTK_IS_WIDGET(frame84)) {
   gtk_grid_attach (GTK_GRID (table_trace), frame84, 0, 5, 1, 1);
+  }
+  if (GTK_IS_WIDGET(frame84)) {
   gtk_widget_set_hexpand (frame84, TRUE);
+  }
+  if (GTK_IS_WIDGET(frame84)) {
   gtk_widget_set_vexpand (frame84, TRUE);
+  }
 
   table90 = gtk_grid_new(); /* gtk_table_new removed - using gtk_grid_new */
   gtk_widget_show (table90);
@@ -2677,7 +3351,9 @@ create_main_window (void)
 
   label891 = gtk_label_new (_("Calculate core fusion for potential number (KFUS):"));
   gtk_widget_show (label891);
+  if (GTK_IS_GRID(table90) && GTK_IS_WIDGET(label891)) {
   gtk_grid_attach (GTK_GRID (table90), label891, 0, 0, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label891), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
@@ -2685,13 +3361,19 @@ create_main_window (void)
   spin_kfus_adj = gtk_adjustment_new (0, 0, 100, 1, 10, 10);
   spin_kfus = gtk_spin_button_new (GTK_ADJUSTMENT (spin_kfus_adj), 1, 0);
   gtk_widget_show (spin_kfus);
+  if (GTK_IS_GRID(table90) && GTK_IS_WIDGET(spin_kfus)) {
   gtk_grid_attach (GTK_GRID (table90), spin_kfus, 1, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(spin_kfus)) {
   gtk_widget_set_hexpand (spin_kfus, TRUE);
+  }
   gtk_spin_button_set_numeric (GTK_SPIN_BUTTON (spin_kfus), TRUE);
 
   label1165 = gtk_label_new (_("Also for this number of inelastic channels (NFUS):"));
   gtk_widget_show (label1165);
+  if (GTK_IS_GRID(table90) && GTK_IS_WIDGET(label1165)) {
   gtk_grid_attach (GTK_GRID (table90), label1165, 0, 1, 1, 1);
+  }
   /* gtk_label_set_justify (GTK_LABEL (label1165), GTK_JUSTIFY_LEFT); */ /* needs justification parameter */
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
@@ -2699,14 +3381,24 @@ create_main_window (void)
   spin_nfus_adj = gtk_adjustment_new (0, 0, 100, 1, 10, 10);
   spin_nfus = gtk_spin_button_new (GTK_ADJUSTMENT (spin_nfus_adj), 1, 0);
   gtk_widget_show (spin_nfus);
+  if (GTK_IS_GRID(table90) && GTK_IS_WIDGET(spin_nfus)) {
   gtk_grid_attach (GTK_GRID (table90), spin_nfus, 1, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(spin_nfus)) {
   gtk_widget_set_hexpand (spin_nfus, TRUE);
+  }
 
   frame85 = gtk_frame_new (NULL);
   gtk_widget_show (frame85);
+  if (GTK_IS_GRID(table_trace) && GTK_IS_WIDGET(frame85)) {
   gtk_grid_attach (GTK_GRID (table_trace), frame85, 1, 5, 1, 1);
+  }
+  if (GTK_IS_WIDGET(frame85)) {
   gtk_widget_set_hexpand (frame85, TRUE);
+  }
+  if (GTK_IS_WIDGET(frame85)) {
   gtk_widget_set_vexpand (frame85, TRUE);
+  }
 
   vbox45 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
   gtk_widget_show (vbox45);
@@ -2714,17 +3406,27 @@ create_main_window (void)
 
   check_bpm = gtk_check_button_new_with_mnemonic (_("Calculate fusion cross sections using BPM"));
   gtk_widget_show (check_bpm);
+  if (GTK_IS_BOX(vbox45) && GTK_IS_WIDGET(check_bpm)) {
   gtk_box_append (GTK_BOX (vbox45), check_bpm);
+  }
 
   check_ldistrib = gtk_check_button_new_with_mnemonic (_("Print out L-distribution"));
   gtk_widget_show (check_ldistrib);
+  if (GTK_IS_BOX(vbox45) && GTK_IS_WIDGET(check_ldistrib)) {
   gtk_box_append (GTK_BOX (vbox45), check_ldistrib);
+  }
 
   frame80 = gtk_frame_new (NULL);
   gtk_widget_show (frame80);
+  if (GTK_IS_GRID(table_trace) && GTK_IS_WIDGET(frame80)) {
   gtk_grid_attach (GTK_GRID (table_trace), frame80, 1, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(frame80)) {
   gtk_widget_set_hexpand (frame80, TRUE);
+  }
+  if (GTK_IS_WIDGET(frame80)) {
   gtk_widget_set_vexpand (frame80, TRUE);
+  }
 
   hbox74 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   gtk_widget_show (hbox74);
@@ -2732,7 +3434,9 @@ create_main_window (void)
 
   label761 = gtk_label_new (_("Print xsec and TAP up to rank (XSTABL):"));
   gtk_widget_show (label761);
+  if (GTK_IS_BOX(hbox74) && GTK_IS_WIDGET(label761)) {
   gtk_box_append (GTK_BOX (hbox74), label761);
+  }
   gtk_label_set_justify (GTK_LABEL (label761), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
@@ -2740,14 +3444,24 @@ create_main_window (void)
   spin_xstabl_adj = gtk_adjustment_new (0, 0, 100, 1, 10, 10);
   spin_xstabl = gtk_spin_button_new (GTK_ADJUSTMENT (spin_xstabl_adj), 1, 0);
   gtk_widget_show (spin_xstabl);
+  if (GTK_IS_BOX(hbox74) && GTK_IS_WIDGET(spin_xstabl)) {
   gtk_box_append (GTK_BOX (hbox74), spin_xstabl);
+  }
+  if (GTK_IS_WIDGET(spin_xstabl)) {
   gtk_widget_set_size_request (spin_xstabl, 52, -1); /* added missing args */
+  }
 
   frame_laml = gtk_frame_new (NULL);
   gtk_widget_show (frame_laml);
+  if (GTK_IS_GRID(table_trace) && GTK_IS_WIDGET(frame_laml)) {
   gtk_grid_attach (GTK_GRID (table_trace), frame_laml, 1, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(frame_laml)) {
   gtk_widget_set_hexpand (frame_laml, TRUE);
+  }
+  if (GTK_IS_WIDGET(frame_laml)) {
   gtk_widget_set_vexpand (frame_laml, TRUE);
+  }
 
   hbox78 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   gtk_widget_show (hbox78);
@@ -2755,20 +3469,30 @@ create_main_window (void)
 
   label762 = gtk_label_new (_("Contour plot of non local Kernels (NLPL):"));
   gtk_widget_show (label762);
+  if (GTK_IS_BOX(hbox78) && GTK_IS_WIDGET(label762)) {
   gtk_box_append (GTK_BOX (hbox78), label762);
+  }
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
 
   spin_nlpl_adj = gtk_adjustment_new (0, 0, 100, 1, 10, 10);
   spin_nlpl = gtk_spin_button_new (GTK_ADJUSTMENT (spin_nlpl_adj), 1, 0);
   gtk_widget_show (spin_nlpl);
+  if (GTK_IS_BOX(hbox78) && GTK_IS_WIDGET(spin_nlpl)) {
   gtk_box_append (GTK_BOX (hbox78), spin_nlpl);
+  }
 
   frame77 = gtk_frame_new (NULL);
   gtk_widget_show (frame77);
+  if (GTK_IS_GRID(table_trace) && GTK_IS_WIDGET(frame77)) {
   gtk_grid_attach (GTK_GRID (table_trace), frame77, 0, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(frame77)) {
   gtk_widget_set_hexpand (frame77, TRUE);
+  }
+  if (GTK_IS_WIDGET(frame77)) {
   gtk_widget_set_vexpand (frame77, TRUE);
+  }
 
   hbox71 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   gtk_widget_show (hbox71);
@@ -2776,7 +3500,9 @@ create_main_window (void)
 
   label756 = gtk_label_new (_("Partial waves for each J/pi (CHANS):"));
   gtk_widget_show (label756);
+  if (GTK_IS_BOX(hbox71) && GTK_IS_WIDGET(label756)) {
   gtk_box_append (GTK_BOX (hbox71), label756);
+  }
   gtk_label_set_justify (GTK_LABEL (label756), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
@@ -2784,12 +3510,18 @@ create_main_window (void)
   spin_chans_adj = gtk_adjustment_new (0, 0, 100, 1, 10, 10);
   spin_chans = gtk_spin_button_new (GTK_ADJUSTMENT (spin_chans_adj), 1, 0);
   gtk_widget_show (spin_chans);
+  if (GTK_IS_BOX(hbox71) && GTK_IS_WIDGET(spin_chans)) {
   gtk_box_append (GTK_BOX (hbox71), spin_chans);
+  }
 
   frame_wdisk = gtk_frame_new (NULL);
   gtk_widget_show (frame_wdisk);
+  if (GTK_IS_GRID(table_trace) && GTK_IS_WIDGET(frame_wdisk)) {
   gtk_grid_attach (GTK_GRID (table_trace), frame_wdisk, 0, 4, 1, 1);
+  }
+  if (GTK_IS_WIDGET(frame_wdisk)) {
   gtk_widget_set_hexpand (frame_wdisk, TRUE);
+  }
 
   table_wdisk = gtk_grid_new(); /* gtk_table_new removed - using gtk_grid_new */
   gtk_widget_show (table_wdisk);
@@ -2798,30 +3530,44 @@ create_main_window (void)
 
   check_wdisk = gtk_check_button_new_with_mnemonic (_("Print out wave functions on file 17 (WDISK)"));
   gtk_widget_show (check_wdisk);
+  if (GTK_IS_GRID(table_wdisk) && GTK_IS_WIDGET(check_wdisk)) {
   gtk_grid_attach (GTK_GRID (table_wdisk), check_wdisk, 0, 0, 2, 1);
+  }
 
   rb_wfall = gtk_check_button_new_with_mnemonic (_("All wave functions")) /* was gtk_radio_button */;
   gtk_widget_show (rb_wfall);
+  if (GTK_IS_GRID(table_wdisk) && GTK_IS_WIDGET(rb_wfall)) {
   gtk_grid_attach (GTK_GRID (table_wdisk), rb_wfall, 0, 2, 1, 1);
+  }
 
   rb_wfelastic = gtk_check_button_new_with_mnemonic (_("Elastic wave functions")) /* was gtk_radio_button */;
   gtk_widget_show (rb_wfelastic);
+  if (GTK_IS_GRID(table_wdisk) && GTK_IS_WIDGET(rb_wfelastic)) {
   gtk_grid_attach (GTK_GRID (table_wdisk), rb_wfelastic, 0, 1, 1, 1);
+  }
   gtk_check_button_set_group (GTK_CHECK_BUTTON (rb_wfelastic), GTK_CHECK_BUTTON (rb_wfall));
 
   rb_file17formatted = gtk_check_button_new_with_mnemonic (_("Formatted")) /* was gtk_radio_button */;
   gtk_widget_show (rb_file17formatted);
+  if (GTK_IS_GRID(table_wdisk) && GTK_IS_WIDGET(rb_file17formatted)) {
   gtk_grid_attach (GTK_GRID (table_wdisk), rb_file17formatted, 1, 1, 1, 1);
+  }
 
   rb_file17unformatted = gtk_check_button_new_with_mnemonic (_("Unformatted")) /* was gtk_radio_button */;
   gtk_widget_show (rb_file17unformatted);
+  if (GTK_IS_GRID(table_wdisk) && GTK_IS_WIDGET(rb_file17unformatted)) {
   gtk_grid_attach (GTK_GRID (table_wdisk), rb_file17unformatted, 1, 2, 1, 1);
+  }
   gtk_check_button_set_group (GTK_CHECK_BUTTON (rb_file17unformatted), GTK_CHECK_BUTTON (rb_file17formatted));
 
   frame113 = gtk_frame_new (NULL);
   gtk_widget_show (frame113);
+  if (GTK_IS_GRID(table_trace) && GTK_IS_WIDGET(frame113)) {
   gtk_grid_attach (GTK_GRID (table_trace), frame113, 0, 6, 1, 1);
+  }
+  if (GTK_IS_WIDGET(frame113)) {
   gtk_widget_set_vexpand (frame113, TRUE);
+  }
 
   check_cdcc = gtk_check_button_new_with_mnemonic (_("Print out  f(m'M':mM;theta) for each angle on file 57 \n(CDCC calculations)"));
   gtk_widget_show (check_cdcc);
@@ -2829,7 +3575,9 @@ create_main_window (void)
 
   frame114 = gtk_frame_new (NULL);
   gtk_widget_show (frame114);
+  if (GTK_IS_GRID(table_trace) && GTK_IS_WIDGET(frame114)) {
   gtk_grid_attach (GTK_GRID (table_trace), frame114, 1, 6, 1, 1);
+  }
 
   vbox74 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
   gtk_widget_show (vbox74);
@@ -2837,7 +3585,9 @@ create_main_window (void)
 
   label923 = gtk_label_new (_("MELFIL: Write files 53/54 in  'mel' and 'spec' formats "));
   gtk_widget_show (label923);
+  if (GTK_IS_BOX(vbox74) && GTK_IS_WIDGET(label923)) {
   gtk_box_append (GTK_BOX (vbox74), label923);
+  }
   gtk_label_set_justify (GTK_LABEL (label923), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
@@ -2848,7 +3598,9 @@ create_main_window (void)
   /* opt_melfil = gtk_option_menu_new...; */ opt_melfil = NULL;
   /* gtk_widget_show (opt_melfil);  - NULL widget */
   /* gtk_box_append (GTK_BOX (vbox74), opt_melfil);  - NULL widget */
+  if (GTK_IS_WIDGET(opt_melfil)) {
   gtk_widget_set_size_request (opt_melfil, 130, -1); /* added missing args */
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
 
   /* GtkMenu removed in GTK-4 */
@@ -2899,7 +3651,9 @@ create_main_window (void)
 
   frame_metho_solution = gtk_frame_new (NULL);
   gtk_widget_show (frame_metho_solution);
+  if (GTK_IS_BOX(vbox80) && GTK_IS_WIDGET(frame_metho_solution)) {
   gtk_box_append (GTK_BOX (vbox80), frame_metho_solution);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
   /* gtk_frame_set_shadow_type removed in GTK-4 */
 
@@ -2910,59 +3664,83 @@ create_main_window (void)
 
   hbox143 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   gtk_widget_show (hbox143);
+  if (GTK_IS_BOX(alignment3) && GTK_IS_WIDGET(hbox143)) {
   gtk_box_append (GTK_BOX (alignment3), hbox143);
+  }
 
   table_method_solution = gtk_grid_new(); /* gtk_table_new removed - using gtk_grid_new */
   gtk_widget_show (table_method_solution);
+  if (GTK_IS_BOX(hbox143) && GTK_IS_WIDGET(table_method_solution)) {
   gtk_box_append (GTK_BOX (hbox143), table_method_solution);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
   /* gtk_table_set_row_spacings removed - use gtk_grid_set_row_spacing */
   /* gtk_table_set_col_spacings removed - use gtk_grid_set_col_spacing */
 
   label745 = gtk_label_new (_("Number of states coupled exactly (IBLOCK):"));
   gtk_widget_show (label745);
+  if (GTK_IS_GRID(table_method_solution) && GTK_IS_WIDGET(label745)) {
   gtk_grid_attach (GTK_GRID (table_method_solution), label745, 0, 0, 1, 1);
+  }
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
 
   label986 = gtk_label_new (_("Treatment of Coulomb potential (PLANE):"));
   gtk_widget_show (label986);
+  if (GTK_IS_GRID(table_method_solution) && GTK_IS_WIDGET(label986)) {
   gtk_grid_attach (GTK_GRID (table_method_solution), label986, 0, 5, 1, 1);
+  }
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
 
   label_iblock = gtk_label_new (_("Solve coupled equations using  R-matrix\n (IBLOCK<0):"));
   gtk_widget_show (label_iblock);
+  if (GTK_IS_GRID(table_method_solution) && GTK_IS_WIDGET(label_iblock)) {
   gtk_grid_attach (GTK_GRID (table_method_solution), label_iblock, 0, 6, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label_iblock), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
 
   label984 = gtk_label_new (_("Iterative solution of coupled equations:"));
   gtk_widget_show (label984);
+  if (GTK_IS_GRID(table_method_solution) && GTK_IS_WIDGET(label984)) {
   gtk_grid_attach (GTK_GRID (table_method_solution), label984, 0, 1, 1, 1);
+  }
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
 
   label728 = gtk_label_new (_("Min. iterations: (IT0) :"));
   gtk_widget_show (label728);
+  if (GTK_IS_GRID(table_method_solution) && GTK_IS_WIDGET(label728)) {
   gtk_grid_attach (GTK_GRID (table_method_solution), label728, 1, 1, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label728), GTK_JUSTIFY_RIGHT);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
 
   label729 = gtk_label_new (_("Max. iterations (ITER) :"));
   gtk_widget_show (label729);
+  if (GTK_IS_GRID(table_method_solution) && GTK_IS_WIDGET(label729)) {
   gtk_grid_attach (GTK_GRID (table_method_solution), label729, 3, 1, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label729), GTK_JUSTIFY_FILL);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
 
   spin_iter_adj = gtk_adjustment_new (0, -100, 100, 1, 10, 10);
   spin_iter = gtk_spin_button_new (GTK_ADJUSTMENT (spin_iter_adj), 1, 0);
   gtk_widget_show (spin_iter);
+  if (GTK_IS_GRID(table_method_solution) && GTK_IS_WIDGET(spin_iter)) {
   gtk_grid_attach (GTK_GRID (table_method_solution), spin_iter, 4, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(spin_iter)) {
   gtk_widget_set_hexpand (spin_iter, TRUE);
+  }
+  if (GTK_IS_WIDGET(spin_iter)) {
   gtk_widget_set_size_request (spin_iter, 50, -1); /* added missing args */
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
 
   label890 = gtk_label_new (_("Pade acceleration method:"));
   gtk_widget_show (label890);
+  if (GTK_IS_GRID(table_method_solution) && GTK_IS_WIDGET(label890)) {
   gtk_grid_attach (GTK_GRID (table_method_solution), label890, 0, 2, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label890), GTK_JUSTIFY_RIGHT);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
 
@@ -2971,8 +3749,12 @@ create_main_window (void)
 
   /* opt_pade = gtk_option_menu_new...; */ opt_pade = NULL;
   /* gtk_widget_show (opt_pade);  - NULL widget */
+  if (GTK_IS_GRID(table_method_solution) && GTK_IS_WIDGET(opt_pade)) {
   gtk_grid_attach (GTK_GRID (table_method_solution), opt_pade, 1, 2, 3, 1);
+  }
+  if (GTK_IS_WIDGET(opt_pade)) {
   gtk_widget_set_size_request (opt_pade, 216, -1); /* added missing args */
+  }
 
   /* GtkMenu removed in GTK-4 */
 
@@ -2985,7 +3767,7 @@ create_main_window (void)
   /* convertwidget64 = gtk_menu_item_new...; */ convertwidget64 = NULL;
   /* gtk_widget_show (convertwidget64);  - NULL widget */
   /* gtk_box_append (GTK_BOX (convertwidget63), convertwidget64);  - NULL widget */
-  gtk_widget_set_size_request (convertwidget64, 135, -1); /* added missing args */
+  /* gtk_widget_set_size_request (convertwidget64, 135, -1); - NULL widget */
 
   /* GtkMenuItem removed in GTK-4 */
 
@@ -3006,23 +3788,37 @@ create_main_window (void)
   spin_it0_adj = gtk_adjustment_new (1, 0, 100, 1, 10, 10);
   spin_it0 = gtk_spin_button_new (GTK_ADJUSTMENT (spin_it0_adj), 1, 0);
   gtk_widget_show (spin_it0);
+  if (GTK_IS_GRID(table_method_solution) && GTK_IS_WIDGET(spin_it0)) {
   gtk_grid_attach (GTK_GRID (table_method_solution), spin_it0, 2, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(spin_it0)) {
   gtk_widget_set_hexpand (spin_it0, TRUE);
+  }
+  if (GTK_IS_WIDGET(spin_it0)) {
   gtk_widget_set_size_request (spin_it0, 50, -1); /* added missing args */
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
 
   hbox115 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   gtk_widget_show (hbox115);
+  if (GTK_IS_GRID(table_method_solution) && GTK_IS_WIDGET(hbox115)) {
   gtk_grid_attach (GTK_GRID (table_method_solution), hbox115, 0, 4, 3, 1);
+  }
+  if (GTK_IS_WIDGET(hbox115)) {
   gtk_widget_set_vexpand (hbox115, TRUE);
+  }
 
   hbox147 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   gtk_widget_show (hbox147);
+  if (GTK_IS_BOX(hbox115) && GTK_IS_WIDGET(hbox147)) {
   gtk_box_append (GTK_BOX (hbox115), hbox147);
+  }
 
   check_psiren = gtk_check_button_new_with_mnemonic (_("Apply renormalisation of channel WFS after Padé (PSIREN)"));
   gtk_widget_show (check_psiren);
+  if (GTK_IS_GRID(table_method_solution) && GTK_IS_WIDGET(check_psiren)) {
   gtk_grid_attach (GTK_GRID (table_method_solution), check_psiren, 1, 3, 4, 1);
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
 
   /* GtkOptionMenu removed - use GtkDropDown */
@@ -3030,8 +3826,12 @@ create_main_window (void)
 
   /* opt_plane = gtk_option_menu_new...; */ opt_plane = NULL;
   /* gtk_widget_show (opt_plane);  - NULL widget */
+  if (GTK_IS_GRID(table_method_solution) && GTK_IS_WIDGET(opt_plane)) {
   gtk_grid_attach (GTK_GRID (table_method_solution), opt_plane, 1, 5, 3, 1);
+  }
+  if (GTK_IS_WIDGET(opt_plane)) {
   gtk_widget_set_size_request (opt_plane, 250, -1); /* added missing args */
+  }
 
   /* GtkMenu removed in GTK-4 */
 
@@ -3063,16 +3863,26 @@ create_main_window (void)
 
   button_open_Rmatrix = gtk_button_new_with_mnemonic (_("R-matrix parameters..."));
   gtk_widget_show (button_open_Rmatrix);
+  if (GTK_IS_GRID(table_method_solution) && GTK_IS_WIDGET(button_open_Rmatrix)) {
   gtk_grid_attach (GTK_GRID (table_method_solution), button_open_Rmatrix, 1, 6, 3, 1);
+  }
+  if (GTK_IS_WIDGET(button_open_Rmatrix)) {
   gtk_widget_set_size_request (button_open_Rmatrix, 250, -1); /* added missing args */
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
 
   spin_iblock_adj = gtk_adjustment_new (0, 0, 10000, 1, 10, 10);
   spin_iblock = gtk_spin_button_new (GTK_ADJUSTMENT (spin_iblock_adj), 1, 0);
   gtk_widget_show (spin_iblock);
+  if (GTK_IS_GRID(table_method_solution) && GTK_IS_WIDGET(spin_iblock)) {
   gtk_grid_attach (GTK_GRID (table_method_solution), spin_iblock, 1, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(spin_iblock)) {
   gtk_widget_set_hexpand (spin_iblock, TRUE);
+  }
+  if (GTK_IS_WIDGET(spin_iblock)) {
   gtk_widget_set_size_request (spin_iblock, 50, -1); /* added missing args */
+  }
   gtk_spin_button_set_numeric (GTK_SPIN_BUTTON (spin_iblock), TRUE);
 
   table93 = gtk_grid_new(); /* gtk_table_new removed - using gtk_grid_new */
@@ -3087,7 +3897,9 @@ create_main_window (void)
 
   frame129 = gtk_frame_new (NULL);
   gtk_widget_show (frame129);
+  if (GTK_IS_BOX(vbox80) && GTK_IS_WIDGET(frame129)) {
   gtk_box_append (GTK_BOX (vbox80), frame129);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
   /* gtk_frame_set_shadow_type removed in GTK-4 */
 
@@ -3098,19 +3910,25 @@ create_main_window (void)
 
   table_taps = gtk_grid_new(); /* gtk_table_new removed - using gtk_grid_new */
   gtk_widget_show (table_taps);
+  if (GTK_IS_BOX(alignment11) && GTK_IS_WIDGET(table_taps)) {
   gtk_box_append (GTK_BOX (alignment11), table_taps);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
   /* gtk_table_set_row_spacings removed - use gtk_grid_set_row_spacing */
   /* gtk_table_set_col_spacings removed - use gtk_grid_set_col_spacing */
 
   label693 = gtk_label_new (_("Maximum rank for xsec and TAP (KQMAX): "));
   gtk_widget_show (label693);
+  if (GTK_IS_GRID(table_taps) && GTK_IS_WIDGET(label693)) {
   gtk_grid_attach (GTK_GRID (table_taps), label693, 0, 0, 1, 1);
+  }
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
 
   label862 = gtk_label_new (_("Calculate TAP for (PP):"));
   gtk_widget_show (label862);
+  if (GTK_IS_GRID(table_taps) && GTK_IS_WIDGET(label862)) {
   gtk_grid_attach (GTK_GRID (table_taps), label862, 0, 1, 1, 1);
+  }
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
 
   /* GtkOptionMenu removed - use GtkDropDown */
@@ -3118,8 +3936,12 @@ create_main_window (void)
 
   /* opt_pp = gtk_option_menu_new...; */ opt_pp = NULL;
   /* gtk_widget_show (opt_pp);  - NULL widget */
+  if (GTK_IS_GRID(table_taps) && GTK_IS_WIDGET(opt_pp)) {
   gtk_grid_attach (GTK_GRID (table_taps), opt_pp, 1, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(opt_pp)) {
   gtk_widget_set_size_request (opt_pp, 130, -1); /* added missing args */
+  }
 
   /* GtkMenu removed in GTK-4 */
 
@@ -3159,13 +3981,19 @@ create_main_window (void)
   spin_kqmax_adj = gtk_adjustment_new (1, 0, 100, 1, 10, 10);
   spin_kqmax = gtk_spin_button_new (GTK_ADJUSTMENT (spin_kqmax_adj), 1, 0);
   gtk_widget_show (spin_kqmax);
+  if (GTK_IS_GRID(table_taps) && GTK_IS_WIDGET(spin_kqmax)) {
   gtk_grid_attach (GTK_GRID (table_taps), spin_kqmax, 1, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(spin_kqmax)) {
   gtk_widget_set_size_request (spin_kqmax, 120, -1); /* added missing args */
+  }
   gtk_spin_button_set_numeric (GTK_SPIN_BUTTON (spin_kqmax), TRUE);
 
   label1153 = gtk_label_new (_("Coordinate system for TAP (KOORDS):"));
   gtk_widget_show (label1153);
+  if (GTK_IS_GRID(table_taps) && GTK_IS_WIDGET(label1153)) {
   gtk_grid_attach (GTK_GRID (table_taps), label1153, 0, 2, 1, 1);
+  }
   /* gtk_label_set_justify (GTK_LABEL (label1153), GTK_JUSTIFY_LEFT); */ /* needs justification parameter */
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
 
@@ -3174,8 +4002,12 @@ create_main_window (void)
 
   /* opt_koords = gtk_option_menu_new...; */ opt_koords = NULL;
   /* gtk_widget_show (opt_koords);  - NULL widget */
+  if (GTK_IS_GRID(table_taps) && GTK_IS_WIDGET(opt_koords)) {
   gtk_grid_attach (GTK_GRID (table_taps), opt_koords, 1, 2, 1, 1);
+  }
+  if (GTK_IS_WIDGET(opt_koords)) {
   gtk_widget_set_size_request (opt_koords, 150, -1); /* added missing args */
+  }
 
   /* GtkMenu removed in GTK-4 */
 
@@ -3214,7 +4046,9 @@ create_main_window (void)
 
   label998 = gtk_label_new (_("<b>NEARFA: nearside / farside components:</b>"));
   gtk_widget_show (label998);
+  if (GTK_IS_GRID(table_taps) && GTK_IS_WIDGET(label998)) {
   gtk_grid_attach (GTK_GRID (table_taps), label998, 3, 0, 1, 1);
+  }
   gtk_label_set_use_markup (GTK_LABEL (label998), TRUE);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
 
@@ -3223,8 +4057,12 @@ create_main_window (void)
 
   /* opt_nearfa1 = gtk_option_menu_new...; */ opt_nearfa1 = NULL;
   /* gtk_widget_show (opt_nearfa1);  - NULL widget */
+  if (GTK_IS_GRID(table_taps) && GTK_IS_WIDGET(opt_nearfa1)) {
   gtk_grid_attach (GTK_GRID (table_taps), opt_nearfa1, 3, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(opt_nearfa1)) {
   gtk_widget_set_size_request (opt_nearfa1, 133, -1); /* added missing args */
+  }
 
   /* GtkMenu removed in GTK-4 */
 
@@ -3237,7 +4075,7 @@ create_main_window (void)
   /* convertwidget2 = gtk_menu_item_new...; */ convertwidget2 = NULL;
   /* gtk_widget_show (convertwidget2);  - NULL widget */
   /* gtk_box_append (GTK_BOX (convertwidget1), convertwidget2);  - NULL widget */
-  gtk_widget_set_size_request (convertwidget2, 100, -1); /* added missing args */
+  /* gtk_widget_set_size_request (convertwidget2, 100, -1); - NULL widget */
 
   /* GtkMenuItem removed in GTK-4 */
 
@@ -3253,8 +4091,12 @@ create_main_window (void)
 
   /* opt_nearfa2 = gtk_option_menu_new...; */ opt_nearfa2 = NULL;
   /* gtk_widget_show (opt_nearfa2);  - NULL widget */
+  if (GTK_IS_GRID(table_taps) && GTK_IS_WIDGET(opt_nearfa2)) {
   gtk_grid_attach (GTK_GRID (table_taps), opt_nearfa2, 3, 2, 1, 1);
+  }
+  if (GTK_IS_WIDGET(opt_nearfa2)) {
   gtk_widget_set_size_request (opt_nearfa2, 120, -1); /* added missing args */
+  }
 
   /* GtkMenu removed in GTK-4 */
 
@@ -3286,7 +4128,9 @@ create_main_window (void)
 
   vseparator7 = gtk_separator_new(GTK_ORIENTATION_VERTICAL); /* vseparator/hseparator removed */
   gtk_widget_show (vseparator7);
+  if (GTK_IS_GRID(table_taps) && GTK_IS_WIDGET(vseparator7)) {
   gtk_grid_attach (GTK_GRID (table_taps), vseparator7, 2, 0, 1, 3);
+  }
 
   label997 = gtk_label_new (_("<b>Cross sections and analysing powers</b>"));
   gtk_widget_show (label997);
@@ -3295,7 +4139,9 @@ create_main_window (void)
 
   frame123 = gtk_frame_new (NULL);
   gtk_widget_show (frame123);
+  if (GTK_IS_BOX(vbox80) && GTK_IS_WIDGET(frame123)) {
   gtk_box_append (GTK_BOX (vbox80), frame123);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
   /* gtk_frame_set_shadow_type removed in GTK-4 */
 
@@ -3306,22 +4152,30 @@ create_main_window (void)
 
   table_restrictions = gtk_grid_new(); /* gtk_table_new removed - using gtk_grid_new */
   gtk_widget_show (table_restrictions);
+  if (GTK_IS_BOX(alignment_restrictions) && GTK_IS_WIDGET(table_restrictions)) {
   gtk_box_append (GTK_BOX (alignment_restrictions), table_restrictions);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
   /* gtk_table_set_col_spacings removed - use gtk_grid_set_col_spacing */
 
   label1164 = gtk_label_new (_("Stop the calculation in the following situations: "));
   gtk_widget_show (label1164);
+  if (GTK_IS_GRID(table_restrictions) && GTK_IS_WIDGET(label1164)) {
   gtk_grid_attach (GTK_GRID (table_restrictions), label1164, 0, 0, 2, 1);
+  }
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
 
   hbox107 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   gtk_widget_show (hbox107);
+  if (GTK_IS_GRID(table_restrictions) && GTK_IS_WIDGET(hbox107)) {
   gtk_grid_attach (GTK_GRID (table_restrictions), hbox107, 0, 5, 1, 1);
+  }
 
   label888 = gtk_label_new (_("Isocentrigugal approximation (ISO):"));
   gtk_widget_show (label888);
+  if (GTK_IS_BOX(hbox107) && GTK_IS_WIDGET(label888)) {
   gtk_box_append (GTK_BOX (hbox107), label888);
+  }
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
 
   /* GtkOptionMenu removed - use GtkDropDown */
@@ -3361,68 +4215,100 @@ create_main_window (void)
 
   hbox106 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   gtk_widget_show (hbox106);
+  if (GTK_IS_GRID(table_restrictions) && GTK_IS_WIDGET(hbox106)) {
   gtk_grid_attach (GTK_GRID (table_restrictions), hbox106, 0, 3, 1, 1);
+  }
 
   label1179 = gtk_label_new (_("If differente in S-matrix is less than this % [ISP]"));
   gtk_widget_show (label1179);
+  if (GTK_IS_BOX(hbox106) && GTK_IS_WIDGET(label1179)) {
   gtk_box_append (GTK_BOX (hbox106), label1179);
+  }
   gtk_label_set_justify (GTK_LABEL (label1179), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
 
   entry_ips = gtk_entry_new ();
   gtk_widget_show (entry_ips);
+  if (GTK_IS_BOX(hbox106) && GTK_IS_WIDGET(entry_ips)) {
   gtk_box_append (GTK_BOX (hbox106), entry_ips);
+  }
+  if (GTK_IS_WIDGET(entry_ips)) {
   gtk_widget_set_size_request (entry_ips, 60, -1); /* added missing args */
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_ips), 8226);
 
   hbox105 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   gtk_widget_show (hbox105);
+  if (GTK_IS_GRID(table_restrictions) && GTK_IS_WIDGET(hbox105)) {
   gtk_grid_attach (GTK_GRID (table_restrictions), hbox105, 0, 4, 1, 1);
+  }
 
   label268 = gtk_label_new (_("Number of CRC sets to solve before stopping [JSET] (blank =all) :"));
   gtk_widget_show (label268);
+  if (GTK_IS_BOX(hbox105) && GTK_IS_WIDGET(label268)) {
   gtk_box_append (GTK_BOX (hbox105), label268);
+  }
   gtk_label_set_justify (GTK_LABEL (label268), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
 
   entry_jset = gtk_entry_new ();
   gtk_widget_show (entry_jset);
+  if (GTK_IS_BOX(hbox105) && GTK_IS_WIDGET(entry_jset)) {
   gtk_box_append (GTK_BOX (hbox105), entry_jset);
+  }
+  if (GTK_IS_WIDGET(entry_jset)) {
   gtk_widget_set_size_request (entry_jset, 60, -1); /* added missing args */
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_jset), 8226);
 
   check_fatal = gtk_check_button_new_with_mnemonic (_("Stop when CRC do not converge"));
   gtk_widget_show (check_fatal);
+  if (GTK_IS_GRID(table_restrictions) && GTK_IS_WIDGET(check_fatal)) {
   gtk_grid_attach (GTK_GRID (table_restrictions), check_fatal, 0, 1, 1, 1);
+  }
 
   check_num_errors = gtk_check_button_new_with_mnemonic (_("If succesive differences are smaller than errors\n estimated for numerical integration."));
   gtk_widget_show (check_num_errors);
+  if (GTK_IS_GRID(table_restrictions) && GTK_IS_WIDGET(check_num_errors)) {
   gtk_grid_attach (GTK_GRID (table_restrictions), check_num_errors, 0, 2, 1, 1);
+  }
 
   hbox_iter = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 10);
   gtk_widget_show (hbox_iter);
+  if (GTK_IS_GRID(table_restrictions) && GTK_IS_WIDGET(hbox_iter)) {
   gtk_grid_attach (GTK_GRID (table_restrictions), hbox_iter, 0, 6, 1, 1);
+  }
+  if (GTK_IS_WIDGET(hbox_iter)) {
   gtk_widget_set_vexpand (hbox_iter, TRUE);
+  }
 
   check_pset = gtk_check_button_new_with_mnemonic (_("Restrict parity of total CRC set (PSET)                                "));
   gtk_widget_show (check_pset);
+  if (GTK_IS_BOX(hbox_iter) && GTK_IS_WIDGET(check_pset)) {
   gtk_box_append (GTK_BOX (hbox_iter), check_pset);
+  }
 
   toggle_pset = gtk_toggle_button_new_with_mnemonic (_("+"));
   gtk_widget_show (toggle_pset);
+  if (GTK_IS_BOX(hbox_iter) && GTK_IS_WIDGET(toggle_pset)) {
   gtk_box_append (GTK_BOX (hbox_iter), toggle_pset);
+  }
 
   check_dry = gtk_check_button_new_with_mnemonic (_("DRY run"));
   gtk_widget_show (check_dry);
+  if (GTK_IS_GRID(table_restrictions) && GTK_IS_WIDGET(check_dry)) {
   gtk_grid_attach (GTK_GRID (table_restrictions), check_dry, 0, 7, 1, 1);
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
 
   frame125 = gtk_frame_new (NULL);
   gtk_widget_show (frame125);
+  if (GTK_IS_GRID(table_restrictions) && GTK_IS_WIDGET(frame125)) {
   gtk_grid_attach (GTK_GRID (table_restrictions), frame125, 2, 0, 1, 4);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
   gtk_frame_set_label_align (GTK_FRAME (frame125), 0.12);
 
@@ -3433,54 +4319,82 @@ create_main_window (void)
 
   table_cutr = gtk_grid_new(); /* gtk_table_new removed - using gtk_grid_new */
   gtk_widget_show (table_cutr);
+  if (GTK_IS_BOX(alignment7) && GTK_IS_WIDGET(table_cutr)) {
   gtk_box_append (GTK_BOX (alignment7), table_cutr);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
   /* gtk_table_set_row_spacings removed - use gtk_grid_set_row_spacing */
   /* gtk_table_set_col_spacings removed - use gtk_grid_set_col_spacing */
 
   label991 = gtk_label_new (_("CUTC (signed):"));
   gtk_widget_show (label991);
+  if (GTK_IS_GRID(table_cutr) && GTK_IS_WIDGET(label991)) {
   gtk_grid_attach (GTK_GRID (table_cutr), label991, 0, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(label991)) {
   gtk_widget_set_hexpand (label991, TRUE);
+  }
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
 
   entry_cutc = gtk_entry_new ();
   gtk_widget_show (entry_cutc);
+  if (GTK_IS_GRID(table_cutr) && GTK_IS_WIDGET(entry_cutc)) {
   gtk_grid_attach (GTK_GRID (table_cutr), entry_cutc, 1, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(entry_cutc)) {
   gtk_widget_set_hexpand (entry_cutc, TRUE);
+  }
+  if (GTK_IS_WIDGET(entry_cutc)) {
   gtk_widget_set_size_request (entry_cutc, 50, -1); /* added missing args */
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_cutc), 8226);
   gtk_editable_set_width_chars (GTK_EDITABLE (entry_cutc), 20);
 
   entry_cutr = gtk_entry_new ();
   gtk_widget_show (entry_cutr);
+  if (GTK_IS_GRID(table_cutr) && GTK_IS_WIDGET(entry_cutr)) {
   gtk_grid_attach (GTK_GRID (table_cutr), entry_cutr, 1, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(entry_cutr)) {
   gtk_widget_set_hexpand (entry_cutr, TRUE);
+  }
+  if (GTK_IS_WIDGET(entry_cutr)) {
   gtk_widget_set_size_request (entry_cutr, 50, -1); /* added missing args */
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_cutr), 8226);
   gtk_editable_set_width_chars (GTK_EDITABLE (entry_cutr), 20);
 
   entry_cutl = gtk_entry_new ();
   gtk_widget_show (entry_cutl);
+  if (GTK_IS_GRID(table_cutr) && GTK_IS_WIDGET(entry_cutl)) {
   gtk_grid_attach (GTK_GRID (table_cutr), entry_cutl, 1, 2, 1, 1);
+  }
+  if (GTK_IS_WIDGET(entry_cutl)) {
   gtk_widget_set_hexpand (entry_cutl, TRUE);
+  }
+  if (GTK_IS_WIDGET(entry_cutl)) {
   gtk_widget_set_size_request (entry_cutl, 50, -1); /* added missing args */
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_cutl), 8226);
   gtk_editable_set_width_chars (GTK_EDITABLE (entry_cutl), 20);
 
   label992 = gtk_label_new (_("CUTR (signed):"));
   gtk_widget_show (label992);
+  if (GTK_IS_GRID(table_cutr) && GTK_IS_WIDGET(label992)) {
   gtk_grid_attach (GTK_GRID (table_cutr), label992, 0, 1, 1, 1);
+  }
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
 
   label993 = gtk_label_new (_("CUTL (signed): "));
   gtk_widget_show (label993);
+  if (GTK_IS_GRID(table_cutr) && GTK_IS_WIDGET(label993)) {
   gtk_grid_attach (GTK_GRID (table_cutr), label993, 0, 2, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label993), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
@@ -3493,48 +4407,72 @@ create_main_window (void)
 
   hbox144 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   gtk_widget_show (hbox144);
+  if (GTK_IS_GRID(table_restrictions) && GTK_IS_WIDGET(hbox144)) {
   gtk_grid_attach (GTK_GRID (table_restrictions), hbox144, 0, 9, 1, 1);
+  }
+  if (GTK_IS_WIDGET(hbox144)) {
   gtk_widget_set_vexpand (hbox144, TRUE);
+  }
 
   hbox145 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   gtk_widget_show (hbox145);
+  if (GTK_IS_BOX(hbox144) && GTK_IS_WIDGET(hbox145)) {
   gtk_box_append (GTK_BOX (hbox144), hbox145);
+  }
 
   labelsmallchan = gtk_label_new (_("SMALLCHAN:"));
   gtk_widget_show (labelsmallchan);
+  if (GTK_IS_BOX(hbox145) && GTK_IS_WIDGET(labelsmallchan)) {
   gtk_box_append (GTK_BOX (hbox145), labelsmallchan);
+  }
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
 
   entry_smallchan = gtk_entry_new ();
   gtk_widget_show (entry_smallchan);
+  if (GTK_IS_BOX(hbox145) && GTK_IS_WIDGET(entry_smallchan)) {
   gtk_box_append (GTK_BOX (hbox145), entry_smallchan);
+  }
+  if (GTK_IS_WIDGET(entry_smallchan)) {
   gtk_widget_set_size_request (entry_smallchan, 80, -1); /* added missing args */
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_smallchan), 8226);
 
   hbox146 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   gtk_widget_show (hbox146);
+  if (GTK_IS_BOX(hbox144) && GTK_IS_WIDGET(hbox146)) {
   gtk_box_append (GTK_BOX (hbox144), hbox146);
+  }
 
   label1172 = gtk_label_new (_("SMALLCOUP:"));
   gtk_widget_show (label1172);
+  if (GTK_IS_BOX(hbox146) && GTK_IS_WIDGET(label1172)) {
   gtk_box_append (GTK_BOX (hbox146), label1172);
+  }
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
 
   entry_smallcoup = gtk_entry_new ();
   gtk_widget_show (entry_smallcoup);
+  if (GTK_IS_BOX(hbox146) && GTK_IS_WIDGET(entry_smallcoup)) {
   gtk_box_append (GTK_BOX (hbox146), entry_smallcoup);
+  }
+  if (GTK_IS_WIDGET(entry_smallcoup)) {
   gtk_widget_set_size_request (entry_smallcoup, 80, -1); /* added missing args */
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_smallcoup), 8226);
 
   check_nosol = gtk_check_button_new_with_mnemonic (_("Not solve CRC; only construct couplings (NOSOL)"));
   gtk_widget_show (check_nosol);
+  if (GTK_IS_GRID(table_restrictions) && GTK_IS_WIDGET(check_nosol)) {
   gtk_grid_attach (GTK_GRID (table_restrictions), check_nosol, 0, 8, 1, 1);
+  }
 
   vseparator8 = gtk_separator_new(GTK_ORIENTATION_VERTICAL); /* vseparator/hseparator removed */
   gtk_widget_show (vseparator8);
+  if (GTK_IS_GRID(table_restrictions) && GTK_IS_WIDGET(vseparator8)) {
   gtk_grid_attach (GTK_GRID (table_restrictions), vseparator8, 1, 0, 1, 10);
+  }
 
   label985 = gtk_label_new (_("<b>Restrictions and convergence tests: </b>"));
   gtk_widget_show (label985);
@@ -3552,48 +4490,68 @@ create_main_window (void)
 
   hbox117 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   gtk_widget_show (hbox117);
+  if (GTK_IS_BOX(vbox_partitions_tab) && GTK_IS_WIDGET(hbox117)) {
   gtk_box_append (GTK_BOX (vbox_partitions_tab), hbox117);
+  }
 
   frame3 = gtk_frame_new (NULL);
   gtk_widget_show (frame3);
+  if (GTK_IS_BOX(hbox117) && GTK_IS_WIDGET(frame3)) {
   gtk_box_append (GTK_BOX (hbox117), frame3);
+  }
 
   table5 = gtk_grid_new(); /* gtk_table_new removed - using gtk_grid_new */
   gtk_widget_show (table5);
   gtk_frame_set_child (GTK_FRAME (frame3), table5);
+  if (GTK_IS_WIDGET(table5)) {
   gtk_widget_set_size_request (table5, 150, -1); /* added missing args */
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
   /* gtk_table_set_row_spacings removed - use gtk_grid_set_row_spacing */
 
   label50 = gtk_label_new (_("A"));
   gtk_widget_show (label50);
+  if (GTK_IS_GRID(table5) && GTK_IS_WIDGET(label50)) {
   gtk_grid_attach (GTK_GRID (table5), label50, 1, 0, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label50), GTK_JUSTIFY_CENTER);
 
   label49 = gtk_label_new (_("Nucleus"));
   gtk_widget_show (label49);
+  if (GTK_IS_GRID(table5) && GTK_IS_WIDGET(label49)) {
   gtk_grid_attach (GTK_GRID (table5), label49, 0, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(label49)) {
   gtk_widget_set_hexpand (label49, TRUE);
+  }
   gtk_label_set_justify (GTK_LABEL (label49), GTK_JUSTIFY_CENTER);
 
   label51 = gtk_label_new (_("Z"));
   gtk_widget_show (label51);
+  if (GTK_IS_GRID(table5) && GTK_IS_WIDGET(label51)) {
   gtk_grid_attach (GTK_GRID (table5), label51, 2, 0, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label51), GTK_JUSTIFY_CENTER);
 
   pnucleus = gtk_entry_new ();
   gtk_widget_show (pnucleus);
+  if (GTK_IS_GRID(table5) && GTK_IS_WIDGET(pnucleus)) {
   gtk_grid_attach (GTK_GRID (table5), pnucleus, 0, 1, 1, 1);
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (pnucleus), 8226);
 
   pmass = gtk_entry_new ();
   gtk_widget_show (pmass);
+  if (GTK_IS_GRID(table5) && GTK_IS_WIDGET(pmass)) {
   gtk_grid_attach (GTK_GRID (table5), pmass, 1, 1, 1, 1);
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (pmass), 8226);
 
   pZ = gtk_entry_new ();
   gtk_widget_show (pZ);
+  if (GTK_IS_GRID(table5) && GTK_IS_WIDGET(pZ)) {
   gtk_grid_attach (GTK_GRID (table5), pZ, 2, 1, 1, 1);
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (pZ), 8226);
 
   label952 = gtk_label_new (_("<b>Projectile</b>"));
@@ -3603,43 +4561,61 @@ create_main_window (void)
 
   frame4 = gtk_frame_new (NULL);
   gtk_widget_show (frame4);
+  if (GTK_IS_BOX(hbox117) && GTK_IS_WIDGET(frame4)) {
   gtk_box_append (GTK_BOX (hbox117), frame4);
+  }
 
   table6 = gtk_grid_new(); /* gtk_table_new removed - using gtk_grid_new */
   gtk_widget_show (table6);
   gtk_frame_set_child (GTK_FRAME (frame4), table6);
+  if (GTK_IS_WIDGET(table6)) {
   gtk_widget_set_size_request (table6, 150, -1); /* added missing args */
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
 
   tZ = gtk_entry_new ();
   gtk_widget_show (tZ);
+  if (GTK_IS_GRID(table6) && GTK_IS_WIDGET(tZ)) {
   gtk_grid_attach (GTK_GRID (table6), tZ, 2, 1, 1, 1);
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (tZ), 8226);
 
   tmass = gtk_entry_new ();
   gtk_widget_show (tmass);
+  if (GTK_IS_GRID(table6) && GTK_IS_WIDGET(tmass)) {
   gtk_grid_attach (GTK_GRID (table6), tmass, 1, 1, 1, 1);
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (tmass), 8226);
 
   tnucleus = gtk_entry_new ();
   gtk_widget_show (tnucleus);
+  if (GTK_IS_GRID(table6) && GTK_IS_WIDGET(tnucleus)) {
   gtk_grid_attach (GTK_GRID (table6), tnucleus, 0, 1, 1, 1);
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (tnucleus), 8226);
 
   label52 = gtk_label_new (_("Nucleus"));
   gtk_widget_show (label52);
+  if (GTK_IS_GRID(table6) && GTK_IS_WIDGET(label52)) {
   gtk_grid_attach (GTK_GRID (table6), label52, 0, 0, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label52), GTK_JUSTIFY_CENTER);
 
   label53 = gtk_label_new (_("A"));
   gtk_widget_show (label53);
+  if (GTK_IS_GRID(table6) && GTK_IS_WIDGET(label53)) {
   gtk_grid_attach (GTK_GRID (table6), label53, 1, 0, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label53), GTK_JUSTIFY_CENTER);
 
   label54 = gtk_label_new (_("Z"));
   gtk_widget_show (label54);
+  if (GTK_IS_GRID(table6) && GTK_IS_WIDGET(label54)) {
   gtk_grid_attach (GTK_GRID (table6), label54, 2, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(label54)) {
   gtk_widget_set_hexpand (label54, TRUE);
+  }
   gtk_label_set_justify (GTK_LABEL (label54), GTK_JUSTIFY_CENTER);
 
   label953 = gtk_label_new (_("<b>Target</b>"));
@@ -3649,39 +4625,51 @@ create_main_window (void)
 
   table_qvalue = gtk_grid_new(); /* gtk_table_new removed - using gtk_grid_new */
   gtk_widget_show (table_qvalue);
+  if (GTK_IS_BOX(hbox117) && GTK_IS_WIDGET(table_qvalue)) {
   gtk_box_append (GTK_BOX (hbox117), table_qvalue);
+  }
   /* gtk_table_set_row_spacings removed - use gtk_grid_set_row_spacing */
   /* gtk_table_set_col_spacings removed - use gtk_grid_set_col_spacing */
 
   label48 = gtk_label_new (_("Q-value:   "));
   gtk_widget_show (label48);
+  if (GTK_IS_GRID(table_qvalue) && GTK_IS_WIDGET(label48)) {
   gtk_grid_attach (GTK_GRID (table_qvalue), label48, 0, 0, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label48), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
 
   label945 = gtk_label_new (_("Readstates: "));
   gtk_widget_show (label945);
+  if (GTK_IS_GRID(table_qvalue) && GTK_IS_WIDGET(label945)) {
   gtk_grid_attach (GTK_GRID (table_qvalue), label945, 0, 1, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label945), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
 
   qvalue = gtk_entry_new ();
   gtk_widget_show (qvalue);
+  if (GTK_IS_GRID(table_qvalue) && GTK_IS_WIDGET(qvalue)) {
   gtk_grid_attach (GTK_GRID (table_qvalue), qvalue, 1, 0, 1, 1);
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
   gtk_entry_set_invisible_char (GTK_ENTRY (qvalue), 8226);
   gtk_editable_set_width_chars (GTK_EDITABLE (qvalue), 10);
 
   readstates = gtk_entry_new ();
   gtk_widget_show (readstates);
+  if (GTK_IS_GRID(table_qvalue) && GTK_IS_WIDGET(readstates)) {
   gtk_grid_attach (GTK_GRID (table_qvalue), readstates, 1, 1, 1, 1);
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
   gtk_entry_set_invisible_char (GTK_ENTRY (readstates), 8226);
   gtk_editable_set_width_chars (GTK_EDITABLE (readstates), 10);
 
   frame110 = gtk_frame_new (NULL);
   gtk_widget_show (frame110);
+  if (GTK_IS_BOX(hbox117) && GTK_IS_WIDGET(frame110)) {
   gtk_box_append (GTK_BOX (hbox117), frame110);
+  }
 
   vbox68 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
   gtk_widget_show (vbox68);
@@ -3689,33 +4677,47 @@ create_main_window (void)
 
   eventbox_pwf_part = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0); /* was gtk_event_box_new() */
   gtk_widget_show (eventbox_pwf_part);
+  if (GTK_IS_BOX(vbox68) && GTK_IS_WIDGET(eventbox_pwf_part)) {
   gtk_box_append (GTK_BOX (vbox68), eventbox_pwf_part);
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
 
   check_pwf = gtk_check_button_new_with_mnemonic (_("Acceleration of \nCoulomb (PWF)"));
   gtk_widget_show (check_pwf);
+  if (GTK_IS_BOX(eventbox_pwf_part) && GTK_IS_WIDGET(check_pwf)) {
   gtk_box_append (GTK_BOX (eventbox_pwf_part), check_pwf);
+  }
 
   check_nex = gtk_check_button_new_with_mnemonic (_("Do not print x-section\nfor this partition[NEX<0]"));
   gtk_widget_show (check_nex);
+  if (GTK_IS_BOX(vbox68) && GTK_IS_WIDGET(check_nex)) {
   gtk_box_append (GTK_BOX (vbox68), check_nex);
+  }
 
   vbox_butpot = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
   gtk_widget_show (vbox_butpot);
+  if (GTK_IS_BOX(hbox117) && GTK_IS_WIDGET(vbox_butpot)) {
   gtk_box_append (GTK_BOX (hbox117), vbox_butpot);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
 
   add_partition = gtk_button_new ();
   gtk_widget_show (add_partition);
+  if (GTK_IS_BOX(vbox_butpot) && GTK_IS_WIDGET(add_partition)) {
   gtk_box_append (GTK_BOX (vbox_butpot), add_partition);
+  }
 
   alignment25 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0); /* gtk_alignment_new removed - using box as placeholder */
   gtk_widget_show (alignment25);
+  if (GTK_IS_BOX(add_partition) && GTK_IS_WIDGET(alignment25)) {
   gtk_box_append (GTK_BOX (add_partition), alignment25);
+  }
 
   hbox134 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
   gtk_widget_show (hbox134);
+  if (GTK_IS_BOX(alignment25) && GTK_IS_WIDGET(hbox134)) {
   gtk_box_append (GTK_BOX (alignment25), hbox134);
+  }
 
   /* gtk_image_new_from_stock removed in GTK-4 - use gtk_image_new_from_icon_name */
 
@@ -3726,27 +4728,39 @@ create_main_window (void)
 
   label1161 = gtk_label_new_with_mnemonic (_("Add"));
   gtk_widget_show (label1161);
+  if (GTK_IS_BOX(hbox134) && GTK_IS_WIDGET(label1161)) {
   gtk_box_append (GTK_BOX (hbox134), label1161);
+  }
 
   replace_partition = gtk_button_new_with_mnemonic (_("Replace"));
   gtk_widget_show (replace_partition);
+  if (GTK_IS_BOX(vbox_butpot) && GTK_IS_WIDGET(replace_partition)) {
   gtk_box_append (GTK_BOX (vbox_butpot), replace_partition);
+  }
 
   insert_partition = gtk_button_new_with_mnemonic (_("Insert "));
   gtk_widget_show (insert_partition);
+  if (GTK_IS_BOX(vbox_butpot) && GTK_IS_WIDGET(insert_partition)) {
   gtk_box_append (GTK_BOX (vbox_butpot), insert_partition);
+  }
 
   delete_partition = gtk_button_new ();
   gtk_widget_show (delete_partition);
+  if (GTK_IS_BOX(vbox_butpot) && GTK_IS_WIDGET(delete_partition)) {
   gtk_box_append (GTK_BOX (vbox_butpot), delete_partition);
+  }
 
   alignment26 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0); /* gtk_alignment_new removed - using box as placeholder */
   gtk_widget_show (alignment26);
+  if (GTK_IS_BOX(delete_partition) && GTK_IS_WIDGET(alignment26)) {
   gtk_box_append (GTK_BOX (delete_partition), alignment26);
+  }
 
   hbox135 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
   gtk_widget_show (hbox135);
+  if (GTK_IS_BOX(alignment26) && GTK_IS_WIDGET(hbox135)) {
   gtk_box_append (GTK_BOX (alignment26), hbox135);
+  }
 
   /* gtk_image_new_from_stock removed in GTK-4 - use gtk_image_new_from_icon_name */
 
@@ -3757,11 +4771,15 @@ create_main_window (void)
 
   label1162 = gtk_label_new_with_mnemonic (_("Delete"));
   gtk_widget_show (label1162);
+  if (GTK_IS_BOX(hbox135) && GTK_IS_WIDGET(label1162)) {
   gtk_box_append (GTK_BOX (hbox135), label1162);
+  }
 
   scrolledwindow_potentials = gtk_scrolled_window_new ();
   gtk_widget_show (scrolledwindow_potentials);
+  if (GTK_IS_BOX(vbox_partitions_tab) && GTK_IS_WIDGET(scrolledwindow_potentials)) {
   gtk_box_append (GTK_BOX (vbox_partitions_tab), scrolledwindow_potentials);
+  }
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolledwindow_potentials), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
   /* gtk_scrolled_window_set_shadow_type removed in GTK-4 */
 
@@ -3822,11 +4840,15 @@ create_main_window (void)
 
   hbox_states = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   gtk_widget_show (hbox_states);
+  if (GTK_IS_BOX(vbox_partitions_tab) && GTK_IS_WIDGET(hbox_states)) {
   gtk_box_append (GTK_BOX (vbox_partitions_tab), hbox_states);
+  }
 
   frame126 = gtk_frame_new (NULL);
   gtk_widget_show (frame126);
+  if (GTK_IS_BOX(hbox_states) && GTK_IS_WIDGET(frame126)) {
   gtk_box_append (GTK_BOX (hbox_states), frame126);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
 
   alignment8 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0); /* gtk_alignment_new removed - using box as placeholder */
@@ -3836,143 +4858,217 @@ create_main_window (void)
 
   table82 = gtk_grid_new(); /* gtk_table_new removed - using gtk_grid_new */
   gtk_widget_show (table82);
+  if (GTK_IS_BOX(alignment8) && GTK_IS_WIDGET(table82)) {
   gtk_box_append (GTK_BOX (alignment8), table82);
+  }
+  if (GTK_IS_WIDGET(table82)) {
   gtk_widget_set_size_request (table82, 344, -1); /* added missing args */
+  }
 
   label62 = gtk_label_new (_("Target"));
   gtk_widget_show (label62);
+  if (GTK_IS_GRID(table82) && GTK_IS_WIDGET(label62)) {
   gtk_grid_attach (GTK_GRID (table82), label62, 0, 2, 1, 1);
+  }
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
 
   jt = gtk_entry_new ();
   gtk_widget_show (jt);
+  if (GTK_IS_GRID(table82) && GTK_IS_WIDGET(jt)) {
   gtk_grid_attach (GTK_GRID (table82), jt, 1, 2, 1, 1);
+  }
+  if (GTK_IS_WIDGET(jt)) {
   gtk_widget_set_hexpand (jt, TRUE);
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
   gtk_entry_set_invisible_char (GTK_ENTRY (jt), 8226);
 
   copyt = gtk_entry_new ();
   gtk_widget_show (copyt);
+  if (GTK_IS_GRID(table82) && GTK_IS_WIDGET(copyt)) {
   gtk_grid_attach (GTK_GRID (table82), copyt, 2, 2, 1, 1);
+  }
+  if (GTK_IS_WIDGET(copyt)) {
   gtk_widget_set_hexpand (copyt, TRUE);
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
   gtk_entry_set_invisible_char (GTK_ENTRY (copyt), 8226);
 
   et = gtk_entry_new ();
   gtk_widget_show (et);
+  if (GTK_IS_GRID(table82) && GTK_IS_WIDGET(et)) {
   gtk_grid_attach (GTK_GRID (table82), et, 4, 2, 1, 1);
+  }
+  if (GTK_IS_WIDGET(et)) {
   gtk_widget_set_hexpand (et, TRUE);
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
   gtk_entry_set_invisible_char (GTK_ENTRY (et), 8226);
 
   kkt = gtk_entry_new ();
   gtk_widget_show (kkt);
+  if (GTK_IS_GRID(table82) && GTK_IS_WIDGET(kkt)) {
   gtk_grid_attach (GTK_GRID (table82), kkt, 5, 2, 1, 1);
+  }
+  if (GTK_IS_WIDGET(kkt)) {
   gtk_widget_set_hexpand (kkt, TRUE);
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
   gtk_entry_set_invisible_char (GTK_ENTRY (kkt), 8226);
 
   tt = gtk_entry_new ();
   gtk_widget_show (tt);
+  if (GTK_IS_GRID(table82) && GTK_IS_WIDGET(tt)) {
   gtk_grid_attach (GTK_GRID (table82), tt, 6, 2, 1, 1);
+  }
+  if (GTK_IS_WIDGET(tt)) {
   gtk_widget_set_hexpand (tt, TRUE);
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
   gtk_entry_set_invisible_char (GTK_ENTRY (tt), 8226);
 
   jp = gtk_entry_new ();
   gtk_widget_show (jp);
+  if (GTK_IS_GRID(table82) && GTK_IS_WIDGET(jp)) {
   gtk_grid_attach (GTK_GRID (table82), jp, 1, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(jp)) {
   gtk_widget_set_hexpand (jp, TRUE);
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
   gtk_entry_set_invisible_char (GTK_ENTRY (jp), 8226);
 
   copyp = gtk_entry_new ();
   gtk_widget_show (copyp);
+  if (GTK_IS_GRID(table82) && GTK_IS_WIDGET(copyp)) {
   gtk_grid_attach (GTK_GRID (table82), copyp, 2, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(copyp)) {
   gtk_widget_set_hexpand (copyp, TRUE);
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
   gtk_entry_set_invisible_char (GTK_ENTRY (copyp), 8226);
 
   ep = gtk_entry_new ();
   gtk_widget_show (ep);
+  if (GTK_IS_GRID(table82) && GTK_IS_WIDGET(ep)) {
   gtk_grid_attach (GTK_GRID (table82), ep, 4, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(ep)) {
   gtk_widget_set_hexpand (ep, TRUE);
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
   gtk_entry_set_invisible_char (GTK_ENTRY (ep), 8226);
 
   kkp = gtk_entry_new ();
   gtk_widget_show (kkp);
+  if (GTK_IS_GRID(table82) && GTK_IS_WIDGET(kkp)) {
   gtk_grid_attach (GTK_GRID (table82), kkp, 5, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(kkp)) {
   gtk_widget_set_hexpand (kkp, TRUE);
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
   gtk_entry_set_invisible_char (GTK_ENTRY (kkp), 8226);
 
   tp = gtk_entry_new ();
   gtk_widget_show (tp);
+  if (GTK_IS_GRID(table82) && GTK_IS_WIDGET(tp)) {
   gtk_grid_attach (GTK_GRID (table82), tp, 6, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(tp)) {
   gtk_widget_set_hexpand (tp, TRUE);
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
   gtk_entry_set_invisible_char (GTK_ENTRY (tp), 8226);
 
   label56 = gtk_label_new (_("J"));
   gtk_widget_show (label56);
+  if (GTK_IS_GRID(table82) && GTK_IS_WIDGET(label56)) {
   gtk_grid_attach (GTK_GRID (table82), label56, 1, 0, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label56), GTK_JUSTIFY_CENTER);
 
   label57 = gtk_label_new (_("Copy"));
   gtk_widget_show (label57);
+  if (GTK_IS_GRID(table82) && GTK_IS_WIDGET(label57)) {
   gtk_grid_attach (GTK_GRID (table82), label57, 2, 0, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label57), GTK_JUSTIFY_CENTER);
 
   label58 = gtk_label_new (_("Parity"));
   gtk_widget_show (label58);
+  if (GTK_IS_GRID(table82) && GTK_IS_WIDGET(label58)) {
   gtk_grid_attach (GTK_GRID (table82), label58, 3, 0, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label58), GTK_JUSTIFY_CENTER);
 
   label63 = gtk_label_new (_("E"));
   gtk_widget_show (label63);
+  if (GTK_IS_GRID(table82) && GTK_IS_WIDGET(label63)) {
   gtk_grid_attach (GTK_GRID (table82), label63, 4, 0, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label63), GTK_JUSTIFY_CENTER);
 
   label59 = gtk_label_new (_("K"));
   gtk_widget_show (label59);
+  if (GTK_IS_GRID(table82) && GTK_IS_WIDGET(label59)) {
   gtk_grid_attach (GTK_GRID (table82), label59, 5, 0, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label59), GTK_JUSTIFY_CENTER);
 
   label60 = gtk_label_new (_("T"));
   gtk_widget_show (label60);
+  if (GTK_IS_GRID(table82) && GTK_IS_WIDGET(label60)) {
   gtk_grid_attach (GTK_GRID (table82), label60, 6, 0, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label60), GTK_JUSTIFY_CENTER);
 
   hbox111 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   gtk_widget_show (hbox111);
+  if (GTK_IS_GRID(table82) && GTK_IS_WIDGET(hbox111)) {
   gtk_grid_attach (GTK_GRID (table82), hbox111, 0, 0, 1, 1);
+  }
 
   label935 = gtk_label_new (_("Index:"));
   gtk_widget_show (label935);
+  if (GTK_IS_BOX(hbox111) && GTK_IS_WIDGET(label935)) {
   gtk_box_append (GTK_BOX (hbox111), label935);
+  }
+  if (GTK_IS_WIDGET(label935)) {
   gtk_widget_set_size_request (label935, 77, -1); /* added missing args */
+  }
 
   entry_index_pot = gtk_entry_new ();
   gtk_widget_show (entry_index_pot);
+  if (GTK_IS_BOX(hbox111) && GTK_IS_WIDGET(entry_index_pot)) {
   gtk_box_append (GTK_BOX (hbox111), entry_index_pot);
+  }
+  if (GTK_IS_WIDGET(entry_index_pot)) {
   gtk_widget_set_sensitive (entry_index_pot, FALSE); /* added missing arg */
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_index_pot), 8226);
   gtk_editable_set_width_chars (GTK_EDITABLE (entry_index_pot), 3);
 
   label_proj = gtk_label_new (_("Projectile"));
   gtk_widget_show (label_proj);
+  if (GTK_IS_GRID(table82) && GTK_IS_WIDGET(label_proj)) {
   gtk_grid_attach (GTK_GRID (table82), label_proj, 0, 1, 1, 1);
+  }
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
 
   bandp = gtk_toggle_button_new_with_mnemonic (_("+"));
   gtk_widget_show (bandp);
+  if (GTK_IS_GRID(table82) && GTK_IS_WIDGET(bandp)) {
   gtk_grid_attach (GTK_GRID (table82), bandp, 3, 1, 1, 1);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
 
   bandt = gtk_toggle_button_new_with_mnemonic (_("+"));
   gtk_widget_show (bandt);
+  if (GTK_IS_GRID(table82) && GTK_IS_WIDGET(bandt)) {
   gtk_grid_attach (GTK_GRID (table82), bandt, 3, 2, 1, 1);
+  }
 
   label994 = gtk_label_new (_("<b>Excited states for selection partition</b>"));
   gtk_widget_show (label994);
@@ -3981,7 +5077,9 @@ create_main_window (void)
 
   frame6 = gtk_frame_new (NULL);
   gtk_widget_show (frame6);
+  if (GTK_IS_BOX(hbox_states) && GTK_IS_WIDGET(frame6)) {
   gtk_box_append (GTK_BOX (hbox_states), frame6);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
 
   table72 = gtk_grid_new(); /* gtk_table_new removed - using gtk_grid_new */
@@ -3990,19 +5088,27 @@ create_main_window (void)
 
   ignore = gtk_check_button_new_with_mnemonic (_("IGNORE"));
   gtk_widget_show (ignore);
+  if (GTK_IS_GRID(table72) && GTK_IS_WIDGET(ignore)) {
   gtk_grid_attach (GTK_GRID (table72), ignore, 1, 1, 1, 1);
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
 
   spin_infam_adj = gtk_adjustment_new (0, 0, 100, 1, 10, 10);
   spin_infam = gtk_spin_button_new (GTK_ADJUSTMENT (spin_infam_adj), 1, 0);
   gtk_widget_show (spin_infam);
+  if (GTK_IS_GRID(table72) && GTK_IS_WIDGET(spin_infam)) {
   gtk_grid_attach (GTK_GRID (table72), spin_infam, 1, 2, 1, 1);
+  }
+  if (GTK_IS_WIDGET(spin_infam)) {
   gtk_widget_set_hexpand (spin_infam, TRUE);
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
 
   check_fexch = gtk_check_button_new_with_mnemonic (_("FEXCH"));
   gtk_widget_show (check_fexch);
+  if (GTK_IS_GRID(table72) && GTK_IS_WIDGET(check_fexch)) {
   gtk_grid_attach (GTK_GRID (table72), check_fexch, 0, 1, 1, 1);
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
 
   /* GtkOptionMenu removed - use GtkDropDown */
@@ -4010,7 +5116,9 @@ create_main_window (void)
 
   /* opt_infam = gtk_option_menu_new...; */ opt_infam = NULL;
   /* gtk_widget_show (opt_infam);  - NULL widget */
+  if (GTK_IS_GRID(table72) && GTK_IS_WIDGET(opt_infam)) {
   gtk_grid_attach (GTK_GRID (table72), opt_infam, 0, 2, 1, 1);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
 
@@ -4047,8 +5155,12 @@ create_main_window (void)
 
   /* opt_outfam = gtk_option_menu_new...; */ opt_outfam = NULL;
   /* gtk_widget_show (opt_outfam);  - NULL widget */
+  if (GTK_IS_GRID(table72) && GTK_IS_WIDGET(opt_outfam)) {
   gtk_grid_attach (GTK_GRID (table72), opt_outfam, 0, 3, 1, 1);
+  }
+  if (GTK_IS_WIDGET(opt_outfam)) {
   gtk_widget_set_hexpand (opt_outfam, TRUE);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
 
@@ -4082,44 +5194,64 @@ create_main_window (void)
 
   label900 = gtk_label_new (_("Optical potential [CPOT] : "));
   gtk_widget_show (label900);
+  if (GTK_IS_GRID(table72) && GTK_IS_WIDGET(label900)) {
   gtk_grid_attach (GTK_GRID (table72), label900, 0, 0, 1, 1);
+  }
 
   cpot_adj = gtk_adjustment_new (0, 0, 100, 1, 10, 10);
   cpot = gtk_spin_button_new (GTK_ADJUSTMENT (cpot_adj), 1, 0);
   gtk_widget_show (cpot);
+  if (GTK_IS_GRID(table72) && GTK_IS_WIDGET(cpot)) {
   gtk_grid_attach (GTK_GRID (table72), cpot, 1, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(cpot)) {
   gtk_widget_set_hexpand (cpot, TRUE);
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
 
   vbuttonbox1 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0); /* button_box removed */
   gtk_widget_show (vbuttonbox1);
+  if (GTK_IS_BOX(hbox_states) && GTK_IS_WIDGET(vbuttonbox1)) {
   gtk_box_append (GTK_BOX (hbox_states), vbuttonbox1);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
   gtk_box_set_spacing (GTK_BOX (vbuttonbox1), 2);
 
   replace_states = gtk_button_new_with_mnemonic (_("Replace"));
   gtk_widget_show (replace_states);
+  if (GTK_IS_BOX(vbuttonbox1) && GTK_IS_WIDGET(replace_states)) {
   gtk_box_append (GTK_BOX (vbuttonbox1), replace_states);
+  }
 
   insert_states = gtk_button_new_with_mnemonic (_("Insert after"));
   gtk_widget_show (insert_states);
+  if (GTK_IS_BOX(vbuttonbox1) && GTK_IS_WIDGET(insert_states)) {
   gtk_box_append (GTK_BOX (vbuttonbox1), insert_states);
+  }
 
   add_states = gtk_button_new_with_label ("Add"); /* was gtk_button_new_from_stock("gtk-add") */
   gtk_widget_show (add_states);
+  if (GTK_IS_BOX(vbuttonbox1) && GTK_IS_WIDGET(add_states)) {
   gtk_box_append (GTK_BOX (vbuttonbox1), add_states);
+  }
 
   delete_states = gtk_button_new ();
   gtk_widget_show (delete_states);
+  if (GTK_IS_BOX(vbuttonbox1) && GTK_IS_WIDGET(delete_states)) {
   gtk_box_append (GTK_BOX (vbuttonbox1), delete_states);
+  }
 
   alignment27 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0); /* gtk_alignment_new removed - using box as placeholder */
   gtk_widget_show (alignment27);
+  if (GTK_IS_BOX(delete_states) && GTK_IS_WIDGET(alignment27)) {
   gtk_box_append (GTK_BOX (delete_states), alignment27);
+  }
 
   hbox136 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
   gtk_widget_show (hbox136);
+  if (GTK_IS_BOX(alignment27) && GTK_IS_WIDGET(hbox136)) {
   gtk_box_append (GTK_BOX (alignment27), hbox136);
+  }
 
   /* gtk_image_new_from_stock removed in GTK-4 - use gtk_image_new_from_icon_name */
 
@@ -4130,11 +5262,15 @@ create_main_window (void)
 
   label1163 = gtk_label_new_with_mnemonic (_("Delete"));
   gtk_widget_show (label1163);
+  if (GTK_IS_BOX(hbox136) && GTK_IS_WIDGET(label1163)) {
   gtk_box_append (GTK_BOX (hbox136), label1163);
+  }
 
   scrolledwindow_states = gtk_scrolled_window_new ();
   gtk_widget_show (scrolledwindow_states);
+  if (GTK_IS_BOX(vbox_partitions_tab) && GTK_IS_WIDGET(scrolledwindow_states)) {
   gtk_box_append (GTK_BOX (vbox_partitions_tab), scrolledwindow_states);
+  }
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolledwindow_states), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
   /* gtk_scrolled_window_set_shadow_type removed in GTK-4 */
 
@@ -4244,24 +5380,32 @@ create_main_window (void)
 
   hbox_pot = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   gtk_widget_show (hbox_pot);
+  if (GTK_IS_BOX(vbox75) && GTK_IS_WIDGET(hbox_pot)) {
   gtk_box_append (GTK_BOX (vbox75), hbox_pot);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
 
   vbox55 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 2);
   gtk_widget_show (vbox55);
+  if (GTK_IS_BOX(hbox_pot) && GTK_IS_WIDGET(vbox55)) {
   gtk_box_append (GTK_BOX (hbox_pot), vbox55);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
 
   label_kp = gtk_label_new (_("<b>Potential\nindex (kP)</b>"));
   gtk_widget_show (label_kp);
+  if (GTK_IS_BOX(vbox55) && GTK_IS_WIDGET(label_kp)) {
   gtk_box_append (GTK_BOX (vbox55), label_kp);
+  }
   gtk_label_set_use_markup (GTK_LABEL (label_kp), TRUE);
   gtk_label_set_justify (GTK_LABEL (label_kp), GTK_JUSTIFY_CENTER);
 
   spin_kp_adj = gtk_adjustment_new (7, 0, 1000, 1, 10, 10);
   spin_kp = gtk_spin_button_new (GTK_ADJUSTMENT (spin_kp_adj), 1, 0);
   gtk_widget_show (spin_kp);
+  if (GTK_IS_BOX(vbox55) && GTK_IS_WIDGET(spin_kp)) {
   gtk_box_append (GTK_BOX (vbox55), spin_kp);
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
   gtk_spin_button_set_numeric (GTK_SPIN_BUTTON (spin_kp), TRUE);
 
@@ -4277,23 +5421,37 @@ create_main_window (void)
 
   shape = gtk_label_new (_("Shape :"));
   gtk_widget_show (shape);
+  if (GTK_IS_GRID(table_type_shape) && GTK_IS_WIDGET(shape)) {
   gtk_grid_attach (GTK_GRID (table_type_shape), shape, 0, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(shape)) {
   gtk_widget_set_vexpand (shape, TRUE);
+  }
   gtk_label_set_justify (GTK_LABEL (shape), GTK_JUSTIFY_CENTER);
 
   type = gtk_label_new (_("Type :"));
   gtk_widget_show (type);
+  if (GTK_IS_GRID(table_type_shape) && GTK_IS_WIDGET(type)) {
   gtk_grid_attach (GTK_GRID (table_type_shape), type, 0, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(type)) {
   gtk_widget_set_vexpand (type, TRUE);
+  }
   gtk_label_set_justify (GTK_LABEL (type), GTK_JUSTIFY_CENTER);
 
   /* GtkCombo replaced with GtkComboBoxText */
 
   combo_type = gtk_combo_box_text_new_with_entry();
   gtk_widget_show (combo_type);
+  if (GTK_IS_GRID(table_type_shape) && GTK_IS_WIDGET(combo_type)) {
   gtk_grid_attach (GTK_GRID (table_type_shape), combo_type, 1, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(combo_type)) {
   gtk_widget_set_hexpand (combo_type, TRUE);
+  }
+  if (GTK_IS_WIDGET(combo_type)) {
   gtk_widget_set_size_request (combo_type, 200, -1);
+  }
 
   combo_type_items = g_list_append (combo_type_items, (gpointer) _("0 .-Coulomb"));
   combo_type_items = g_list_append (combo_type_items, (gpointer) _("1 .-Central potential, volume"));
@@ -4334,8 +5492,12 @@ create_main_window (void)
 
   combo_shape = gtk_combo_box_text_new_with_entry();
   gtk_widget_show (combo_shape);
+  if (GTK_IS_GRID(table_type_shape) && GTK_IS_WIDGET(combo_shape)) {
   gtk_grid_attach (GTK_GRID (table_type_shape), combo_shape, 1, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(combo_shape)) {
   gtk_widget_set_hexpand (combo_shape, TRUE);
+  }
 
   combo_shape_items = g_list_append (combo_shape_items, (gpointer) "");
   for (GList *item = combo_shape_items; item != NULL; item = item->next) {
@@ -4354,100 +5516,154 @@ create_main_window (void)
 
   frame_pot_parameters = gtk_frame_new (NULL);
   gtk_widget_show (frame_pot_parameters);
+  if (GTK_IS_BOX(hbox_pot) && GTK_IS_WIDGET(frame_pot_parameters)) {
   gtk_box_append (GTK_BOX (hbox_pot), frame_pot_parameters);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
 
   table_p = gtk_grid_new(); /* gtk_table_new removed - using gtk_grid_new */
   gtk_widget_show (table_p);
   gtk_frame_set_child (GTK_FRAME (frame_pot_parameters), table_p);
+  if (GTK_IS_WIDGET(table_p)) {
   gtk_widget_set_size_request (table_p, 120, -1); /* added missing args */
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
   /* gtk_table_set_col_spacings removed - use gtk_grid_set_col_spacing */
 
   entry_p4 = gtk_entry_new ();
   gtk_widget_show (entry_p4);
+  if (GTK_IS_GRID(table_p) && GTK_IS_WIDGET(entry_p4)) {
   gtk_grid_attach (GTK_GRID (table_p), entry_p4, 0, 3, 1, 1);
+  }
+  if (GTK_IS_WIDGET(entry_p4)) {
   gtk_widget_set_hexpand (entry_p4, TRUE);
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_p4), 8226);
 
   lab_p4 = gtk_label_new (_("p4 (W)"));
   gtk_widget_show (lab_p4);
+  if (GTK_IS_GRID(table_p) && GTK_IS_WIDGET(lab_p4)) {
   gtk_grid_attach (GTK_GRID (table_p), lab_p4, 0, 2, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (lab_p4), GTK_JUSTIFY_CENTER);
 
   lab_p1 = gtk_label_new (_("p1 (Vo)"));
   gtk_widget_show (lab_p1);
+  if (GTK_IS_GRID(table_p) && GTK_IS_WIDGET(lab_p1)) {
   gtk_grid_attach (GTK_GRID (table_p), lab_p1, 0, 0, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (lab_p1), GTK_JUSTIFY_CENTER);
 
   entry_p1 = gtk_entry_new ();
   gtk_widget_show (entry_p1);
+  if (GTK_IS_GRID(table_p) && GTK_IS_WIDGET(entry_p1)) {
   gtk_grid_attach (GTK_GRID (table_p), entry_p1, 0, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(entry_p1)) {
   gtk_widget_set_hexpand (entry_p1, TRUE);
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_p1), 8226);
 
   entry_p2 = gtk_entry_new ();
   gtk_widget_show (entry_p2);
+  if (GTK_IS_GRID(table_p) && GTK_IS_WIDGET(entry_p2)) {
   gtk_grid_attach (GTK_GRID (table_p), entry_p2, 1, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(entry_p2)) {
   gtk_widget_set_hexpand (entry_p2, TRUE);
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_p2), 8226);
 
   entry_p5 = gtk_entry_new ();
   gtk_widget_show (entry_p5);
+  if (GTK_IS_GRID(table_p) && GTK_IS_WIDGET(entry_p5)) {
   gtk_grid_attach (GTK_GRID (table_p), entry_p5, 1, 3, 1, 1);
+  }
+  if (GTK_IS_WIDGET(entry_p5)) {
   gtk_widget_set_hexpand (entry_p5, TRUE);
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_p5), 8226);
 
   entry_p6 = gtk_entry_new ();
   gtk_widget_show (entry_p6);
+  if (GTK_IS_GRID(table_p) && GTK_IS_WIDGET(entry_p6)) {
   gtk_grid_attach (GTK_GRID (table_p), entry_p6, 2, 3, 1, 1);
+  }
+  if (GTK_IS_WIDGET(entry_p6)) {
   gtk_widget_set_hexpand (entry_p6, TRUE);
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_p6), 8226);
 
   entry_p3 = gtk_entry_new ();
   gtk_widget_show (entry_p3);
+  if (GTK_IS_GRID(table_p) && GTK_IS_WIDGET(entry_p3)) {
   gtk_grid_attach (GTK_GRID (table_p), entry_p3, 2, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(entry_p3)) {
   gtk_widget_set_hexpand (entry_p3, TRUE);
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_p3), 8226);
 
   lab_p3 = gtk_label_new (_("p3 (ao)"));
   gtk_widget_show (lab_p3);
+  if (GTK_IS_GRID(table_p) && GTK_IS_WIDGET(lab_p3)) {
   gtk_grid_attach (GTK_GRID (table_p), lab_p3, 2, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(lab_p3)) {
   gtk_widget_set_hexpand (lab_p3, TRUE);
+  }
   gtk_label_set_justify (GTK_LABEL (lab_p3), GTK_JUSTIFY_CENTER);
 
   lab_p6 = gtk_label_new (_("p6 (ai)"));
   gtk_widget_show (lab_p6);
+  if (GTK_IS_GRID(table_p) && GTK_IS_WIDGET(lab_p6)) {
   gtk_grid_attach (GTK_GRID (table_p), lab_p6, 2, 2, 1, 1);
+  }
+  if (GTK_IS_WIDGET(lab_p6)) {
   gtk_widget_set_hexpand (lab_p6, TRUE);
+  }
   gtk_label_set_justify (GTK_LABEL (lab_p6), GTK_JUSTIFY_CENTER);
 
   lab_p5 = gtk_label_new (_("p5 (ri)"));
   gtk_widget_show (lab_p5);
+  if (GTK_IS_GRID(table_p) && GTK_IS_WIDGET(lab_p5)) {
   gtk_grid_attach (GTK_GRID (table_p), lab_p5, 1, 2, 1, 1);
+  }
+  if (GTK_IS_WIDGET(lab_p5)) {
   gtk_widget_set_hexpand (lab_p5, TRUE);
+  }
   gtk_label_set_justify (GTK_LABEL (lab_p5), GTK_JUSTIFY_CENTER);
 
   lab_p2 = gtk_label_new (_("p2 (ro)"));
   gtk_widget_show (lab_p2);
+  if (GTK_IS_GRID(table_p) && GTK_IS_WIDGET(lab_p2)) {
   gtk_grid_attach (GTK_GRID (table_p), lab_p2, 1, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(lab_p2)) {
   gtk_widget_set_hexpand (lab_p2, TRUE);
+  }
   gtk_label_set_justify (GTK_LABEL (lab_p2), GTK_JUSTIFY_CENTER);
 
   entry_p7 = gtk_entry_new ();
   gtk_widget_show (entry_p7);
+  if (GTK_IS_GRID(table_p) && GTK_IS_WIDGET(entry_p7)) {
   gtk_grid_attach (GTK_GRID (table_p), entry_p7, 3, 3, 1, 1);
+  }
+  if (GTK_IS_WIDGET(entry_p7)) {
   gtk_widget_set_hexpand (entry_p7, TRUE);
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_p7), 8226);
   gtk_editable_set_width_chars (GTK_EDITABLE (entry_p7), 10);
 
   label870 = gtk_label_new (_("p7"));
   gtk_widget_show (label870);
+  if (GTK_IS_GRID(table_p) && GTK_IS_WIDGET(label870)) {
   gtk_grid_attach (GTK_GRID (table_p), label870, 3, 2, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label870), GTK_JUSTIFY_CENTER);
 
   label956 = gtk_label_new (_("<b> Potential parameters </b>"));
@@ -4457,7 +5673,9 @@ create_main_window (void)
 
   frame55 = gtk_frame_new (NULL);
   gtk_widget_show (frame55);
+  if (GTK_IS_BOX(hbox_pot) && GTK_IS_WIDGET(frame55)) {
   gtk_box_append (GTK_BOX (hbox_pot), frame55);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
 
   hbox61 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
@@ -4466,37 +5684,53 @@ create_main_window (void)
 
   vbox_p7 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
   gtk_widget_show (vbox_p7);
+  if (GTK_IS_BOX(hbox61) && GTK_IS_WIDGET(vbox_p7)) {
   gtk_box_append (GTK_BOX (hbox61), vbox_p7);
+  }
 
   check_type = gtk_check_button_new_with_mnemonic (_("add num.\nto previous \ncomponent"));
   gtk_widget_show (check_type);
+  if (GTK_IS_BOX(vbox_p7) && GTK_IS_WIDGET(check_type)) {
   gtk_box_append (GTK_BOX (vbox_p7), check_type);
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
 
   eventbox_itt = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0); /* was gtk_event_box_new() */
   gtk_widget_show (eventbox_itt);
+  if (GTK_IS_BOX(vbox_p7) && GTK_IS_WIDGET(eventbox_itt)) {
   gtk_box_append (GTK_BOX (vbox_p7), eventbox_itt);
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
 
   check_itt = gtk_check_button_new_with_mnemonic (_("Iterative?\n(ITT)"));
   gtk_widget_show (check_itt);
+  if (GTK_IS_BOX(eventbox_itt) && GTK_IS_WIDGET(check_itt)) {
   gtk_box_append (GTK_BOX (eventbox_itt), check_itt);
+  }
 
   vbuttonbox_potentials = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0); /* button_box removed */
   gtk_widget_show (vbuttonbox_potentials);
+  if (GTK_IS_BOX(hbox_pot) && GTK_IS_WIDGET(vbuttonbox_potentials)) {
   gtk_box_append (GTK_BOX (hbox_pot), vbuttonbox_potentials);
+  }
 
   pot_add = gtk_button_new ();
   gtk_widget_show (pot_add);
+  if (GTK_IS_BOX(vbuttonbox_potentials) && GTK_IS_WIDGET(pot_add)) {
   gtk_box_append (GTK_BOX (vbuttonbox_potentials), pot_add);
+  }
 
   alignment18 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0); /* gtk_alignment_new removed - using box as placeholder */
   gtk_widget_show (alignment18);
+  if (GTK_IS_BOX(pot_add) && GTK_IS_WIDGET(alignment18)) {
   gtk_box_append (GTK_BOX (pot_add), alignment18);
+  }
 
   hbox127 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
   gtk_widget_show (hbox127);
+  if (GTK_IS_BOX(alignment18) && GTK_IS_WIDGET(hbox127)) {
   gtk_box_append (GTK_BOX (alignment18), hbox127);
+  }
 
   /* gtk_image_new_from_stock removed in GTK-4 - use gtk_image_new_from_icon_name */
 
@@ -4507,27 +5741,39 @@ create_main_window (void)
 
   label1154 = gtk_label_new_with_mnemonic (_("Add"));
   gtk_widget_show (label1154);
+  if (GTK_IS_BOX(hbox127) && GTK_IS_WIDGET(label1154)) {
   gtk_box_append (GTK_BOX (hbox127), label1154);
+  }
 
   pot_insert = gtk_button_new_with_mnemonic (_("Insert"));
   gtk_widget_show (pot_insert);
+  if (GTK_IS_BOX(vbuttonbox_potentials) && GTK_IS_WIDGET(pot_insert)) {
   gtk_box_append (GTK_BOX (vbuttonbox_potentials), pot_insert);
+  }
 
   pot_replace = gtk_button_new_with_label ("Apply"); /* was gtk_button_new_from_stock("gtk-apply") */
   gtk_widget_show (pot_replace);
+  if (GTK_IS_BOX(vbuttonbox_potentials) && GTK_IS_WIDGET(pot_replace)) {
   gtk_box_append (GTK_BOX (vbuttonbox_potentials), pot_replace);
+  }
 
   pot_delete = gtk_button_new ();
   gtk_widget_show (pot_delete);
+  if (GTK_IS_BOX(vbuttonbox_potentials) && GTK_IS_WIDGET(pot_delete)) {
   gtk_box_append (GTK_BOX (vbuttonbox_potentials), pot_delete);
+  }
 
   alignment20 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0); /* gtk_alignment_new removed - using box as placeholder */
   gtk_widget_show (alignment20);
+  if (GTK_IS_BOX(pot_delete) && GTK_IS_WIDGET(alignment20)) {
   gtk_box_append (GTK_BOX (pot_delete), alignment20);
+  }
 
   hbox129 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
   gtk_widget_show (hbox129);
+  if (GTK_IS_BOX(alignment20) && GTK_IS_WIDGET(hbox129)) {
   gtk_box_append (GTK_BOX (alignment20), hbox129);
+  }
 
   /* gtk_image_new_from_stock removed in GTK-4 - use gtk_image_new_from_icon_name */
 
@@ -4538,12 +5784,18 @@ create_main_window (void)
 
   label1156 = gtk_label_new_with_mnemonic (_("Delete"));
   gtk_widget_show (label1156);
+  if (GTK_IS_BOX(hbox129) && GTK_IS_WIDGET(label1156)) {
   gtk_box_append (GTK_BOX (hbox129), label1156);
+  }
 
   scrolledwindow_pot = gtk_scrolled_window_new ();
   gtk_widget_show (scrolledwindow_pot);
+  if (GTK_IS_BOX(vbox75) && GTK_IS_WIDGET(scrolledwindow_pot)) {
   gtk_box_append (GTK_BOX (vbox75), scrolledwindow_pot);
+  }
+  if (GTK_IS_WIDGET(scrolledwindow_pot)) {
   gtk_widget_set_size_request (scrolledwindow_pot, -1, 176); /* added missing args */
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
   /* GTK_WIDGET_UNSET_FLAGS removed in GTK-3 */
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolledwindow_pot), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
@@ -4620,14 +5872,22 @@ create_main_window (void)
 
   hbox_step = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   gtk_widget_show (hbox_step);
+  if (GTK_IS_BOX(vbox76) && GTK_IS_WIDGET(hbox_step)) {
   gtk_box_append (GTK_BOX (vbox76), hbox_step);
+  }
+  if (GTK_IS_WIDGET(hbox_step)) {
   gtk_widget_set_sensitive (hbox_step, FALSE); /* added missing arg */
+  }
 
   frame_states = gtk_frame_new (NULL);
   gtk_widget_show (frame_states);
+  if (GTK_IS_BOX(hbox_step) && GTK_IS_WIDGET(frame_states)) {
   gtk_box_append (GTK_BOX (hbox_step), frame_states);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
+  if (GTK_IS_WIDGET(frame_states)) {
   gtk_widget_set_sensitive (frame_states, FALSE); /* added missing arg */
+  }
 
   table_step = gtk_grid_new(); /* gtk_table_new removed - using gtk_grid_new */
   gtk_widget_show (table_step);
@@ -4638,83 +5898,137 @@ create_main_window (void)
   spin_ib_adj = gtk_adjustment_new (2, 0, 100, 1, 10, 10);
   spin_ib = gtk_spin_button_new (GTK_ADJUSTMENT (spin_ib_adj), 1, 0);
   gtk_widget_show (spin_ib);
+  if (GTK_IS_GRID(table_step) && GTK_IS_WIDGET(spin_ib)) {
   gtk_grid_attach (GTK_GRID (table_step), spin_ib, 1, 0, 1, 1);
+  }
   gtk_spin_button_set_numeric (GTK_SPIN_BUTTON (spin_ib), TRUE);
 
   spin_ia_adj = gtk_adjustment_new (1, 0, 100, 1, 10, 0); /* added missing args */
   spin_ia = gtk_spin_button_new (GTK_ADJUSTMENT (spin_ia_adj), 1, 0);
   gtk_widget_show (spin_ia);
+  if (GTK_IS_GRID(table_step) && GTK_IS_WIDGET(spin_ia)) {
   gtk_grid_attach (GTK_GRID (table_step), spin_ia, 1, 1, 1, 1);
+  }
   gtk_spin_button_set_numeric (GTK_SPIN_BUTTON (spin_ia), TRUE);
 
   vseparator4 = gtk_separator_new(GTK_ORIENTATION_VERTICAL); /* vseparator/hseparator removed */
   gtk_widget_show (vseparator4);
+  if (GTK_IS_GRID(table_step) && GTK_IS_WIDGET(vseparator4)) {
   gtk_grid_attach (GTK_GRID (table_step), vseparator4, 3, 0, 1, 2);
+  }
+  if (GTK_IS_WIDGET(vseparator4)) {
   gtk_widget_set_hexpand (vseparator4, TRUE);
+  }
+  if (GTK_IS_WIDGET(vseparator4)) {
   gtk_widget_set_vexpand (vseparator4, TRUE);
+  }
 
   entry_ib_desc = gtk_entry_new ();
   gtk_widget_show (entry_ib_desc);
+  if (GTK_IS_GRID(table_step) && GTK_IS_WIDGET(entry_ib_desc)) {
   gtk_grid_attach (GTK_GRID (table_step), entry_ib_desc, 2, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(entry_ib_desc)) {
   gtk_widget_set_hexpand (entry_ib_desc, TRUE);
+  }
+  if (GTK_IS_WIDGET(entry_ib_desc)) {
   gtk_widget_set_sensitive (entry_ib_desc, FALSE); /* added missing arg */
+  }
   /* GTK_WIDGET_UNSET_FLAGS removed in GTK-3 */
   gtk_editable_set_editable (GTK_EDITABLE (entry_ib_desc), FALSE);
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_ib_desc), 8226);
 
   entry_ia_desc = gtk_entry_new ();
   gtk_widget_show (entry_ia_desc);
+  if (GTK_IS_GRID(table_step) && GTK_IS_WIDGET(entry_ia_desc)) {
   gtk_grid_attach (GTK_GRID (table_step), entry_ia_desc, 2, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(entry_ia_desc)) {
   gtk_widget_set_hexpand (entry_ia_desc, TRUE);
+  }
+  if (GTK_IS_WIDGET(entry_ia_desc)) {
   gtk_widget_set_sensitive (entry_ia_desc, FALSE); /* added missing arg */
+  }
   gtk_editable_set_editable (GTK_EDITABLE (entry_ia_desc), FALSE);
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_ia_desc), 8226);
 
   spin_k_adj = gtk_adjustment_new (1, 0, 100, 1, 10, 10);
   spin_k = gtk_spin_button_new (GTK_ADJUSTMENT (spin_k_adj), 1, 0);
   gtk_widget_show (spin_k);
+  if (GTK_IS_GRID(table_step) && GTK_IS_WIDGET(spin_k)) {
   gtk_grid_attach (GTK_GRID (table_step), spin_k, 5, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(spin_k)) {
   gtk_widget_set_hexpand (spin_k, TRUE);
+  }
+  if (GTK_IS_WIDGET(spin_k)) {
   gtk_widget_set_vexpand (spin_k, TRUE);
+  }
+  if (GTK_IS_WIDGET(spin_k)) {
   gtk_widget_set_size_request (spin_k, 60, -1); /* added missing args */
+  }
   gtk_spin_button_set_numeric (GTK_SPIN_BUTTON (spin_k), TRUE);
 
   entry_str = gtk_entry_new ();
   gtk_widget_show (entry_str);
+  if (GTK_IS_GRID(table_step) && GTK_IS_WIDGET(entry_str)) {
   gtk_grid_attach (GTK_GRID (table_step), entry_str, 5, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(entry_str)) {
   gtk_widget_set_hexpand (entry_str, TRUE);
+  }
+  if (GTK_IS_WIDGET(entry_str)) {
   gtk_widget_set_vexpand (entry_str, TRUE);
+  }
+  if (GTK_IS_WIDGET(entry_str)) {
   gtk_widget_set_size_request (entry_str, -1, -1); /* added missing args */
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_str), 8226);
 
   label115 = gtk_label_new (_("Strength (STR) : "));
   gtk_widget_show (label115);
+  if (GTK_IS_GRID(table_step) && GTK_IS_WIDGET(label115)) {
   gtk_grid_attach (GTK_GRID (table_step), label115, 4, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(label115)) {
   gtk_widget_set_vexpand (label115, TRUE);
+  }
   gtk_label_set_justify (GTK_LABEL (label115), GTK_JUSTIFY_RIGHT);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
 
   label114 = gtk_label_new (_("Multipolarity (k ):"));
   gtk_widget_show (label114);
+  if (GTK_IS_GRID(table_step) && GTK_IS_WIDGET(label114)) {
   gtk_grid_attach (GTK_GRID (table_step), label114, 4, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(label114)) {
   gtk_widget_set_vexpand (label114, TRUE);
+  }
   gtk_label_set_justify (GTK_LABEL (label114), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
 
   label113 = gtk_label_new (_("Couple state: IB ="));
   gtk_widget_show (label113);
+  if (GTK_IS_GRID(table_step) && GTK_IS_WIDGET(label113)) {
   gtk_grid_attach (GTK_GRID (table_step), label113, 0, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(label113)) {
   gtk_widget_set_vexpand (label113, TRUE);
+  }
   gtk_label_set_justify (GTK_LABEL (label113), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
 
   label662 = gtk_label_new (_("with state IA ="));
   gtk_widget_show (label662);
+  if (GTK_IS_GRID(table_step) && GTK_IS_WIDGET(label662)) {
   gtk_grid_attach (GTK_GRID (table_step), label662, 0, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(label662)) {
   gtk_widget_set_vexpand (label662, TRUE);
+  }
   gtk_label_set_justify (GTK_LABEL (label662), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
@@ -4725,39 +6039,63 @@ create_main_window (void)
 
   buttons_step = gtk_grid_new(); /* gtk_table_new removed - using gtk_grid_new */
   gtk_widget_show (buttons_step);
+  if (GTK_IS_BOX(hbox_step) && GTK_IS_WIDGET(buttons_step)) {
   gtk_box_append (GTK_BOX (hbox_step), buttons_step);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
   /* gtk_table_set_row_spacings removed - use gtk_grid_set_row_spacing */
   /* gtk_table_set_col_spacings removed - use gtk_grid_set_col_spacing */
 
   pot0_add = gtk_button_new_with_label ("Add"); /* was gtk_button_new_from_stock("gtk-add") */
   gtk_widget_show (pot0_add);
+  if (GTK_IS_GRID(buttons_step) && GTK_IS_WIDGET(pot0_add)) {
   gtk_grid_attach (GTK_GRID (buttons_step), pot0_add, 0, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(pot0_add)) {
   gtk_widget_set_hexpand (pot0_add, TRUE);
+  }
+  if (GTK_IS_WIDGET(pot0_add)) {
   gtk_widget_set_vexpand (pot0_add, TRUE);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
 
   pot0_insert = gtk_button_new_with_mnemonic (_("Insert"));
   gtk_widget_show (pot0_insert);
+  if (GTK_IS_GRID(buttons_step) && GTK_IS_WIDGET(pot0_insert)) {
   gtk_grid_attach (GTK_GRID (buttons_step), pot0_insert, 1, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(pot0_insert)) {
   gtk_widget_set_hexpand (pot0_insert, TRUE);
+  }
+  if (GTK_IS_WIDGET(pot0_insert)) {
   gtk_widget_set_vexpand (pot0_insert, TRUE);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
 
   pot0_replace = gtk_button_new ();
   gtk_widget_show (pot0_replace);
+  if (GTK_IS_GRID(buttons_step) && GTK_IS_WIDGET(pot0_replace)) {
   gtk_grid_attach (GTK_GRID (buttons_step), pot0_replace, 0, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(pot0_replace)) {
   gtk_widget_set_hexpand (pot0_replace, TRUE);
+  }
+  if (GTK_IS_WIDGET(pot0_replace)) {
   gtk_widget_set_vexpand (pot0_replace, TRUE);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
 
   alignment30 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0); /* gtk_alignment_new removed - using box as placeholder */
   gtk_widget_show (alignment30);
+  if (GTK_IS_BOX(pot0_replace) && GTK_IS_WIDGET(alignment30)) {
   gtk_box_append (GTK_BOX (pot0_replace), alignment30);
+  }
 
   hbox141 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
   gtk_widget_show (hbox141);
+  if (GTK_IS_BOX(alignment30) && GTK_IS_WIDGET(hbox141)) {
   gtk_box_append (GTK_BOX (alignment30), hbox141);
+  }
 
   /* gtk_image_new_from_stock removed in GTK-4 - use gtk_image_new_from_icon_name */
 
@@ -4768,22 +6106,34 @@ create_main_window (void)
 
   label1170 = gtk_label_new_with_mnemonic (_("Replace"));
   gtk_widget_show (label1170);
+  if (GTK_IS_BOX(hbox141) && GTK_IS_WIDGET(label1170)) {
   gtk_box_append (GTK_BOX (hbox141), label1170);
+  }
 
   pot0_delete = gtk_button_new ();
   gtk_widget_show (pot0_delete);
+  if (GTK_IS_GRID(buttons_step) && GTK_IS_WIDGET(pot0_delete)) {
   gtk_grid_attach (GTK_GRID (buttons_step), pot0_delete, 1, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(pot0_delete)) {
   gtk_widget_set_hexpand (pot0_delete, TRUE);
+  }
+  if (GTK_IS_WIDGET(pot0_delete)) {
   gtk_widget_set_vexpand (pot0_delete, TRUE);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
 
   alignment31 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0); /* gtk_alignment_new removed - using box as placeholder */
   gtk_widget_show (alignment31);
+  if (GTK_IS_BOX(pot0_delete) && GTK_IS_WIDGET(alignment31)) {
   gtk_box_append (GTK_BOX (pot0_delete), alignment31);
+  }
 
   hbox142 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
   gtk_widget_show (hbox142);
+  if (GTK_IS_BOX(alignment31) && GTK_IS_WIDGET(hbox142)) {
   gtk_box_append (GTK_BOX (alignment31), hbox142);
+  }
 
   /* gtk_image_new_from_stock removed in GTK-4 - use gtk_image_new_from_icon_name */
 
@@ -4794,11 +6144,15 @@ create_main_window (void)
 
   label1171 = gtk_label_new_with_mnemonic (_("Delete"));
   gtk_widget_show (label1171);
+  if (GTK_IS_BOX(hbox142) && GTK_IS_WIDGET(label1171)) {
   gtk_box_append (GTK_BOX (hbox142), label1171);
+  }
 
   scrolledwindow_step = gtk_scrolled_window_new ();
   gtk_widget_show (scrolledwindow_step);
+  if (GTK_IS_BOX(vbox76) && GTK_IS_WIDGET(scrolledwindow_step)) {
   gtk_box_append (GTK_BOX (vbox76), scrolledwindow_step);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
   /* GTK_WIDGET_UNSET_FLAGS removed in GTK-3 */
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolledwindow_step), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
@@ -4851,7 +6205,9 @@ create_main_window (void)
 
   scrolledwindow11 = gtk_scrolled_window_new ();
   gtk_widget_show (scrolledwindow11);
+  if (GTK_IS_BOX(vbox66) && GTK_IS_WIDGET(scrolledwindow11)) {
   gtk_box_append (GTK_BOX (vbox66), scrolledwindow11);
+  }
   /* GTK_WIDGET_UNSET_FLAGS removed in GTK-3 */
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolledwindow11), GTK_POLICY_NEVER, GTK_POLICY_ALWAYS);
 
@@ -4865,7 +6221,9 @@ create_main_window (void)
 
   frame131 = gtk_frame_new (NULL);
   gtk_widget_show (frame131);
+  if (GTK_IS_BOX(vbox_overlaps) && GTK_IS_WIDGET(frame131)) {
   gtk_box_append (GTK_BOX (vbox_overlaps), frame131);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
 
   alignment13 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0); /* gtk_alignment_new removed - using box as placeholder */
@@ -4875,36 +6233,56 @@ create_main_window (void)
 
   table86 = gtk_grid_new(); /* gtk_table_new removed - using gtk_grid_new */
   gtk_widget_show (table86);
+  if (GTK_IS_BOX(alignment13) && GTK_IS_WIDGET(table86)) {
   gtk_box_append (GTK_BOX (alignment13), table86);
+  }
   /* gtk_table_set_col_spacings removed - use gtk_grid_set_col_spacing */
 
   label800 = gtk_label_new (_("KN1: overlap index "));
   gtk_widget_show (label800);
+  if (GTK_IS_GRID(table86) && GTK_IS_WIDGET(label800)) {
   gtk_grid_attach (GTK_GRID (table86), label800, 0, 0, 1, 1);
+  }
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
 
   over_kn1_adj = gtk_adjustment_new (0, 0, 10000, 1, 10, 10);
   over_kn1 = gtk_spin_button_new (GTK_ADJUSTMENT (over_kn1_adj), 1, 0);
   gtk_widget_show (over_kn1);
+  if (GTK_IS_GRID(table86) && GTK_IS_WIDGET(over_kn1)) {
   gtk_grid_attach (GTK_GRID (table86), over_kn1, 1, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(over_kn1)) {
   gtk_widget_set_size_request (over_kn1, 50, -1); /* added missing args */
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
 
   label907 = gtk_label_new (_("KN2: "));
+  if (GTK_IS_GRID(table86) && GTK_IS_WIDGET(label907)) {
   gtk_grid_attach (GTK_GRID (table86), label907, 0, 1, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label907), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
 
   over_kn2_adj = gtk_adjustment_new (0, 0, 100, 1, 10, 10);
   over_kn2 = gtk_spin_button_new (GTK_ADJUSTMENT (over_kn2_adj), 1, 0);
+  if (GTK_IS_GRID(table86) && GTK_IS_WIDGET(over_kn2)) {
   gtk_grid_attach (GTK_GRID (table86), over_kn2, 1, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(over_kn2)) {
   gtk_widget_set_hexpand (over_kn2, TRUE);
+  }
+  if (GTK_IS_WIDGET(over_kn2)) {
   gtk_widget_set_size_request (over_kn2, 50, -1); /* added missing args */
+  }
 
   label804 = gtk_label_new (_("KIND of overlap:"));
   gtk_widget_show (label804);
+  if (GTK_IS_GRID(table86) && GTK_IS_WIDGET(label804)) {
   gtk_grid_attach (GTK_GRID (table86), label804, 2, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(label804)) {
   gtk_widget_set_hexpand (label804, TRUE);
+  }
   gtk_label_set_justify (GTK_LABEL (label804), GTK_JUSTIFY_RIGHT);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
 
@@ -4914,9 +6292,15 @@ create_main_window (void)
   /* GtkCombo replaced with GtkComboBoxText */
   over_kind = gtk_combo_box_text_new_with_entry();
   gtk_widget_show (over_kind);
+  if (GTK_IS_GRID(table86) && GTK_IS_WIDGET(over_kind)) {
   gtk_grid_attach (GTK_GRID (table86), over_kind, 3, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(over_kind)) {
   gtk_widget_set_hexpand (over_kind, TRUE);
+  }
+  if (GTK_IS_WIDGET(over_kind)) {
   gtk_widget_set_size_request (over_kind, 226, -1);
+  }
 
   over_kind_items = g_list_append (over_kind_items, (gpointer) _("0. (LN,SN)JN couplings"));
   over_kind_items = g_list_append (over_kind_items, (gpointer) _("1. |Ln,(SN, Jcore)S;Jcom>"));
@@ -4943,7 +6327,9 @@ create_main_window (void)
 
   frame95 = gtk_frame_new (NULL);
   gtk_widget_show (frame95);
+  if (GTK_IS_BOX(vbox_overlaps) && GTK_IS_WIDGET(frame95)) {
   gtk_box_append (GTK_BOX (vbox_overlaps), frame95);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
 
   table70 = gtk_grid_new(); /* gtk_table_new removed - using gtk_grid_new */
@@ -4954,36 +6340,48 @@ create_main_window (void)
 
   label1146 = gtk_label_new (_("     IC2:"));
   gtk_widget_show (label1146);
+  if (GTK_IS_GRID(table70) && GTK_IS_WIDGET(label1146)) {
   gtk_grid_attach (GTK_GRID (table70), label1146, 2, 1, 1, 1);
+  }
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
 
   label1147 = gtk_label_new (_("     IC1: "));
   gtk_widget_show (label1147);
+  if (GTK_IS_GRID(table70) && GTK_IS_WIDGET(label1147)) {
   gtk_grid_attach (GTK_GRID (table70), label1147, 2, 2, 1, 1);
+  }
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
 
   label1148 = gtk_label_new (_("       Core (IA): "));
   gtk_widget_show (label1148);
+  if (GTK_IS_GRID(table70) && GTK_IS_WIDGET(label1148)) {
   gtk_grid_attach (GTK_GRID (table70), label1148, 4, 2, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label1148), GTK_JUSTIFY_RIGHT);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
 
   label798 = gtk_label_new (_("       Composite (IB): "));
   gtk_widget_show (label798);
+  if (GTK_IS_GRID(table70) && GTK_IS_WIDGET(label798)) {
   gtk_grid_attach (GTK_GRID (table70), label798, 4, 1, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label798), GTK_JUSTIFY_RIGHT);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
 
   label802 = gtk_label_new (_("Composite:"));
   gtk_widget_show (label802);
+  if (GTK_IS_GRID(table70) && GTK_IS_WIDGET(label802)) {
   gtk_grid_attach (GTK_GRID (table70), label802, 1, 1, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label802), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
 
   label801 = gtk_label_new (_("Core:"));
   gtk_widget_show (label801);
+  if (GTK_IS_GRID(table70) && GTK_IS_WIDGET(label801)) {
   gtk_grid_attach (GTK_GRID (table70), label801, 1, 2, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label801), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
@@ -4991,23 +6389,37 @@ create_main_window (void)
   over_ia_adj = gtk_adjustment_new (0, 0, 100, 1, 10, 10);
   over_ia = gtk_spin_button_new (GTK_ADJUSTMENT (over_ia_adj), 1, 0);
   gtk_widget_show (over_ia);
+  if (GTK_IS_GRID(table70) && GTK_IS_WIDGET(over_ia)) {
   gtk_grid_attach (GTK_GRID (table70), over_ia, 5, 2, 1, 1);
+  }
+  if (GTK_IS_WIDGET(over_ia)) {
   gtk_widget_set_hexpand (over_ia, TRUE);
+  }
+  if (GTK_IS_WIDGET(over_ia)) {
   gtk_widget_set_size_request (over_ia, 60, -1); /* added missing args */
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
 
   lab_ia_desc = gtk_label_new (_("<b>Partition:</b>"));
   gtk_widget_show (lab_ia_desc);
+  if (GTK_IS_GRID(table70) && GTK_IS_WIDGET(lab_ia_desc)) {
   gtk_grid_attach (GTK_GRID (table70), lab_ia_desc, 2, 0, 2, 1);
+  }
   gtk_label_set_use_markup (GTK_LABEL (lab_ia_desc), TRUE);
   gtk_label_set_justify (GTK_LABEL (lab_ia_desc), GTK_JUSTIFY_CENTER);
 
   over_ib_adj = gtk_adjustment_new (0, 0, 100, 1, 10, 10);
   over_ib = gtk_spin_button_new (GTK_ADJUSTMENT (over_ib_adj), 1, 0);
   gtk_widget_show (over_ib);
+  if (GTK_IS_GRID(table70) && GTK_IS_WIDGET(over_ib)) {
   gtk_grid_attach (GTK_GRID (table70), over_ib, 5, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(over_ib)) {
   gtk_widget_set_hexpand (over_ib, TRUE);
+  }
+  if (GTK_IS_WIDGET(over_ib)) {
   gtk_widget_set_size_request (over_ib, 60, -1); /* added missing args */
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
 
   /* GtkOptionMenu removed - use GtkDropDown */
@@ -5015,8 +6427,12 @@ create_main_window (void)
 
   /* over_in = gtk_option_menu_new...; */ over_in = NULL;
   /* gtk_widget_show (over_in);  - NULL widget */
+  if (GTK_IS_GRID(table70) && GTK_IS_WIDGET(over_in)) {
   gtk_grid_attach (GTK_GRID (table70), over_in, 0, 1, 1, 2);
+  }
+  if (GTK_IS_WIDGET(over_in)) {
   gtk_widget_set_size_request (over_in, 150, -1); /* added missing args */
+  }
 
   /* GtkMenu removed in GTK-4 */
 
@@ -5041,7 +6457,9 @@ create_main_window (void)
 
   label796 = gtk_label_new (_("<b>State within partition</b>"));
   gtk_widget_show (label796);
+  if (GTK_IS_GRID(table70) && GTK_IS_WIDGET(label796)) {
   gtk_grid_attach (GTK_GRID (table70), label796, 4, 0, 2, 1);
+  }
   gtk_label_set_use_markup (GTK_LABEL (label796), TRUE);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
 
@@ -5049,9 +6467,15 @@ create_main_window (void)
 
   combo_ic2 = gtk_combo_box_text_new_with_entry();
   gtk_widget_show (combo_ic2);
+  if (GTK_IS_GRID(table70) && GTK_IS_WIDGET(combo_ic2)) {
   gtk_grid_attach (GTK_GRID (table70), combo_ic2, 3, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(combo_ic2)) {
   gtk_widget_set_hexpand (combo_ic2, TRUE);
+  }
+  if (GTK_IS_WIDGET(combo_ic2)) {
   gtk_widget_set_size_request (combo_ic2, 175, -1);
+  }
 
   combo_ic2_items = g_list_append (combo_ic2_items, (gpointer) "");
   for (GList *item = combo_ic2_items; item != NULL; item = item->next) {
@@ -5066,9 +6490,15 @@ create_main_window (void)
 
   combo_ic1 = gtk_combo_box_text_new_with_entry();
   gtk_widget_show (combo_ic1);
+  if (GTK_IS_GRID(table70) && GTK_IS_WIDGET(combo_ic1)) {
   gtk_grid_attach (GTK_GRID (table70), combo_ic1, 3, 2, 1, 1);
+  }
+  if (GTK_IS_WIDGET(combo_ic1)) {
   gtk_widget_set_hexpand (combo_ic1, TRUE);
+  }
+  if (GTK_IS_WIDGET(combo_ic1)) {
   gtk_widget_set_size_request (combo_ic1, 175, -1);
+  }
 
   combo_ic1_items = g_list_append (combo_ic1_items, (gpointer) "");
   for (GList *item = combo_ic1_items; item != NULL; item = item->next) {
@@ -5089,8 +6519,12 @@ create_main_window (void)
 
   frame102 = gtk_frame_new (NULL);
   gtk_widget_show (frame102);
+  if (GTK_IS_BOX(vbox_overlaps) && GTK_IS_WIDGET(frame102)) {
   gtk_box_append (GTK_BOX (vbox_overlaps), frame102);
+  }
+  if (GTK_IS_WIDGET(frame102)) {
   gtk_widget_set_size_request (frame102, 624, -1); /* added missing args */
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
 
   table_qnumbers = gtk_grid_new(); /* gtk_table_new removed - using gtk_grid_new */
@@ -5101,31 +6535,45 @@ create_main_window (void)
 
   label812 = gtk_label_new (_("Nodes (NN)"));
   gtk_widget_show (label812);
+  if (GTK_IS_GRID(table_qnumbers) && GTK_IS_WIDGET(label812)) {
   gtk_grid_attach (GTK_GRID (table_qnumbers), label812, 2, 1, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label812), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
 
   label797 = gtk_label_new (_("JN=LN+SN:"));
   gtk_widget_show (label797);
+  if (GTK_IS_GRID(table_qnumbers) && GTK_IS_WIDGET(label797)) {
   gtk_grid_attach (GTK_GRID (table_qnumbers), label797, 4, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(label797)) {
   gtk_widget_set_vexpand (label797, TRUE);
+  }
   gtk_label_set_justify (GTK_LABEL (label797), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
 
   label793 = gtk_label_new (_("L cluster-core:"));
   gtk_widget_show (label793);
+  if (GTK_IS_GRID(table_qnumbers) && GTK_IS_WIDGET(label793)) {
   gtk_grid_attach (GTK_GRID (table_qnumbers), label793, 0, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(label793)) {
   gtk_widget_set_vexpand (label793, TRUE);
+  }
   gtk_label_set_justify (GTK_LABEL (label793), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
 
   label794 = gtk_label_new (_("LMAX in def. pot.:"));
   gtk_widget_show (label794);
+  if (GTK_IS_GRID(table_qnumbers) && GTK_IS_WIDGET(label794)) {
   gtk_grid_attach (GTK_GRID (table_qnumbers), label794, 0, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(label794)) {
   gtk_widget_set_vexpand (label794, TRUE);
+  }
   gtk_label_set_justify (GTK_LABEL (label794), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
@@ -5133,96 +6581,160 @@ create_main_window (void)
   over_j_adj = gtk_adjustment_new (0, 0, 100, 0, 10, 10);
   over_j = gtk_spin_button_new (GTK_ADJUSTMENT (over_j_adj), 0.5, 1);
   gtk_widget_show (over_j);
+  if (GTK_IS_GRID(table_qnumbers) && GTK_IS_WIDGET(over_j)) {
   gtk_grid_attach (GTK_GRID (table_qnumbers), over_j, 5, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(over_j)) {
   gtk_widget_set_hexpand (over_j, TRUE);
+  }
+  if (GTK_IS_WIDGET(over_j)) {
   gtk_widget_set_vexpand (over_j, TRUE);
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
 
   over_sn_adj = gtk_adjustment_new (0, 0, 100, 0.5, 10, 10);
   over_sn = gtk_spin_button_new (GTK_ADJUSTMENT (over_sn_adj), 0.5, 1);
   gtk_widget_show (over_sn);
+  if (GTK_IS_GRID(table_qnumbers) && GTK_IS_WIDGET(over_sn)) {
   gtk_grid_attach (GTK_GRID (table_qnumbers), over_sn, 3, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(over_sn)) {
   gtk_widget_set_hexpand (over_sn, TRUE);
+  }
+  if (GTK_IS_WIDGET(over_sn)) {
   gtk_widget_set_vexpand (over_sn, TRUE);
+  }
+  if (GTK_IS_WIDGET(over_sn)) {
   gtk_widget_set_size_request (over_sn, 50, -1); /* added missing args */
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
 
   over_nn_adj = gtk_adjustment_new (0, 0, 100, 1, 10, 10);
   over_nn = gtk_spin_button_new (GTK_ADJUSTMENT (over_nn_adj), 1, 0);
   gtk_widget_show (over_nn);
+  if (GTK_IS_GRID(table_qnumbers) && GTK_IS_WIDGET(over_nn)) {
   gtk_grid_attach (GTK_GRID (table_qnumbers), over_nn, 3, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(over_nn)) {
   gtk_widget_set_hexpand (over_nn, TRUE);
+  }
+  if (GTK_IS_WIDGET(over_nn)) {
   gtk_widget_set_size_request (over_nn, 50, -1); /* added missing args */
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
 
   over_l_adj = gtk_adjustment_new (0, 0, 100, 1, 10, 10);
   over_l = gtk_spin_button_new (GTK_ADJUSTMENT (over_l_adj), 1, 0);
   gtk_widget_show (over_l);
+  if (GTK_IS_GRID(table_qnumbers) && GTK_IS_WIDGET(over_l)) {
   gtk_grid_attach (GTK_GRID (table_qnumbers), over_l, 1, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(over_l)) {
   gtk_widget_set_hexpand (over_l, TRUE);
+  }
+  if (GTK_IS_WIDGET(over_l)) {
   gtk_widget_set_vexpand (over_l, TRUE);
+  }
+  if (GTK_IS_WIDGET(over_l)) {
   gtk_widget_set_size_request (over_l, 50, -1); /* added missing args */
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
 
   over_lmax_adj = gtk_adjustment_new (0, 0, 100, 1, 10, 10);
   over_lmax = gtk_spin_button_new (GTK_ADJUSTMENT (over_lmax_adj), 1, 0);
   gtk_widget_show (over_lmax);
+  if (GTK_IS_GRID(table_qnumbers) && GTK_IS_WIDGET(over_lmax)) {
   gtk_grid_attach (GTK_GRID (table_qnumbers), over_lmax, 1, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(over_lmax)) {
   gtk_widget_set_hexpand (over_lmax, TRUE);
+  }
+  if (GTK_IS_WIDGET(over_lmax)) {
   gtk_widget_set_vexpand (over_lmax, TRUE);
+  }
+  if (GTK_IS_WIDGET(over_lmax)) {
   gtk_widget_set_size_request (over_lmax, 50, -1); /* added missing args */
+  }
+  if (GTK_IS_WIDGET(over_lmax)) {
   gtk_widget_set_sensitive (over_lmax, FALSE); /* added missing arg */
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
 
   label814 = gtk_label_new (_("Mass (DM):"));
   gtk_widget_show (label814);
+  if (GTK_IS_GRID(table_qnumbers) && GTK_IS_WIDGET(label814)) {
   gtk_grid_attach (GTK_GRID (table_qnumbers), label814, 2, 2, 1, 1);
+  }
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
 
   over_dm = gtk_entry_new ();
   gtk_widget_show (over_dm);
+  if (GTK_IS_GRID(table_qnumbers) && GTK_IS_WIDGET(over_dm)) {
   gtk_grid_attach (GTK_GRID (table_qnumbers), over_dm, 3, 2, 1, 1);
+  }
+  if (GTK_IS_WIDGET(over_dm)) {
   gtk_widget_set_hexpand (over_dm, TRUE);
+  }
+  if (GTK_IS_WIDGET(over_dm)) {
   gtk_widget_set_size_request (over_dm, 60, -1); /* added missing args */
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
   gtk_entry_set_invisible_char (GTK_ENTRY (over_dm), 8226);
   gtk_editable_set_width_chars (GTK_EDITABLE (over_dm), 8);
 
   label813 = gtk_label_new (_("CH1:"));
   gtk_widget_show (label813);
+  if (GTK_IS_GRID(table_qnumbers) && GTK_IS_WIDGET(label813)) {
   gtk_grid_attach (GTK_GRID (table_qnumbers), label813, 4, 1, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label813), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
 
   over_ch1 = gtk_entry_new ();
   gtk_widget_show (over_ch1);
+  if (GTK_IS_GRID(table_qnumbers) && GTK_IS_WIDGET(over_ch1)) {
   gtk_grid_attach (GTK_GRID (table_qnumbers), over_ch1, 5, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(over_ch1)) {
   gtk_widget_set_hexpand (over_ch1, TRUE);
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
   gtk_entry_set_invisible_char (GTK_ENTRY (over_ch1), 8226);
   gtk_editable_set_width_chars (GTK_EDITABLE (over_ch1), 7);
 
   label807 = gtk_label_new (_("Binding energy (BE):"));
   gtk_widget_show (label807);
+  if (GTK_IS_GRID(table_qnumbers) && GTK_IS_WIDGET(label807)) {
   gtk_grid_attach (GTK_GRID (table_qnumbers), label807, 0, 2, 1, 1);
+  }
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
 
   over_be = gtk_entry_new ();
   gtk_widget_show (over_be);
+  if (GTK_IS_GRID(table_qnumbers) && GTK_IS_WIDGET(over_be)) {
   gtk_grid_attach (GTK_GRID (table_qnumbers), over_be, 1, 2, 1, 1);
+  }
+  if (GTK_IS_WIDGET(over_be)) {
   gtk_widget_set_hexpand (over_be, TRUE);
+  }
+  if (GTK_IS_WIDGET(over_be)) {
   gtk_widget_set_size_request (over_be, 60, -1); /* added missing args */
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
   gtk_editable_set_text (GTK_EDITABLE (over_be), _("0.000"));
   gtk_entry_set_invisible_char (GTK_ENTRY (over_be), 8226);
 
   label795 = gtk_label_new (_("Intrinsic spin: SN"));
   gtk_widget_show (label795);
+  if (GTK_IS_GRID(table_qnumbers) && GTK_IS_WIDGET(label795)) {
   gtk_grid_attach (GTK_GRID (table_qnumbers), label795, 2, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(label795)) {
   gtk_widget_set_vexpand (label795, TRUE);
+  }
   gtk_label_set_justify (GTK_LABEL (label795), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
@@ -5234,7 +6746,9 @@ create_main_window (void)
 
   frame132 = gtk_frame_new (NULL);
   gtk_widget_show (frame132);
+  if (GTK_IS_BOX(vbox_overlaps) && GTK_IS_WIDGET(frame132)) {
   gtk_box_append (GTK_BOX (vbox_overlaps), frame132);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
 
   alignment14 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0); /* gtk_alignment_new removed - using box as placeholder */
@@ -5244,14 +6758,22 @@ create_main_window (void)
 
   table_bindpot = gtk_grid_new(); /* gtk_table_new removed - using gtk_grid_new */
   gtk_widget_show (table_bindpot);
+  if (GTK_IS_BOX(alignment14) && GTK_IS_WIDGET(table_bindpot)) {
   gtk_box_append (GTK_BOX (alignment14), table_bindpot);
+  }
+  if (GTK_IS_WIDGET(table_bindpot)) {
   gtk_widget_set_size_request (table_bindpot, 200, -1); /* added missing args */
+  }
   /* gtk_table_set_col_spacings removed - use gtk_grid_set_col_spacing */
 
   frame134 = gtk_frame_new (NULL);
   gtk_widget_show (frame134);
+  if (GTK_IS_GRID(table_bindpot) && GTK_IS_WIDGET(frame134)) {
   gtk_grid_attach (GTK_GRID (table_bindpot), frame134, 0, 0, 2, 1);
+  }
+  if (GTK_IS_WIDGET(frame134)) {
   gtk_widget_set_hexpand (frame134, TRUE);
+  }
 
   alignment29 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0); /* gtk_alignment_new removed - using box as placeholder */
   gtk_widget_show (alignment29);
@@ -5260,31 +6782,43 @@ create_main_window (void)
 
   vbox83 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
   gtk_widget_show (vbox83);
+  if (GTK_IS_BOX(alignment29) && GTK_IS_WIDGET(vbox83)) {
   gtk_box_append (GTK_BOX (alignment29), vbox83);
+  }
 
   hbox138 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   gtk_widget_show (hbox138);
+  if (GTK_IS_BOX(vbox83) && GTK_IS_WIDGET(hbox138)) {
   gtk_box_append (GTK_BOX (vbox83), hbox138);
+  }
 
   label897 = gtk_label_new (_("KBPOT : Binding potential "));
   gtk_widget_show (label897);
+  if (GTK_IS_BOX(hbox138) && GTK_IS_WIDGET(label897)) {
   gtk_box_append (GTK_BOX (hbox138), label897);
+  }
   gtk_label_set_justify (GTK_LABEL (label897), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
 
   over_kbpot_adj = gtk_adjustment_new (0, 0, 100, 1, 10, 10);
   over_kbpot = gtk_spin_button_new (GTK_ADJUSTMENT (over_kbpot_adj), 1, 0);
   gtk_widget_show (over_kbpot);
+  if (GTK_IS_BOX(hbox138) && GTK_IS_WIDGET(over_kbpot)) {
   gtk_box_append (GTK_BOX (hbox138), over_kbpot);
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
 
   hbox139 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   gtk_widget_show (hbox139);
+  if (GTK_IS_BOX(vbox83) && GTK_IS_WIDGET(hbox139)) {
   gtk_box_append (GTK_BOX (vbox83), hbox139);
+  }
 
   label808 = gtk_label_new (_("Print control (IPC)"));
   gtk_widget_show (label808);
+  if (GTK_IS_BOX(hbox139) && GTK_IS_WIDGET(label808)) {
   gtk_box_append (GTK_BOX (hbox139), label808);
+  }
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
 
   /* GtkOptionMenu removed - use GtkDropDown */
@@ -5338,7 +6872,9 @@ create_main_window (void)
 
   hbox140 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   gtk_widget_show (hbox140);
+  if (GTK_IS_BOX(vbox83) && GTK_IS_WIDGET(hbox140)) {
   gtk_box_append (GTK_BOX (vbox83), hbox140);
+  }
 
   /* GtkOptionMenu removed - use GtkDropDown */
 
@@ -5370,14 +6906,20 @@ create_main_window (void)
 
   label1167 = gtk_label_new (_("NFL: "));
   gtk_widget_show (label1167);
+  if (GTK_IS_BOX(hbox140) && GTK_IS_WIDGET(label1167)) {
   gtk_box_append (GTK_BOX (hbox140), label1167);
+  }
   gtk_label_set_justify (GTK_LABEL (label1167), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
 
   over_nfl = gtk_entry_new ();
   gtk_widget_show (over_nfl);
+  if (GTK_IS_BOX(hbox140) && GTK_IS_WIDGET(over_nfl)) {
   gtk_box_append (GTK_BOX (hbox140), over_nfl);
+  }
+  if (GTK_IS_WIDGET(over_nfl)) {
   gtk_widget_set_size_request (over_nfl, 66, -1); /* added missing args */
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (over_nfl), 8226);
   gtk_editable_set_width_chars (GTK_EDITABLE (over_nfl), 8);
 
@@ -5388,8 +6930,12 @@ create_main_window (void)
 
   frame133 = gtk_frame_new (NULL);
   gtk_widget_show (frame133);
+  if (GTK_IS_GRID(table_bindpot) && GTK_IS_WIDGET(frame133)) {
   gtk_grid_attach (GTK_GRID (table_bindpot), frame133, 2, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(frame133)) {
   gtk_widget_set_hexpand (frame133, TRUE);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
 
   alignment28 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0); /* gtk_alignment_new removed - using box as placeholder */
@@ -5399,29 +6945,39 @@ create_main_window (void)
 
   table91 = gtk_grid_new(); /* gtk_table_new removed - using gtk_grid_new */
   gtk_widget_show (table91);
+  if (GTK_IS_BOX(alignment28) && GTK_IS_WIDGET(table91)) {
   gtk_box_append (GTK_BOX (alignment28), table91);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
 
   check_vary_be = gtk_check_button_new_with_mnemonic (_("Vary binding Energy instead of potential"));
   gtk_widget_show (check_vary_be);
+  if (GTK_IS_GRID(table91) && GTK_IS_WIDGET(check_vary_be)) {
   gtk_grid_attach (GTK_GRID (table91), check_vary_be, 0, 2, 2, 1);
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
 
   over_isc_adj = gtk_adjustment_new (0, 0, 50, 1, 10, 10);
   over_isc = gtk_spin_button_new (GTK_ADJUSTMENT (over_isc_adj), 1, 0);
   gtk_widget_show (over_isc);
+  if (GTK_IS_GRID(table91) && GTK_IS_WIDGET(over_isc)) {
   gtk_grid_attach (GTK_GRID (table91), over_isc, 1, 0, 1, 1);
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
 
   label809 = gtk_label_new (_("ISC : component type to adjust"));
   gtk_widget_show (label809);
+  if (GTK_IS_GRID(table91) && GTK_IS_WIDGET(label809)) {
   gtk_grid_attach (GTK_GRID (table91), label809, 0, 0, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label809), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
 
   check_vforbins = gtk_check_button_new_with_mnemonic (_("Use calculated potential for continuum bins [ISC<0]"));
   gtk_widget_show (check_vforbins);
+  if (GTK_IS_GRID(table91) && GTK_IS_WIDGET(check_vforbins)) {
   gtk_grid_attach (GTK_GRID (table91), check_vforbins, 0, 1, 2, 1);
+  }
 
   label1168 = gtk_label_new (_("<b></b>"));
   gtk_widget_show (label1168);
@@ -5435,7 +6991,9 @@ create_main_window (void)
 
   frame116 = gtk_frame_new (NULL);
   gtk_widget_show (frame116);
+  if (GTK_IS_BOX(vbox_overlaps) && GTK_IS_WIDGET(frame116)) {
   gtk_box_append (GTK_BOX (vbox_overlaps), frame116);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
 
   table78 = gtk_grid_new(); /* gtk_table_new removed - using gtk_grid_new */
@@ -5447,45 +7005,73 @@ create_main_window (void)
 
   over_nk = gtk_entry_new ();
   gtk_widget_show (over_nk);
+  if (GTK_IS_GRID(table78) && GTK_IS_WIDGET(over_nk)) {
   gtk_grid_attach (GTK_GRID (table78), over_nk, 1, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(over_nk)) {
   gtk_widget_set_hexpand (over_nk, TRUE);
+  }
+  if (GTK_IS_WIDGET(over_nk)) {
   gtk_widget_set_vexpand (over_nk, TRUE);
+  }
+  if (GTK_IS_WIDGET(over_nk)) {
   gtk_widget_set_size_request (over_nk, 60, -1); /* added missing args */
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
   gtk_entry_set_invisible_char (GTK_ENTRY (over_nk), 8226);
 
   over_er = gtk_entry_new ();
   gtk_widget_show (over_er);
+  if (GTK_IS_GRID(table78) && GTK_IS_WIDGET(over_er)) {
   gtk_grid_attach (GTK_GRID (table78), over_er, 3, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(over_er)) {
   gtk_widget_set_size_request (over_er, 60, -1); /* added missing args */
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
   gtk_entry_set_invisible_char (GTK_ENTRY (over_er), 8226);
 
   over_isc_cont_adj = gtk_adjustment_new (0, 0, 1000, 1, 10, 10);
   over_isc_cont = gtk_spin_button_new (GTK_ADJUSTMENT (over_isc_cont_adj), 1, 0);
   gtk_widget_show (over_isc_cont);
+  if (GTK_IS_GRID(table78) && GTK_IS_WIDGET(over_isc_cont)) {
   gtk_grid_attach (GTK_GRID (table78), over_isc_cont, 5, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(over_isc_cont)) {
   gtk_widget_set_size_request (over_isc_cont, 60, -1); /* added missing args */
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
 
   label946 = gtk_label_new (_("Integration steps: NK"));
   gtk_widget_show (label946);
+  if (GTK_IS_GRID(table78) && GTK_IS_WIDGET(label946)) {
   gtk_grid_attach (GTK_GRID (table78), label946, 0, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(label946)) {
   gtk_widget_set_hexpand (label946, TRUE);
+  }
+  if (GTK_IS_WIDGET(label946)) {
   gtk_widget_set_vexpand (label946, TRUE);
+  }
   gtk_label_set_justify (GTK_LABEL (label946), GTK_JUSTIFY_RIGHT);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
 
   label947 = gtk_label_new (_("Range of  bin: ER"));
   gtk_widget_show (label947);
+  if (GTK_IS_GRID(table78) && GTK_IS_WIDGET(label947)) {
   gtk_grid_attach (GTK_GRID (table78), label947, 2, 0, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label947), GTK_JUSTIFY_RIGHT);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
 
   label948 = gtk_label_new (_("Normalization: ISC"));
   gtk_widget_show (label948);
+  if (GTK_IS_GRID(table78) && GTK_IS_WIDGET(label948)) {
   gtk_grid_attach (GTK_GRID (table78), label948, 4, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(label948)) {
   gtk_widget_set_hexpand (label948, TRUE);
+  }
   gtk_label_set_justify (GTK_LABEL (label948), GTK_JUSTIFY_RIGHT);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
 
@@ -5496,11 +7082,15 @@ create_main_window (void)
 
   event_misc_over = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0); /* was gtk_event_box_new() */
   gtk_widget_show (event_misc_over);
+  if (GTK_IS_BOX(vbox_overlaps) && GTK_IS_WIDGET(event_misc_over)) {
   gtk_box_append (GTK_BOX (vbox_overlaps), event_misc_over);
+  }
 
   frame_zerorange = gtk_frame_new (NULL);
   gtk_widget_show (frame_zerorange);
+  if (GTK_IS_BOX(event_misc_over) && GTK_IS_WIDGET(frame_zerorange)) {
   gtk_box_append (GTK_BOX (event_misc_over), frame_zerorange);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
   /* gtk_frame_set_shadow_type removed in GTK-4 */
 
@@ -5510,46 +7100,68 @@ create_main_window (void)
   /* gtk_alignment_set removed in GTK-4 */
 
   table_miscbins = gtk_grid_new(); /* gtk_table_new removed - using gtk_grid_new */
+  if (GTK_IS_BOX(alignment12) && GTK_IS_WIDGET(table_miscbins)) {
   gtk_box_append (GTK_BOX (alignment12), table_miscbins);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
 
   label899 = gtk_label_new (_("AMPL:"));
   gtk_widget_show (label899);
+  if (GTK_IS_GRID(table_miscbins) && GTK_IS_WIDGET(label899)) {
   gtk_grid_attach (GTK_GRID (table_miscbins), label899, 0, 1, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label899), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
 
   label898 = gtk_label_new (_("NAM:"));
   gtk_widget_show (label898);
+  if (GTK_IS_GRID(table_miscbins) && GTK_IS_WIDGET(label898)) {
   gtk_grid_attach (GTK_GRID (table_miscbins), label898, 2, 1, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label898), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
 
   label806 = gtk_label_new (_("KRPOT : "));
   gtk_widget_show (label806);
+  if (GTK_IS_GRID(table_miscbins) && GTK_IS_WIDGET(label806)) {
   gtk_grid_attach (GTK_GRID (table_miscbins), label806, 0, 0, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label806), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
 
   over_krpot_adj = gtk_adjustment_new (0, 0, 100, 1, 10, 10);
   over_krpot = gtk_spin_button_new (GTK_ADJUSTMENT (over_krpot_adj), 1, 0);
   gtk_widget_show (over_krpot);
+  if (GTK_IS_GRID(table_miscbins) && GTK_IS_WIDGET(over_krpot)) {
   gtk_grid_attach (GTK_GRID (table_miscbins), over_krpot, 1, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(over_krpot)) {
   gtk_widget_set_hexpand (over_krpot, TRUE);
+  }
+  if (GTK_IS_WIDGET(over_krpot)) {
   gtk_widget_set_size_request (over_krpot, 52, -1); /* added missing args */
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
 
   over_ampl = gtk_entry_new ();
   gtk_widget_show (over_ampl);
+  if (GTK_IS_GRID(table_miscbins) && GTK_IS_WIDGET(over_ampl)) {
   gtk_grid_attach (GTK_GRID (table_miscbins), over_ampl, 1, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(over_ampl)) {
   gtk_widget_set_hexpand (over_ampl, TRUE);
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (over_ampl), 8226);
   gtk_editable_set_width_chars (GTK_EDITABLE (over_ampl), 8);
 
   over_nam = gtk_entry_new ();
   gtk_widget_show (over_nam);
+  if (GTK_IS_GRID(table_miscbins) && GTK_IS_WIDGET(over_nam)) {
   gtk_grid_attach (GTK_GRID (table_miscbins), over_nam, 3, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(over_nam)) {
   gtk_widget_set_hexpand (over_nam, TRUE);
+  }
   /* GTK_WIDGET_SET_FLAGS removed in GTK-3 */
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
   gtk_entry_set_invisible_char (GTK_ENTRY (over_nam), 8226);
@@ -5561,7 +7173,9 @@ create_main_window (void)
   gtk_label_set_use_markup (GTK_LABEL (label1142), TRUE);
 
   frame109 = gtk_frame_new (NULL);
+  if (GTK_IS_BOX(vbox66) && GTK_IS_WIDGET(frame109)) {
   gtk_box_append (GTK_BOX (vbox66), frame109);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
 
   hbuttonbox5 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0); /* button_box removed */
@@ -5573,28 +7187,42 @@ create_main_window (void)
 
   button34 = gtk_button_new_with_mnemonic (_("Add"));
   gtk_widget_show (button34);
+  if (GTK_IS_BOX(hbuttonbox5) && GTK_IS_WIDGET(button34)) {
   gtk_box_append (GTK_BOX (hbuttonbox5), button34);
+  }
 
   button35 = gtk_button_new_with_mnemonic (_("Insert"));
   gtk_widget_show (button35);
+  if (GTK_IS_BOX(hbuttonbox5) && GTK_IS_WIDGET(button35)) {
   gtk_box_append (GTK_BOX (hbuttonbox5), button35);
+  }
 
   button36 = gtk_button_new_with_mnemonic (_("Replace"));
   gtk_widget_show (button36);
+  if (GTK_IS_BOX(hbuttonbox5) && GTK_IS_WIDGET(button36)) {
   gtk_box_append (GTK_BOX (hbuttonbox5), button36);
+  }
 
   button37 = gtk_button_new_with_mnemonic (_("Delete"));
   gtk_widget_show (button37);
+  if (GTK_IS_BOX(hbuttonbox5) && GTK_IS_WIDGET(button37)) {
   gtk_box_append (GTK_BOX (hbuttonbox5), button37);
+  }
 
   hbox122 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   gtk_widget_show (hbox122);
+  if (GTK_IS_BOX(vbox66) && GTK_IS_WIDGET(hbox122)) {
   gtk_box_append (GTK_BOX (vbox66), hbox122);
+  }
 
   scrolled_overlap = gtk_scrolled_window_new ();
   gtk_widget_show (scrolled_overlap);
+  if (GTK_IS_BOX(hbox122) && GTK_IS_WIDGET(scrolled_overlap)) {
   gtk_box_append (GTK_BOX (hbox122), scrolled_overlap);
+  }
+  if (GTK_IS_WIDGET(scrolled_overlap)) {
   gtk_widget_set_size_request (scrolled_overlap, -1, 150); /* added missing args */
+  }
   /* GTK_WIDGET_UNSET_FLAGS removed in GTK-3 */
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolled_overlap), GTK_POLICY_AUTOMATIC, GTK_POLICY_ALWAYS);
   /* gtk_scrolled_window_set_shadow_type removed in GTK-4 */
@@ -5602,7 +7230,9 @@ create_main_window (void)
 
   overlap_clist = gtk_clist_new (25);
   gtk_widget_show (overlap_clist);
+  if (GTK_IS_BOX(scrolled_overlap) && GTK_IS_WIDGET(overlap_clist)) {
   gtk_box_append (GTK_BOX (scrolled_overlap), overlap_clist);
+  }
   gtk_clist_set_column_width (GTK_CLIST (overlap_clist), 0, 29);
   gtk_clist_set_column_width (GTK_CLIST (overlap_clist), 1, 29);
   gtk_clist_set_column_width (GTK_CLIST (overlap_clist), 2, 28);
@@ -5733,12 +7363,16 @@ create_main_window (void)
 
   vbuttonbox2 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0); /* button_box removed */
   gtk_widget_show (vbuttonbox2);
+  if (GTK_IS_BOX(hbox122) && GTK_IS_WIDGET(vbuttonbox2)) {
   gtk_box_append (GTK_BOX (hbox122), vbuttonbox2);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
 
   button40 = gtk_button_new ();
   gtk_widget_show (button40);
+  if (GTK_IS_BOX(vbuttonbox2) && GTK_IS_WIDGET(button40)) {
   gtk_box_append (GTK_BOX (vbuttonbox2), button40);
+  }
   /* GTK_WIDGET_SET_FLAGS removed in GTK-3 */
 
   alignment15 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0); /* gtk_alignment_new removed - using box as placeholder */
@@ -5747,7 +7381,9 @@ create_main_window (void)
 
   hbox123 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
   gtk_widget_show (hbox123);
+  if (GTK_IS_BOX(alignment15) && GTK_IS_WIDGET(hbox123)) {
   gtk_box_append (GTK_BOX (alignment15), hbox123);
+  }
 
   /* gtk_image_new_from_stock removed in GTK-4 - use gtk_image_new_from_icon_name */
 
@@ -5758,16 +7394,22 @@ create_main_window (void)
 
   label1150 = gtk_label_new_with_mnemonic (_("Add"));
   gtk_widget_show (label1150);
+  if (GTK_IS_BOX(hbox123) && GTK_IS_WIDGET(label1150)) {
   gtk_box_append (GTK_BOX (hbox123), label1150);
+  }
 
   button41 = gtk_button_new_with_mnemonic (_("Insert"));
   gtk_widget_show (button41);
+  if (GTK_IS_BOX(vbuttonbox2) && GTK_IS_WIDGET(button41)) {
   gtk_box_append (GTK_BOX (vbuttonbox2), button41);
+  }
   /* GTK_WIDGET_SET_FLAGS removed in GTK-3 */
 
   button42 = gtk_button_new ();
   gtk_widget_show (button42);
+  if (GTK_IS_BOX(vbuttonbox2) && GTK_IS_WIDGET(button42)) {
   gtk_box_append (GTK_BOX (vbuttonbox2), button42);
+  }
   /* GTK_WIDGET_SET_FLAGS removed in GTK-3 */
 
   alignment17 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0); /* gtk_alignment_new removed - using box as placeholder */
@@ -5776,7 +7418,9 @@ create_main_window (void)
 
   hbox125 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
   gtk_widget_show (hbox125);
+  if (GTK_IS_BOX(alignment17) && GTK_IS_WIDGET(hbox125)) {
   gtk_box_append (GTK_BOX (alignment17), hbox125);
+  }
 
   /* gtk_image_new_from_stock removed in GTK-4 - use gtk_image_new_from_icon_name */
 
@@ -5787,11 +7431,15 @@ create_main_window (void)
 
   label1152 = gtk_label_new_with_mnemonic (_("Replace"));
   gtk_widget_show (label1152);
+  if (GTK_IS_BOX(hbox125) && GTK_IS_WIDGET(label1152)) {
   gtk_box_append (GTK_BOX (hbox125), label1152);
+  }
 
   button43 = gtk_button_new ();
   gtk_widget_show (button43);
+  if (GTK_IS_BOX(vbuttonbox2) && GTK_IS_WIDGET(button43)) {
   gtk_box_append (GTK_BOX (vbuttonbox2), button43);
+  }
   /* GTK_WIDGET_SET_FLAGS removed in GTK-3 */
 
   alignment16 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0); /* gtk_alignment_new removed - using box as placeholder */
@@ -5800,7 +7448,9 @@ create_main_window (void)
 
   hbox124 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
   gtk_widget_show (hbox124);
+  if (GTK_IS_BOX(alignment16) && GTK_IS_WIDGET(hbox124)) {
   gtk_box_append (GTK_BOX (alignment16), hbox124);
+  }
 
   /* gtk_image_new_from_stock removed in GTK-4 - use gtk_image_new_from_icon_name */
 
@@ -5811,7 +7461,9 @@ create_main_window (void)
 
   label1151 = gtk_label_new_with_mnemonic (_("Delete"));
   gtk_widget_show (label1151);
+  if (GTK_IS_BOX(hbox124) && GTK_IS_WIDGET(label1151)) {
   gtk_box_append (GTK_BOX (hbox124), label1151);
+  }
 
   label836 = gtk_label_new (_("Overlaps"));
   gtk_widget_show (label836);
@@ -5824,7 +7476,9 @@ create_main_window (void)
 
   vpaned_couplings = gtk_paned_new (GTK_ORIENTATION_VERTICAL); /* was gtk_vpaned_new() */
   gtk_widget_show (vpaned_couplings);
+  if (GTK_IS_BOX(alignment1) && GTK_IS_WIDGET(vpaned_couplings)) {
   gtk_box_append (GTK_BOX (alignment1), vpaned_couplings);
+  }
 
   frame_coupling = gtk_frame_new (NULL);
   gtk_widget_show (frame_coupling);
@@ -5837,12 +7491,16 @@ create_main_window (void)
 
   hbox32 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   gtk_widget_show (hbox32);
+  if (GTK_IS_BOX(vbox26) && GTK_IS_WIDGET(hbox32)) {
   gtk_box_append (GTK_BOX (vbox26), hbox32);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
 
   frame_ict0 = gtk_frame_new (NULL);
   gtk_widget_show (frame_ict0);
+  if (GTK_IS_BOX(hbox32) && GTK_IS_WIDGET(frame_ict0)) {
   gtk_box_append (GTK_BOX (hbox32), frame_ict0);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
 
   table69 = gtk_grid_new(); /* gtk_table_new removed - using gtk_grid_new */
@@ -5854,7 +7512,9 @@ create_main_window (void)
 
   label364 = gtk_label_new (_("ICT0:"));
   gtk_widget_show (label364);
+  if (GTK_IS_GRID(table69) && GTK_IS_WIDGET(label364)) {
   gtk_grid_attach (GTK_GRID (table69), label364, 0, 0, 1, 1);
+  }
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
 
@@ -5862,8 +7522,12 @@ create_main_window (void)
 
   combo_ictfrom = gtk_combo_box_text_new_with_entry();
   gtk_widget_show (combo_ictfrom);
+  if (GTK_IS_GRID(table69) && GTK_IS_WIDGET(combo_ictfrom)) {
   gtk_grid_attach (GTK_GRID (table69), combo_ictfrom, 3, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(combo_ictfrom)) {
   gtk_widget_set_hexpand (combo_ictfrom, TRUE);
+  }
 
   combo_ictfrom_items = g_list_append (combo_ictfrom_items, (gpointer) "");
   for (GList *item = combo_ictfrom_items; item != NULL; item = item->next) {
@@ -5877,53 +7541,79 @@ create_main_window (void)
 
   label365 = gtk_label_new (_("ICTFROM:"));
   gtk_widget_show (label365);
+  if (GTK_IS_GRID(table69) && GTK_IS_WIDGET(label365)) {
   gtk_grid_attach (GTK_GRID (table69), label365, 2, 0, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label365), GTK_JUSTIFY_CENTER);
 
   check_icto = gtk_check_button_new_with_mnemonic (_("Block coupling in reverse direction [ICTO <0]"));
   gtk_widget_show (check_icto);
+  if (GTK_IS_GRID(table69) && GTK_IS_WIDGET(check_icto)) {
   gtk_grid_attach (GTK_GRID (table69), check_icto, 0, 1, 4, 1);
+  }
 
   label366 = gtk_label_new (_("KIND:"));
   gtk_widget_show (label366);
+  if (GTK_IS_GRID(table69) && GTK_IS_WIDGET(label366)) {
   gtk_grid_attach (GTK_GRID (table69), label366, 0, 2, 1, 1);
+  }
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
 
   entry_rmax = gtk_entry_new ();
   gtk_widget_show (entry_rmax);
+  if (GTK_IS_GRID(table69) && GTK_IS_WIDGET(entry_rmax)) {
   gtk_grid_attach (GTK_GRID (table69), entry_rmax, 1, 3, 1, 1);
+  }
+  if (GTK_IS_WIDGET(entry_rmax)) {
   gtk_widget_set_hexpand (entry_rmax, TRUE);
+  }
+  if (GTK_IS_WIDGET(entry_rmax)) {
   gtk_widget_set_size_request (entry_rmax, 50, -1); /* added missing args */
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_rmax), 8226);
 
   label475 = gtk_label_new (_("RMAX:"));
   gtk_widget_show (label475);
+  if (GTK_IS_GRID(table69) && GTK_IS_WIDGET(label475)) {
   gtk_grid_attach (GTK_GRID (table69), label475, 0, 3, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label475), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
 
   entry_jmax = gtk_entry_new ();
   gtk_widget_show (entry_jmax);
+  if (GTK_IS_GRID(table69) && GTK_IS_WIDGET(entry_jmax)) {
   gtk_grid_attach (GTK_GRID (table69), entry_jmax, 3, 3, 1, 1);
+  }
+  if (GTK_IS_WIDGET(entry_jmax)) {
   gtk_widget_set_hexpand (entry_jmax, TRUE);
+  }
+  if (GTK_IS_WIDGET(entry_jmax)) {
   gtk_widget_set_size_request (entry_jmax, 50, -1); /* added missing args */
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_jmax), 8226);
 
   label476 = gtk_label_new (_("JMAX:"));
   gtk_widget_show (label476);
+  if (GTK_IS_GRID(table69) && GTK_IS_WIDGET(label476)) {
   gtk_grid_attach (GTK_GRID (table69), label476, 2, 3, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label476), GTK_JUSTIFY_CENTER);
 
   /* GtkCombo replaced with GtkComboBoxText */
 
   combo_icto = gtk_combo_box_text_new_with_entry();
   gtk_widget_show (combo_icto);
+  if (GTK_IS_GRID(table69) && GTK_IS_WIDGET(combo_icto)) {
   gtk_grid_attach (GTK_GRID (table69), combo_icto, 1, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(combo_icto)) {
   gtk_widget_set_hexpand (combo_icto, TRUE);
+  }
 
   combo_icto_items = g_list_append (combo_icto_items, (gpointer) "");
   for (GList *item = combo_icto_items; item != NULL; item = item->next) {
@@ -5939,9 +7629,15 @@ create_main_window (void)
 
   combo_kind = gtk_combo_box_text_new_with_entry();
   gtk_widget_show (combo_kind);
+  if (GTK_IS_GRID(table69) && GTK_IS_WIDGET(combo_kind)) {
   gtk_grid_attach (GTK_GRID (table69), combo_kind, 1, 2, 3, 1);
+  }
+  if (GTK_IS_WIDGET(combo_kind)) {
   gtk_widget_set_hexpand (combo_kind, TRUE);
+  }
+  if (GTK_IS_WIDGET(combo_kind)) {
   gtk_widget_set_size_request (combo_kind, 264, -1);
+  }
 
   combo_kind_items = g_list_append (combo_kind_items, (gpointer) _("1.-Coupling between states of the projectile"));
   combo_kind_items = g_list_append (combo_kind_items, (gpointer) _("2.-Couplings between states of the target"));
@@ -5967,8 +7663,12 @@ create_main_window (void)
 
   frame63 = gtk_frame_new (NULL);
   gtk_widget_show (frame63);
+  if (GTK_IS_BOX(hbox32) && GTK_IS_WIDGET(frame63)) {
   gtk_box_append (GTK_BOX (hbox32), frame63);
+  }
+  if (GTK_IS_WIDGET(frame63)) {
   gtk_widget_set_size_request (frame63, 291, -1); /* added missing args */
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
 
   nb_coup = gtk_notebook_new ();
@@ -5980,9 +7680,13 @@ create_main_window (void)
 
   table_kind3 = gtk_grid_new(); /* gtk_table_new removed - using gtk_grid_new */
   gtk_widget_show (table_kind3);
+  if (GTK_IS_BOX(nb_coup) && GTK_IS_WIDGET(table_kind3)) {
   gtk_box_append (GTK_BOX (nb_coup), table_kind3);
+  }
   /* gtk_notebook_set_tab_label_packing removed in GTK-4 */
+  if (GTK_IS_WIDGET(table_kind3)) {
   gtk_widget_set_size_request (table_kind3, 200, -1); /* added missing args */
+  }
   /* gtk_table_set_row_spacings removed - use gtk_grid_set_row_spacing */
   /* gtk_table_set_col_spacings removed - use gtk_grid_set_col_spacing */
 
@@ -5991,9 +7695,15 @@ create_main_window (void)
 
   /* opt_k3_ip3 = gtk_option_menu_new...; */ opt_k3_ip3 = NULL;
   /* gtk_widget_show (opt_k3_ip3);  - NULL widget */
+  if (GTK_IS_GRID(table_kind3) && GTK_IS_WIDGET(opt_k3_ip3)) {
   gtk_grid_attach (GTK_GRID (table_kind3), opt_k3_ip3, 0, 2, 4, 1);
+  }
+  if (GTK_IS_WIDGET(opt_k3_ip3)) {
   gtk_widget_set_hexpand (opt_k3_ip3, TRUE);
+  }
+  if (GTK_IS_WIDGET(opt_k3_ip3)) {
   gtk_widget_set_size_request (opt_k3_ip3, 120, -1); /* added missing args */
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
 
   /* GtkMenu removed in GTK-4 */
@@ -6090,8 +7800,12 @@ create_main_window (void)
   spin_q_adj = gtk_adjustment_new (0, 0, 100, 1, 10, 10);
   spin_q = gtk_spin_button_new (GTK_ADJUSTMENT (spin_q_adj), 1, 0);
   gtk_widget_show (spin_q);
+  if (GTK_IS_GRID(table_kind3) && GTK_IS_WIDGET(spin_q)) {
   gtk_grid_attach (GTK_GRID (table_kind3), spin_q, 1, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(spin_q)) {
   gtk_widget_set_hexpand (spin_q, TRUE);
+  }
   gtk_spin_button_set_numeric (GTK_SPIN_BUTTON (spin_q), TRUE);
 
   /* GtkOptionMenu removed - use GtkDropDown */
@@ -6099,8 +7813,12 @@ create_main_window (void)
 
   /* opt_q = gtk_option_menu_new...; */ opt_q = NULL;
   /* gtk_widget_show (opt_q);  - NULL widget */
+  if (GTK_IS_GRID(table_kind3) && GTK_IS_WIDGET(opt_q)) {
   gtk_grid_attach (GTK_GRID (table_kind3), opt_q, 2, 0, 2, 1);
+  }
+  if (GTK_IS_WIDGET(opt_q)) {
   gtk_widget_set_hexpand (opt_q, TRUE);
+  }
 
   /* GtkMenu removed in GTK-4 */
 
@@ -6125,42 +7843,64 @@ create_main_window (void)
 
   label703 = gtk_label_new (_("Q (IP1):"));
   gtk_widget_show (label703);
+  if (GTK_IS_GRID(table_kind3) && GTK_IS_WIDGET(label703)) {
   gtk_grid_attach (GTK_GRID (table_kind3), label703, 0, 0, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label703), GTK_JUSTIFY_CENTER);
 
   label704 = gtk_label_new (_("kfrag (P1):"));
   gtk_widget_show (label704);
+  if (GTK_IS_GRID(table_kind3) && GTK_IS_WIDGET(label704)) {
   gtk_grid_attach (GTK_GRID (table_kind3), label704, 0, 3, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label704), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
 
   entry_k3_p1 = gtk_entry_new ();
   gtk_widget_show (entry_k3_p1);
+  if (GTK_IS_GRID(table_kind3) && GTK_IS_WIDGET(entry_k3_p1)) {
   gtk_grid_attach (GTK_GRID (table_kind3), entry_k3_p1, 1, 3, 1, 1);
+  }
+  if (GTK_IS_WIDGET(entry_k3_p1)) {
   gtk_widget_set_hexpand (entry_k3_p1, TRUE);
+  }
+  if (GTK_IS_WIDGET(entry_k3_p1)) {
   gtk_widget_set_size_request (entry_k3_p1, 50, -1); /* added missing args */
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_k3_p1), 8226);
 
   entry_k3_p2 = gtk_entry_new ();
   gtk_widget_show (entry_k3_p2);
+  if (GTK_IS_GRID(table_kind3) && GTK_IS_WIDGET(entry_k3_p2)) {
   gtk_grid_attach (GTK_GRID (table_kind3), entry_k3_p2, 3, 3, 1, 1);
+  }
+  if (GTK_IS_WIDGET(entry_k3_p2)) {
   gtk_widget_set_hexpand (entry_k3_p2, TRUE);
+  }
+  if (GTK_IS_WIDGET(entry_k3_p2)) {
   gtk_widget_set_size_request (entry_k3_p2, 50, -1); /* added missing args */
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_k3_p2), 8226);
 
   label705 = gtk_label_new (_("kcore (P2):"));
   gtk_widget_show (label705);
+  if (GTK_IS_GRID(table_kind3) && GTK_IS_WIDGET(label705)) {
   gtk_grid_attach (GTK_GRID (table_kind3), label705, 2, 3, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label705), GTK_JUSTIFY_CENTER);
 
   /* TODO: Replace with GTK-4 GtkDropDown + GtkStringList */
   combo_k3_ip2 = gtk_label_new("ComboBox placeholder");
   gtk_widget_show (combo_k3_ip2);
+  if (GTK_IS_GRID(table_kind3) && GTK_IS_WIDGET(combo_k3_ip2)) {
   gtk_grid_attach (GTK_GRID (table_kind3), combo_k3_ip2, 0, 1, 4, 1);
+  }
+  if (GTK_IS_WIDGET(combo_k3_ip2)) {
   gtk_widget_set_vexpand (combo_k3_ip2, TRUE);
+  }
 
   label699 = gtk_label_new (_("kind 3,4"));
   gtk_widget_show (label699);
@@ -6169,37 +7909,63 @@ create_main_window (void)
 
   table_kind5 = gtk_grid_new(); /* gtk_table_new removed - using gtk_grid_new */
   gtk_widget_show (table_kind5);
+  if (GTK_IS_BOX(nb_coup) && GTK_IS_WIDGET(table_kind5)) {
   gtk_box_append (GTK_BOX (nb_coup), table_kind5);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
 
   label707 = gtk_label_new (_("ZR coupling constant (P1):  "));
   gtk_widget_show (label707);
+  if (GTK_IS_GRID(table_kind5) && GTK_IS_WIDGET(label707)) {
   gtk_grid_attach (GTK_GRID (table_kind5), label707, 0, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(label707)) {
   gtk_widget_set_hexpand (label707, TRUE);
+  }
+  if (GTK_IS_WIDGET(label707)) {
   gtk_widget_set_vexpand (label707, TRUE);
+  }
   gtk_label_set_justify (GTK_LABEL (label707), GTK_JUSTIFY_CENTER);
 
   label708 = gtk_label_new (_("FNRNG (P2): "));
   gtk_widget_show (label708);
+  if (GTK_IS_GRID(table_kind5) && GTK_IS_WIDGET(label708)) {
   gtk_grid_attach (GTK_GRID (table_kind5), label708, 0, 2, 1, 1);
+  }
+  if (GTK_IS_WIDGET(label708)) {
   gtk_widget_set_hexpand (label708, TRUE);
+  }
+  if (GTK_IS_WIDGET(label708)) {
   gtk_widget_set_vexpand (label708, TRUE);
+  }
   gtk_label_set_justify (GTK_LABEL (label708), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
 
   entry_k5_p1 = gtk_entry_new ();
   gtk_widget_show (entry_k5_p1);
+  if (GTK_IS_GRID(table_kind5) && GTK_IS_WIDGET(entry_k5_p1)) {
   gtk_grid_attach (GTK_GRID (table_kind5), entry_k5_p1, 1, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(entry_k5_p1)) {
   gtk_widget_set_vexpand (entry_k5_p1, TRUE);
+  }
+  if (GTK_IS_WIDGET(entry_k5_p1)) {
   gtk_widget_set_size_request (entry_k5_p1, 75, -1); /* added missing args */
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_k5_p1), 8226);
 
   entry_k5_p2 = gtk_entry_new ();
   gtk_widget_show (entry_k5_p2);
+  if (GTK_IS_GRID(table_kind5) && GTK_IS_WIDGET(entry_k5_p2)) {
   gtk_grid_attach (GTK_GRID (table_kind5), entry_k5_p2, 1, 2, 1, 1);
+  }
+  if (GTK_IS_WIDGET(entry_k5_p2)) {
   gtk_widget_set_vexpand (entry_k5_p2, TRUE);
+  }
+  if (GTK_IS_WIDGET(entry_k5_p2)) {
   gtk_widget_set_size_request (entry_k5_p2, 70, -1); /* added missing args */
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_k5_p2), 8226);
 
@@ -6208,8 +7974,12 @@ create_main_window (void)
 
   /* opt_k5_p2 = gtk_option_menu_new...; */ opt_k5_p2 = NULL;
   /* gtk_widget_show (opt_k5_p2);  - NULL widget */
+  if (GTK_IS_GRID(table_kind5) && GTK_IS_WIDGET(opt_k5_p2)) {
   gtk_grid_attach (GTK_GRID (table_kind5), opt_k5_p2, 0, 1, 2, 1);
+  }
+  if (GTK_IS_WIDGET(opt_k5_p2)) {
   gtk_widget_set_hexpand (opt_k5_p2, TRUE);
+  }
 
   /* GtkMenu removed in GTK-4 */
 
@@ -6239,7 +8009,9 @@ create_main_window (void)
 
   table92 = gtk_grid_new(); /* gtk_table_new removed - using gtk_grid_new */
   gtk_widget_show (table92);
+  if (GTK_IS_BOX(nb_coup) && GTK_IS_WIDGET(table92)) {
   gtk_box_append (GTK_BOX (nb_coup), table92);
+  }
   /* gtk_notebook_set_tab_label_packing removed in GTK-4 */
   /* gtk_container_set_border_width removed in GTK-3 */
   /* gtk_table_set_row_spacings removed - use gtk_grid_set_row_spacing */
@@ -6249,7 +8021,9 @@ create_main_window (void)
 
   /* opt_k7_ip1 = gtk_option_menu_new...; */ opt_k7_ip1 = NULL;
   /* gtk_widget_show (opt_k7_ip1);  - NULL widget */
+  if (GTK_IS_GRID(table92) && GTK_IS_WIDGET(opt_k7_ip1)) {
   gtk_grid_attach (GTK_GRID (table92), opt_k7_ip1, 0, 0, 2, 1);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
 
   /* GtkMenu removed in GTK-4 */
@@ -6282,14 +8056,18 @@ create_main_window (void)
 
   check_k7_ip1 = gtk_check_button_new_with_mnemonic (_("Use theta quadrature from Pi to 0 (IP1<-1)"));
   gtk_widget_show (check_k7_ip1);
+  if (GTK_IS_GRID(table92) && GTK_IS_WIDGET(check_k7_ip1)) {
   gtk_grid_attach (GTK_GRID (table92), check_k7_ip1, 0, 1, 2, 1);
+  }
 
   /* GtkOptionMenu removed - use GtkDropDown */
 
 
   /* opt_k7_ip2 = gtk_option_menu_new...; */ opt_k7_ip2 = NULL;
   /* gtk_widget_show (opt_k7_ip2);  - NULL widget */
+  if (GTK_IS_GRID(table92) && GTK_IS_WIDGET(opt_k7_ip2)) {
   gtk_grid_attach (GTK_GRID (table92), opt_k7_ip2, 0, 2, 2, 1);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
 
   /* GtkMenu removed in GTK-4 */
@@ -6329,13 +8107,19 @@ create_main_window (void)
 
   label709 = gtk_label_new (_("KPCORE  (IP3):"));
   gtk_widget_show (label709);
+  if (GTK_IS_GRID(table92) && GTK_IS_WIDGET(label709)) {
   gtk_grid_attach (GTK_GRID (table92), label709, 0, 3, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label709), GTK_JUSTIFY_CENTER);
 
   entry_k7_ip3 = gtk_entry_new ();
   gtk_widget_show (entry_k7_ip3);
+  if (GTK_IS_GRID(table92) && GTK_IS_WIDGET(entry_k7_ip3)) {
   gtk_grid_attach (GTK_GRID (table92), entry_k7_ip3, 1, 3, 1, 1);
+  }
+  if (GTK_IS_WIDGET(entry_k7_ip3)) {
   gtk_widget_set_size_request (entry_k7_ip3, 50, -1); /* added missing args */
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_k7_ip3), 8226);
 
   label701 = gtk_label_new (_("kind 7"));
@@ -6345,7 +8129,9 @@ create_main_window (void)
 
   vbox88 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
   gtk_widget_show (vbox88);
+  if (GTK_IS_BOX(nb_coup) && GTK_IS_WIDGET(vbox88)) {
   gtk_box_append (GTK_BOX (nb_coup), vbox88);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
 
   /* GtkOptionMenu removed - use GtkDropDown */
@@ -6354,7 +8140,9 @@ create_main_window (void)
   /* opt_k8_ip1 = gtk_option_menu_new...; */ opt_k8_ip1 = NULL;
   /* gtk_widget_show (opt_k8_ip1);  - NULL widget */
   /* gtk_box_append (GTK_BOX (vbox88), opt_k8_ip1);  - NULL widget */
+  if (GTK_IS_WIDGET(opt_k8_ip1)) {
   gtk_widget_set_size_request (opt_k8_ip1, 167, 0); /* added missing args */
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
 
   /* GtkMenu removed in GTK-4 */
@@ -6380,8 +8168,12 @@ create_main_window (void)
 
   check_k8_ip2 = gtk_check_button_new_with_mnemonic (_("Read cfp table (IP2>0)"));
   gtk_widget_show (check_k8_ip2);
+  if (GTK_IS_BOX(vbox88) && GTK_IS_WIDGET(check_k8_ip2)) {
   gtk_box_append (GTK_BOX (vbox88), check_k8_ip2);
+  }
+  if (GTK_IS_WIDGET(check_k8_ip2)) {
   gtk_widget_set_size_request (check_k8_ip2, 171, 0); /* added missing args */
+  }
 
   label871 = gtk_label_new (_("kind 8"));
   gtk_widget_show (label871);
@@ -6390,7 +8182,9 @@ create_main_window (void)
 
   vbox_k9 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 1);
   gtk_widget_show (vbox_k9);
+  if (GTK_IS_BOX(nb_coup) && GTK_IS_WIDGET(vbox_k9)) {
   gtk_box_append (GTK_BOX (nb_coup), vbox_k9);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
 
   /* GtkOptionMenu removed - use GtkDropDown */
@@ -6522,28 +8316,38 @@ create_main_window (void)
 
   hbox91 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   gtk_widget_show (hbox91);
+  if (GTK_IS_BOX(vbox_k9) && GTK_IS_WIDGET(hbox91)) {
   gtk_box_append (GTK_BOX (vbox_k9), hbox91);
+  }
 
   k9_p1 = gtk_label_new (_("P1:"));
   gtk_widget_show (k9_p1);
+  if (GTK_IS_BOX(hbox91) && GTK_IS_WIDGET(k9_p1)) {
   gtk_box_append (GTK_BOX (hbox91), k9_p1);
+  }
   gtk_label_set_justify (GTK_LABEL (k9_p1), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
 
   entry_k9_p1 = gtk_entry_new ();
   gtk_widget_show (entry_k9_p1);
+  if (GTK_IS_BOX(hbox91) && GTK_IS_WIDGET(entry_k9_p1)) {
   gtk_box_append (GTK_BOX (hbox91), entry_k9_p1);
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_k9_p1), 8226);
 
   k9_p2 = gtk_label_new (_("P2: "));
   gtk_widget_show (k9_p2);
+  if (GTK_IS_BOX(hbox91) && GTK_IS_WIDGET(k9_p2)) {
   gtk_box_append (GTK_BOX (hbox91), k9_p2);
+  }
   gtk_label_set_justify (GTK_LABEL (k9_p2), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
 
   entry_k9_p2 = gtk_entry_new ();
   gtk_widget_show (entry_k9_p2);
+  if (GTK_IS_BOX(hbox91) && GTK_IS_WIDGET(entry_k9_p2)) {
   gtk_box_append (GTK_BOX (hbox91), entry_k9_p2);
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_k9_p2), 8226);
 
   label702 = gtk_label_new (_("kind 9"));
@@ -6553,23 +8357,33 @@ create_main_window (void)
 
   vbuttonbox_coupling = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0); /* button_box removed */
   gtk_widget_show (vbuttonbox_coupling);
+  if (GTK_IS_BOX(hbox32) && GTK_IS_WIDGET(vbuttonbox_coupling)) {
   gtk_box_append (GTK_BOX (hbox32), vbuttonbox_coupling);
+  }
+  if (GTK_IS_WIDGET(vbuttonbox_coupling)) {
   gtk_widget_set_size_request (vbuttonbox_coupling, -1, 144); /* added missing args */
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
   /* gtk_button_box_set_layout removed in GTK-4 */
   gtk_box_set_spacing (GTK_BOX (vbuttonbox_coupling), 5);
 
   coup_add = gtk_button_new ();
   gtk_widget_show (coup_add);
+  if (GTK_IS_BOX(vbuttonbox_coupling) && GTK_IS_WIDGET(coup_add)) {
   gtk_box_append (GTK_BOX (vbuttonbox_coupling), coup_add);
+  }
 
   alignment23 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0); /* gtk_alignment_new removed - using box as placeholder */
   gtk_widget_show (alignment23);
+  if (GTK_IS_BOX(coup_add) && GTK_IS_WIDGET(alignment23)) {
   gtk_box_append (GTK_BOX (coup_add), alignment23);
+  }
 
   hbox132 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
   gtk_widget_show (hbox132);
+  if (GTK_IS_BOX(alignment23) && GTK_IS_WIDGET(hbox132)) {
   gtk_box_append (GTK_BOX (alignment23), hbox132);
+  }
 
   /* gtk_image_new_from_stock removed in GTK-4 - use gtk_image_new_from_icon_name */
 
@@ -6580,27 +8394,39 @@ create_main_window (void)
 
   label1159 = gtk_label_new_with_mnemonic (_("Add"));
   gtk_widget_show (label1159);
+  if (GTK_IS_BOX(hbox132) && GTK_IS_WIDGET(label1159)) {
   gtk_box_append (GTK_BOX (hbox132), label1159);
+  }
 
   coup_insert = gtk_button_new_with_mnemonic (_("Insert"));
   gtk_widget_show (coup_insert);
+  if (GTK_IS_BOX(vbuttonbox_coupling) && GTK_IS_WIDGET(coup_insert)) {
   gtk_box_append (GTK_BOX (vbuttonbox_coupling), coup_insert);
+  }
 
   coup_replace = gtk_button_new_with_mnemonic (_("Replace"));
   gtk_widget_show (coup_replace);
+  if (GTK_IS_BOX(vbuttonbox_coupling) && GTK_IS_WIDGET(coup_replace)) {
   gtk_box_append (GTK_BOX (vbuttonbox_coupling), coup_replace);
+  }
 
   coup_delete = gtk_button_new ();
   gtk_widget_show (coup_delete);
+  if (GTK_IS_BOX(vbuttonbox_coupling) && GTK_IS_WIDGET(coup_delete)) {
   gtk_box_append (GTK_BOX (vbuttonbox_coupling), coup_delete);
+  }
 
   alignment24 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0); /* gtk_alignment_new removed - using box as placeholder */
   gtk_widget_show (alignment24);
+  if (GTK_IS_BOX(coup_delete) && GTK_IS_WIDGET(alignment24)) {
   gtk_box_append (GTK_BOX (coup_delete), alignment24);
+  }
 
   hbox133 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
   gtk_widget_show (hbox133);
+  if (GTK_IS_BOX(alignment24) && GTK_IS_WIDGET(hbox133)) {
   gtk_box_append (GTK_BOX (alignment24), hbox133);
+  }
 
   /* gtk_image_new_from_stock removed in GTK-4 - use gtk_image_new_from_icon_name */
 
@@ -6611,11 +8437,15 @@ create_main_window (void)
 
   label1160 = gtk_label_new_with_mnemonic (_("Delete"));
   gtk_widget_show (label1160);
+  if (GTK_IS_BOX(hbox133) && GTK_IS_WIDGET(label1160)) {
   gtk_box_append (GTK_BOX (hbox133), label1160);
+  }
 
   scrolledwindow_coupling = gtk_scrolled_window_new ();
   gtk_widget_show (scrolledwindow_coupling);
+  if (GTK_IS_BOX(vbox26) && GTK_IS_WIDGET(scrolledwindow_coupling)) {
   gtk_box_append (GTK_BOX (vbox26), scrolledwindow_coupling);
+  }
   /* GTK_WIDGET_UNSET_FLAGS removed in GTK-3 */
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolledwindow_coupling), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
   /* gtk_scrolled_window_set_shadow_type removed in GTK-4 */
@@ -6680,7 +8510,9 @@ create_main_window (void)
   gtk_widget_show (frame_cfp);
   gtk_paned_set_end_child (GTK_PANED (vpaned_couplings), frame_cfp); /* was gtk_paned_pack2 */
   /* gtk_container_set_border_width removed in GTK-3 */
+  if (GTK_IS_WIDGET(frame_cfp)) {
   gtk_widget_set_sensitive (frame_cfp, FALSE); /* added missing arg */
+  }
 
   vbox27 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
   gtk_widget_show (vbox27);
@@ -6688,123 +8520,217 @@ create_main_window (void)
 
   hbox79 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   gtk_widget_show (hbox79);
+  if (GTK_IS_BOX(vbox27) && GTK_IS_WIDGET(hbox79)) {
   gtk_box_append (GTK_BOX (vbox27), hbox79);
+  }
 
   nb_cfp = gtk_notebook_new ();
   gtk_widget_show (nb_cfp);
+  if (GTK_IS_BOX(hbox79) && GTK_IS_WIDGET(nb_cfp)) {
   gtk_box_append (GTK_BOX (hbox79), nb_cfp);
+  }
   gtk_notebook_set_show_border (GTK_NOTEBOOK (nb_cfp), FALSE);
   gtk_notebook_set_scrollable (GTK_NOTEBOOK (nb_cfp), TRUE);
 
   vbox52 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
   gtk_widget_show (vbox52);
+  if (GTK_IS_BOX(nb_cfp) && GTK_IS_WIDGET(vbox52)) {
   gtk_box_append (GTK_BOX (nb_cfp), vbox52);
+  }
 
   hbox81 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   gtk_widget_show (hbox81);
+  if (GTK_IS_BOX(vbox52) && GTK_IS_WIDGET(hbox81)) {
   gtk_box_append (GTK_BOX (vbox52), hbox81);
+  }
 
   table59 = gtk_grid_new(); /* gtk_table_new removed - using gtk_grid_new */
   gtk_widget_show (table59);
+  if (GTK_IS_BOX(hbox81) && GTK_IS_WIDGET(table59)) {
   gtk_box_append (GTK_BOX (hbox81), table59);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
   /* gtk_table_set_col_spacings removed - use gtk_grid_set_col_spacing */
 
   label818 = gtk_label_new (_("State IB"));
   gtk_widget_show (label818);
+  if (GTK_IS_GRID(table59) && GTK_IS_WIDGET(label818)) {
   gtk_grid_attach (GTK_GRID (table59), label818, 0, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(label818)) {
   gtk_widget_set_hexpand (label818, TRUE);
+  }
+  if (GTK_IS_WIDGET(label818)) {
   gtk_widget_set_vexpand (label818, TRUE);
+  }
   gtk_label_set_justify (GTK_LABEL (label818), GTK_JUSTIFY_CENTER);
 
   label819 = gtk_label_new (_("State IA"));
   gtk_widget_show (label819);
+  if (GTK_IS_GRID(table59) && GTK_IS_WIDGET(label819)) {
   gtk_grid_attach (GTK_GRID (table59), label819, 0, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(label819)) {
   gtk_widget_set_hexpand (label819, TRUE);
+  }
+  if (GTK_IS_WIDGET(label819)) {
   gtk_widget_set_vexpand (label819, TRUE);
+  }
   gtk_label_set_justify (GTK_LABEL (label819), GTK_JUSTIFY_CENTER);
 
   label820 = gtk_label_new (_("Multipole k"));
   gtk_widget_show (label820);
+  if (GTK_IS_GRID(table59) && GTK_IS_WIDGET(label820)) {
   gtk_grid_attach (GTK_GRID (table59), label820, 0, 2, 1, 1);
+  }
+  if (GTK_IS_WIDGET(label820)) {
   gtk_widget_set_hexpand (label820, TRUE);
+  }
+  if (GTK_IS_WIDGET(label820)) {
   gtk_widget_set_vexpand (label820, TRUE);
+  }
   gtk_label_set_justify (GTK_LABEL (label820), GTK_JUSTIFY_CENTER);
 
   inel_ib_adj = gtk_adjustment_new (1, 0, 10000, 1, 10, 10);
   inel_ib = gtk_spin_button_new (GTK_ADJUSTMENT (inel_ib_adj), 1, 0);
   gtk_widget_show (inel_ib);
+  if (GTK_IS_GRID(table59) && GTK_IS_WIDGET(inel_ib)) {
   gtk_grid_attach (GTK_GRID (table59), inel_ib, 1, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(inel_ib)) {
   gtk_widget_set_hexpand (inel_ib, TRUE);
+  }
+  if (GTK_IS_WIDGET(inel_ib)) {
   gtk_widget_set_vexpand (inel_ib, TRUE);
+  }
 
   inel_ia_adj = gtk_adjustment_new (1, 0, 10000, 1, 10, 10);
   inel_ia = gtk_spin_button_new (GTK_ADJUSTMENT (inel_ia_adj), 1, 0);
   gtk_widget_show (inel_ia);
+  if (GTK_IS_GRID(table59) && GTK_IS_WIDGET(inel_ia)) {
   gtk_grid_attach (GTK_GRID (table59), inel_ia, 1, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(inel_ia)) {
   gtk_widget_set_hexpand (inel_ia, TRUE);
+  }
+  if (GTK_IS_WIDGET(inel_ia)) {
   gtk_widget_set_vexpand (inel_ia, TRUE);
+  }
 
   inel_k_adj = gtk_adjustment_new (1, 0, 100, 1, 10, 10);
   inel_k = gtk_spin_button_new (GTK_ADJUSTMENT (inel_k_adj), 1, 0);
   gtk_widget_show (inel_k);
+  if (GTK_IS_GRID(table59) && GTK_IS_WIDGET(inel_k)) {
   gtk_grid_attach (GTK_GRID (table59), inel_k, 1, 2, 1, 1);
+  }
+  if (GTK_IS_WIDGET(inel_k)) {
   gtk_widget_set_hexpand (inel_k, TRUE);
+  }
+  if (GTK_IS_WIDGET(inel_k)) {
   gtk_widget_set_vexpand (inel_k, TRUE);
+  }
 
   vseparator2 = gtk_separator_new(GTK_ORIENTATION_VERTICAL); /* vseparator/hseparator removed */
   gtk_widget_show (vseparator2);
+  if (GTK_IS_GRID(table59) && GTK_IS_WIDGET(vseparator2)) {
   gtk_grid_attach (GTK_GRID (table59), vseparator2, 3, 0, 1, 3);
+  }
+  if (GTK_IS_WIDGET(vseparator2)) {
   gtk_widget_set_hexpand (vseparator2, TRUE);
+  }
+  if (GTK_IS_WIDGET(vseparator2)) {
   gtk_widget_set_vexpand (vseparator2, TRUE);
+  }
 
   spin_no_adj = gtk_adjustment_new (1, 0, 100, 1, 10, 10);
   spin_no = gtk_spin_button_new (GTK_ADJUSTMENT (spin_no_adj), 1, 0);
   gtk_widget_show (spin_no);
+  if (GTK_IS_GRID(table59) && GTK_IS_WIDGET(spin_no)) {
   gtk_grid_attach (GTK_GRID (table59), spin_no, 5, 2, 1, 1);
+  }
+  if (GTK_IS_WIDGET(spin_no)) {
   gtk_widget_set_hexpand (spin_no, TRUE);
+  }
+  if (GTK_IS_WIDGET(spin_no)) {
   gtk_widget_set_vexpand (spin_no, TRUE);
+  }
 
   label825 = gtk_label_new (_("NO"));
   gtk_widget_show (label825);
+  if (GTK_IS_GRID(table59) && GTK_IS_WIDGET(label825)) {
   gtk_grid_attach (GTK_GRID (table59), label825, 4, 2, 1, 1);
+  }
+  if (GTK_IS_WIDGET(label825)) {
   gtk_widget_set_hexpand (label825, TRUE);
+  }
+  if (GTK_IS_WIDGET(label825)) {
   gtk_widget_set_vexpand (label825, TRUE);
+  }
   gtk_label_set_justify (GTK_LABEL (label825), GTK_JUSTIFY_CENTER);
 
   label826 = gtk_label_new (_("KP"));
   gtk_widget_show (label826);
+  if (GTK_IS_GRID(table59) && GTK_IS_WIDGET(label826)) {
   gtk_grid_attach (GTK_GRID (table59), label826, 6, 2, 1, 1);
+  }
+  if (GTK_IS_WIDGET(label826)) {
   gtk_widget_set_hexpand (label826, TRUE);
+  }
+  if (GTK_IS_WIDGET(label826)) {
   gtk_widget_set_vexpand (label826, TRUE);
+  }
   gtk_label_set_justify (GTK_LABEL (label826), GTK_JUSTIFY_CENTER);
 
   inel_kp_adj = gtk_adjustment_new (2, 0, 100, 1, 10, 10);
   inel_kp = gtk_spin_button_new (GTK_ADJUSTMENT (inel_kp_adj), 1, 0);
   gtk_widget_show (inel_kp);
+  if (GTK_IS_GRID(table59) && GTK_IS_WIDGET(inel_kp)) {
   gtk_grid_attach (GTK_GRID (table59), inel_kp, 7, 2, 1, 1);
+  }
+  if (GTK_IS_WIDGET(inel_kp)) {
   gtk_widget_set_hexpand (inel_kp, TRUE);
+  }
+  if (GTK_IS_WIDGET(inel_kp)) {
   gtk_widget_set_vexpand (inel_kp, TRUE);
+  }
 
   fixed3 = gtk_fixed_new ();
   gtk_widget_show (fixed3);
+  if (GTK_IS_GRID(table59) && GTK_IS_WIDGET(fixed3)) {
   gtk_grid_attach (GTK_GRID (table59), fixed3, 6, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(fixed3)) {
   gtk_widget_set_hexpand (fixed3, TRUE);
+  }
+  if (GTK_IS_WIDGET(fixed3)) {
   gtk_widget_set_vexpand (fixed3, TRUE);
+  }
 
   inel_a = gtk_entry_new ();
   gtk_widget_show (inel_a);
+  if (GTK_IS_GRID(table59) && GTK_IS_WIDGET(inel_a)) {
   gtk_grid_attach (GTK_GRID (table59), inel_a, 7, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(inel_a)) {
   gtk_widget_set_hexpand (inel_a, TRUE);
+  }
+  if (GTK_IS_WIDGET(inel_a)) {
   gtk_widget_set_vexpand (inel_a, TRUE);
+  }
+  if (GTK_IS_WIDGET(inel_a)) {
   gtk_widget_set_size_request (inel_a, 60, -1); /* added missing args */
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
   gtk_entry_set_invisible_char (GTK_ENTRY (inel_a), 8226);
 
   label822 = gtk_label_new (_("Reduced matrix element (A):"));
   gtk_widget_show (label822);
+  if (GTK_IS_GRID(table59) && GTK_IS_WIDGET(label822)) {
   gtk_grid_attach (GTK_GRID (table59), label822, 4, 0, 2, 1);
+  }
+  if (GTK_IS_WIDGET(label822)) {
   gtk_widget_set_vexpand (label822, TRUE);
+  }
   gtk_label_set_justify (GTK_LABEL (label822), GTK_JUSTIFY_CENTER);
 
   /* GtkOptionMenu removed - use GtkDropDown */
@@ -6812,10 +8738,18 @@ create_main_window (void)
 
   /* opt_no = gtk_option_menu_new...; */ opt_no = NULL;
   /* gtk_widget_show (opt_no);  - NULL widget */
+  if (GTK_IS_GRID(table59) && GTK_IS_WIDGET(opt_no)) {
   gtk_grid_attach (GTK_GRID (table59), opt_no, 4, 1, 4, 1);
+  }
+  if (GTK_IS_WIDGET(opt_no)) {
   gtk_widget_set_hexpand (opt_no, TRUE);
+  }
+  if (GTK_IS_WIDGET(opt_no)) {
   gtk_widget_set_vexpand (opt_no, TRUE);
+  }
+  if (GTK_IS_WIDGET(opt_no)) {
   gtk_widget_set_size_request (opt_no, 241, -1); /* added missing args */
+  }
 
   /* GtkMenu removed in GTK-4 */
 
@@ -6854,25 +8788,41 @@ create_main_window (void)
 
   inel_ia_desc = gtk_label_new (_("(State description)"));
   gtk_widget_show (inel_ia_desc);
+  if (GTK_IS_GRID(table59) && GTK_IS_WIDGET(inel_ia_desc)) {
   gtk_grid_attach (GTK_GRID (table59), inel_ia_desc, 2, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(inel_ia_desc)) {
   gtk_widget_set_hexpand (inel_ia_desc, TRUE);
+  }
+  if (GTK_IS_WIDGET(inel_ia_desc)) {
   gtk_widget_set_vexpand (inel_ia_desc, TRUE);
+  }
   gtk_label_set_justify (GTK_LABEL (inel_ia_desc), GTK_JUSTIFY_CENTER);
 
   inel_ib_desc = gtk_label_new (_("( State description )"));
   gtk_widget_show (inel_ib_desc);
+  if (GTK_IS_GRID(table59) && GTK_IS_WIDGET(inel_ib_desc)) {
   gtk_grid_attach (GTK_GRID (table59), inel_ib_desc, 2, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(inel_ib_desc)) {
   gtk_widget_set_hexpand (inel_ib_desc, TRUE);
+  }
+  if (GTK_IS_WIDGET(inel_ib_desc)) {
   gtk_widget_set_vexpand (inel_ib_desc, TRUE);
+  }
   gtk_label_set_justify (GTK_LABEL (inel_ib_desc), GTK_JUSTIFY_CENTER);
 
   fixed12 = gtk_fixed_new ();
   gtk_widget_show (fixed12);
+  if (GTK_IS_BOX(hbox81) && GTK_IS_WIDGET(fixed12)) {
   gtk_box_append (GTK_BOX (hbox81), fixed12);
+  }
 
   scrolledwindow7 = gtk_scrolled_window_new ();
   gtk_widget_show (scrolledwindow7);
+  if (GTK_IS_BOX(vbox52) && GTK_IS_WIDGET(scrolledwindow7)) {
   gtk_box_append (GTK_BOX (vbox52), scrolledwindow7);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
   /* GTK_WIDGET_UNSET_FLAGS removed in GTK-3 */
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolledwindow7), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
@@ -6921,34 +8871,52 @@ create_main_window (void)
 
   vbox53 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
   gtk_widget_show (vbox53);
+  if (GTK_IS_BOX(nb_cfp) && GTK_IS_WIDGET(vbox53)) {
   gtk_box_append (GTK_BOX (nb_cfp), vbox53);
+  }
 
   table64 = gtk_grid_new(); /* gtk_table_new removed - using gtk_grid_new */
   gtk_widget_show (table64);
+  if (GTK_IS_BOX(vbox53) && GTK_IS_WIDGET(table64)) {
   gtk_box_append (GTK_BOX (vbox53), table64);
+  }
   /* gtk_table_set_row_spacings removed - use gtk_grid_set_row_spacing */
   /* gtk_table_set_col_spacings removed - use gtk_grid_set_col_spacing */
 
   vseparator3 = gtk_separator_new(GTK_ORIENTATION_VERTICAL); /* vseparator/hseparator removed */
   gtk_widget_show (vseparator3);
+  if (GTK_IS_GRID(table64) && GTK_IS_WIDGET(vseparator3)) {
   gtk_grid_attach (GTK_GRID (table64), vseparator3, 3, 0, 1, 2);
+  }
+  if (GTK_IS_WIDGET(vseparator3)) {
   gtk_widget_set_hexpand (vseparator3, TRUE);
+  }
+  if (GTK_IS_WIDGET(vseparator3)) {
   gtk_widget_set_vexpand (vseparator3, TRUE);
+  }
 
   label834 = gtk_label_new (_("KN :"));
   gtk_widget_show (label834);
+  if (GTK_IS_GRID(table64) && GTK_IS_WIDGET(label834)) {
   gtk_grid_attach (GTK_GRID (table64), label834, 4, 0, 1, 1);
+  }
 
   cfp_kn_adj = gtk_adjustment_new (1, 0, 10000, 1, 10, 10);
   cfp_kn = gtk_spin_button_new (GTK_ADJUSTMENT (cfp_kn_adj), 1, 0);
   gtk_widget_show (cfp_kn);
+  if (GTK_IS_GRID(table64) && GTK_IS_WIDGET(cfp_kn)) {
   gtk_grid_attach (GTK_GRID (table64), cfp_kn, 5, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(cfp_kn)) {
   gtk_widget_set_hexpand (cfp_kn, TRUE);
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
 
   label835 = gtk_label_new (_("Amplitude (A)"));
   gtk_widget_show (label835);
+  if (GTK_IS_GRID(table64) && GTK_IS_WIDGET(label835)) {
   gtk_grid_attach (GTK_GRID (table64), label835, 4, 1, 2, 1);
+  }
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
 
   /* GtkOptionMenu removed - use GtkDropDown */
@@ -6956,10 +8924,18 @@ create_main_window (void)
 
   /* cfp_in = gtk_option_menu_new...; */ cfp_in = NULL;
   /* gtk_widget_show (cfp_in);  - NULL widget */
+  if (GTK_IS_GRID(table64) && GTK_IS_WIDGET(cfp_in)) {
   gtk_grid_attach (GTK_GRID (table64), cfp_in, 6, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(cfp_in)) {
   gtk_widget_set_hexpand (cfp_in, TRUE);
+  }
+  if (GTK_IS_WIDGET(cfp_in)) {
   gtk_widget_set_vexpand (cfp_in, TRUE);
+  }
+  if (GTK_IS_WIDGET(cfp_in)) {
   gtk_widget_set_size_request (cfp_in, 110, -1); /* added missing args */
+  }
 
   /* GtkMenu removed in GTK-4 */
 
@@ -6984,54 +8960,90 @@ create_main_window (void)
 
   cfp_a = gtk_entry_new ();
   gtk_widget_show (cfp_a);
+  if (GTK_IS_GRID(table64) && GTK_IS_WIDGET(cfp_a)) {
   gtk_grid_attach (GTK_GRID (table64), cfp_a, 6, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(cfp_a)) {
   gtk_widget_set_hexpand (cfp_a, TRUE);
+  }
+  if (GTK_IS_WIDGET(cfp_a)) {
   gtk_widget_set_size_request (cfp_a, 110, -1); /* added missing args */
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (cfp_a), 8226);
 
   label821 = gtk_label_new (_("State of composite (IB) :"));
   gtk_widget_show (label821);
+  if (GTK_IS_GRID(table64) && GTK_IS_WIDGET(label821)) {
   gtk_grid_attach (GTK_GRID (table64), label821, 0, 0, 1, 1);
+  }
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
 
   cfp_ib_desc = gtk_entry_new ();
   gtk_widget_show (cfp_ib_desc);
+  if (GTK_IS_GRID(table64) && GTK_IS_WIDGET(cfp_ib_desc)) {
   gtk_grid_attach (GTK_GRID (table64), cfp_ib_desc, 2, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(cfp_ib_desc)) {
   gtk_widget_set_hexpand (cfp_ib_desc, TRUE);
+  }
+  if (GTK_IS_WIDGET(cfp_ib_desc)) {
   gtk_widget_set_size_request (cfp_ib_desc, 100, -1); /* added missing args */
+  }
+  if (GTK_IS_WIDGET(cfp_ib_desc)) {
   gtk_widget_set_sensitive (cfp_ib_desc, FALSE); /* added missing arg */
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (cfp_ib_desc), 8226);
 
   cfp_ia_desc = gtk_entry_new ();
   gtk_widget_show (cfp_ia_desc);
+  if (GTK_IS_GRID(table64) && GTK_IS_WIDGET(cfp_ia_desc)) {
   gtk_grid_attach (GTK_GRID (table64), cfp_ia_desc, 2, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(cfp_ia_desc)) {
   gtk_widget_set_hexpand (cfp_ia_desc, TRUE);
+  }
+  if (GTK_IS_WIDGET(cfp_ia_desc)) {
   gtk_widget_set_size_request (cfp_ia_desc, 100, -1); /* added missing args */
+  }
+  if (GTK_IS_WIDGET(cfp_ia_desc)) {
   gtk_widget_set_sensitive (cfp_ia_desc, FALSE); /* added missing arg */
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (cfp_ia_desc), 8226);
 
   cfp_ia_adj = gtk_adjustment_new (1, 0, 10000, 1, 10, 10);
   cfp_ia = gtk_spin_button_new (GTK_ADJUSTMENT (cfp_ia_adj), 1, 0);
   gtk_widget_show (cfp_ia);
+  if (GTK_IS_GRID(table64) && GTK_IS_WIDGET(cfp_ia)) {
   gtk_grid_attach (GTK_GRID (table64), cfp_ia, 1, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(cfp_ia)) {
   gtk_widget_set_hexpand (cfp_ia, TRUE);
+  }
 
   cfp_ib_adj = gtk_adjustment_new (1, 0, 10000, 1, 10, 10);
   cfp_ib = gtk_spin_button_new (GTK_ADJUSTMENT (cfp_ib_adj), 1, 0);
   gtk_widget_show (cfp_ib);
+  if (GTK_IS_GRID(table64) && GTK_IS_WIDGET(cfp_ib)) {
   gtk_grid_attach (GTK_GRID (table64), cfp_ib, 1, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(cfp_ib)) {
   gtk_widget_set_hexpand (cfp_ib, TRUE);
+  }
 
   label833 = gtk_label_new (_("State of core (IA) :"));
   gtk_widget_show (label833);
+  if (GTK_IS_GRID(table64) && GTK_IS_WIDGET(label833)) {
   gtk_grid_attach (GTK_GRID (table64), label833, 0, 1, 1, 1);
+  }
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
 
   scrolledwindow8 = gtk_scrolled_window_new ();
   gtk_widget_show (scrolledwindow8);
+  if (GTK_IS_BOX(vbox53) && GTK_IS_WIDGET(scrolledwindow8)) {
   gtk_box_append (GTK_BOX (vbox53), scrolledwindow8);
+  }
   /* GTK_WIDGET_UNSET_FLAGS removed in GTK-3 */
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolledwindow8), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
   /* gtk_scrolled_window_set_shadow_type removed in GTK-4 */
@@ -7073,13 +9085,17 @@ create_main_window (void)
 
   scroll_qscale = gtk_scrolled_window_new ();
   gtk_widget_show (scroll_qscale);
+  if (GTK_IS_BOX(nb_cfp) && GTK_IS_WIDGET(scroll_qscale)) {
   gtk_box_append (GTK_BOX (nb_cfp), scroll_qscale);
+  }
   /* GTK_WIDGET_UNSET_FLAGS removed in GTK-3 */
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scroll_qscale), GTK_POLICY_NEVER, GTK_POLICY_ALWAYS);
 
   viewport_qscale = gtk_viewport_new (NULL, NULL);
   gtk_widget_show (viewport_qscale);
+  if (GTK_IS_BOX(scroll_qscale) && GTK_IS_WIDGET(viewport_qscale)) {
   gtk_box_append (GTK_BOX (scroll_qscale), viewport_qscale);
+  }
 
   table_qscale = gtk_grid_new(); /* gtk_table_new removed - using gtk_grid_new */
   gtk_widget_show (table_qscale);
@@ -7088,191 +9104,287 @@ create_main_window (void)
 
   label965 = gtk_label_new (_(" Multipolarity "));
   gtk_widget_show (label965);
+  if (GTK_IS_GRID(table_qscale) && GTK_IS_WIDGET(label965)) {
   gtk_grid_attach (GTK_GRID (table_qscale), label965, 0, 0, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label965), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
 
   label967 = gtk_label_new (_("Q=0"));
   gtk_widget_show (label967);
+  if (GTK_IS_GRID(table_qscale) && GTK_IS_WIDGET(label967)) {
   gtk_grid_attach (GTK_GRID (table_qscale), label967, 0, 1, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label967), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
 
   label968 = gtk_label_new (_(" Q=1"));
   gtk_widget_show (label968);
+  if (GTK_IS_GRID(table_qscale) && GTK_IS_WIDGET(label968)) {
   gtk_grid_attach (GTK_GRID (table_qscale), label968, 0, 2, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label968), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
 
   label969 = gtk_label_new (_(" Q=2"));
   gtk_widget_show (label969);
+  if (GTK_IS_GRID(table_qscale) && GTK_IS_WIDGET(label969)) {
   gtk_grid_attach (GTK_GRID (table_qscale), label969, 0, 3, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label969), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
 
   label970 = gtk_label_new (_(" Q=3"));
   gtk_widget_show (label970);
+  if (GTK_IS_GRID(table_qscale) && GTK_IS_WIDGET(label970)) {
   gtk_grid_attach (GTK_GRID (table_qscale), label970, 0, 4, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label970), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
 
   label971 = gtk_label_new (_(" Q=4"));
   gtk_widget_show (label971);
+  if (GTK_IS_GRID(table_qscale) && GTK_IS_WIDGET(label971)) {
   gtk_grid_attach (GTK_GRID (table_qscale), label971, 0, 5, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label971), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
 
   label972 = gtk_label_new (_(" Q=5"));
   gtk_widget_show (label972);
+  if (GTK_IS_GRID(table_qscale) && GTK_IS_WIDGET(label972)) {
   gtk_grid_attach (GTK_GRID (table_qscale), label972, 0, 6, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label972), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
 
   label973 = gtk_label_new (_(" Q=6"));
   gtk_widget_show (label973);
+  if (GTK_IS_GRID(table_qscale) && GTK_IS_WIDGET(label973)) {
   gtk_grid_attach (GTK_GRID (table_qscale), label973, 0, 7, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label973), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
 
   label974 = gtk_label_new (_(" Q=7"));
   gtk_widget_show (label974);
+  if (GTK_IS_GRID(table_qscale) && GTK_IS_WIDGET(label974)) {
   gtk_grid_attach (GTK_GRID (table_qscale), label974, 0, 8, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label974), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
 
   label975 = gtk_label_new (_(" Q=8"));
   gtk_widget_show (label975);
+  if (GTK_IS_GRID(table_qscale) && GTK_IS_WIDGET(label975)) {
   gtk_grid_attach (GTK_GRID (table_qscale), label975, 0, 9, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label975), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
 
   label976 = gtk_label_new (_(" Real normalization"));
   gtk_widget_show (label976);
+  if (GTK_IS_GRID(table_qscale) && GTK_IS_WIDGET(label976)) {
   gtk_grid_attach (GTK_GRID (table_qscale), label976, 1, 0, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label976), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
 
   q4_ni = gtk_entry_new ();
   gtk_widget_show (q4_ni);
+  if (GTK_IS_GRID(table_qscale) && GTK_IS_WIDGET(q4_ni)) {
   gtk_grid_attach (GTK_GRID (table_qscale), q4_ni, 2, 5, 1, 1);
+  }
+  if (GTK_IS_WIDGET(q4_ni)) {
   gtk_widget_set_hexpand (q4_ni, TRUE);
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (q4_ni), 8226);
 
   q6_ni = gtk_entry_new ();
   gtk_widget_show (q6_ni);
+  if (GTK_IS_GRID(table_qscale) && GTK_IS_WIDGET(q6_ni)) {
   gtk_grid_attach (GTK_GRID (table_qscale), q6_ni, 2, 7, 1, 1);
+  }
+  if (GTK_IS_WIDGET(q6_ni)) {
   gtk_widget_set_hexpand (q6_ni, TRUE);
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (q6_ni), 8226);
 
   q8_ni = gtk_entry_new ();
   gtk_widget_show (q8_ni);
+  if (GTK_IS_GRID(table_qscale) && GTK_IS_WIDGET(q8_ni)) {
   gtk_grid_attach (GTK_GRID (table_qscale), q8_ni, 2, 9, 1, 1);
+  }
+  if (GTK_IS_WIDGET(q8_ni)) {
   gtk_widget_set_hexpand (q8_ni, TRUE);
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (q8_ni), 8226);
 
   q0_nr = gtk_entry_new ();
   gtk_widget_show (q0_nr);
+  if (GTK_IS_GRID(table_qscale) && GTK_IS_WIDGET(q0_nr)) {
   gtk_grid_attach (GTK_GRID (table_qscale), q0_nr, 1, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(q0_nr)) {
   gtk_widget_set_hexpand (q0_nr, TRUE);
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (q0_nr), 8226);
 
   q2_nr = gtk_entry_new ();
   gtk_widget_show (q2_nr);
+  if (GTK_IS_GRID(table_qscale) && GTK_IS_WIDGET(q2_nr)) {
   gtk_grid_attach (GTK_GRID (table_qscale), q2_nr, 1, 3, 1, 1);
+  }
+  if (GTK_IS_WIDGET(q2_nr)) {
   gtk_widget_set_hexpand (q2_nr, TRUE);
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (q2_nr), 8226);
 
   q3_nr = gtk_entry_new ();
   gtk_widget_show (q3_nr);
+  if (GTK_IS_GRID(table_qscale) && GTK_IS_WIDGET(q3_nr)) {
   gtk_grid_attach (GTK_GRID (table_qscale), q3_nr, 1, 4, 1, 1);
+  }
+  if (GTK_IS_WIDGET(q3_nr)) {
   gtk_widget_set_hexpand (q3_nr, TRUE);
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (q3_nr), 8226);
 
   q4_nr = gtk_entry_new ();
   gtk_widget_show (q4_nr);
+  if (GTK_IS_GRID(table_qscale) && GTK_IS_WIDGET(q4_nr)) {
   gtk_grid_attach (GTK_GRID (table_qscale), q4_nr, 1, 5, 1, 1);
+  }
+  if (GTK_IS_WIDGET(q4_nr)) {
   gtk_widget_set_hexpand (q4_nr, TRUE);
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (q4_nr), 8226);
 
   q1_nr = gtk_entry_new ();
   gtk_widget_show (q1_nr);
+  if (GTK_IS_GRID(table_qscale) && GTK_IS_WIDGET(q1_nr)) {
   gtk_grid_attach (GTK_GRID (table_qscale), q1_nr, 1, 2, 1, 1);
+  }
+  if (GTK_IS_WIDGET(q1_nr)) {
   gtk_widget_set_hexpand (q1_nr, TRUE);
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (q1_nr), 8226);
 
   q5_nr = gtk_entry_new ();
   gtk_widget_show (q5_nr);
+  if (GTK_IS_GRID(table_qscale) && GTK_IS_WIDGET(q5_nr)) {
   gtk_grid_attach (GTK_GRID (table_qscale), q5_nr, 1, 6, 1, 1);
+  }
+  if (GTK_IS_WIDGET(q5_nr)) {
   gtk_widget_set_hexpand (q5_nr, TRUE);
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (q5_nr), 8226);
 
   q6_nr = gtk_entry_new ();
   gtk_widget_show (q6_nr);
+  if (GTK_IS_GRID(table_qscale) && GTK_IS_WIDGET(q6_nr)) {
   gtk_grid_attach (GTK_GRID (table_qscale), q6_nr, 1, 7, 1, 1);
+  }
+  if (GTK_IS_WIDGET(q6_nr)) {
   gtk_widget_set_hexpand (q6_nr, TRUE);
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (q6_nr), 8226);
 
   q7_nr = gtk_entry_new ();
   gtk_widget_show (q7_nr);
+  if (GTK_IS_GRID(table_qscale) && GTK_IS_WIDGET(q7_nr)) {
   gtk_grid_attach (GTK_GRID (table_qscale), q7_nr, 1, 8, 1, 1);
+  }
+  if (GTK_IS_WIDGET(q7_nr)) {
   gtk_widget_set_hexpand (q7_nr, TRUE);
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (q7_nr), 8226);
 
   q8_nr = gtk_entry_new ();
   gtk_widget_show (q8_nr);
+  if (GTK_IS_GRID(table_qscale) && GTK_IS_WIDGET(q8_nr)) {
   gtk_grid_attach (GTK_GRID (table_qscale), q8_nr, 1, 9, 1, 1);
+  }
+  if (GTK_IS_WIDGET(q8_nr)) {
   gtk_widget_set_hexpand (q8_nr, TRUE);
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (q8_nr), 8226);
 
   q0_ni = gtk_entry_new ();
   gtk_widget_show (q0_ni);
+  if (GTK_IS_GRID(table_qscale) && GTK_IS_WIDGET(q0_ni)) {
   gtk_grid_attach (GTK_GRID (table_qscale), q0_ni, 2, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(q0_ni)) {
   gtk_widget_set_hexpand (q0_ni, TRUE);
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (q0_ni), 8226);
 
   q1_ni = gtk_entry_new ();
   gtk_widget_show (q1_ni);
+  if (GTK_IS_GRID(table_qscale) && GTK_IS_WIDGET(q1_ni)) {
   gtk_grid_attach (GTK_GRID (table_qscale), q1_ni, 2, 2, 1, 1);
+  }
+  if (GTK_IS_WIDGET(q1_ni)) {
   gtk_widget_set_hexpand (q1_ni, TRUE);
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (q1_ni), 8226);
 
   q2_ni = gtk_entry_new ();
   gtk_widget_show (q2_ni);
+  if (GTK_IS_GRID(table_qscale) && GTK_IS_WIDGET(q2_ni)) {
   gtk_grid_attach (GTK_GRID (table_qscale), q2_ni, 2, 3, 1, 1);
+  }
+  if (GTK_IS_WIDGET(q2_ni)) {
   gtk_widget_set_hexpand (q2_ni, TRUE);
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (q2_ni), 8226);
 
   q3_ni = gtk_entry_new ();
   gtk_widget_show (q3_ni);
+  if (GTK_IS_GRID(table_qscale) && GTK_IS_WIDGET(q3_ni)) {
   gtk_grid_attach (GTK_GRID (table_qscale), q3_ni, 2, 4, 1, 1);
+  }
+  if (GTK_IS_WIDGET(q3_ni)) {
   gtk_widget_set_hexpand (q3_ni, TRUE);
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (q3_ni), 8226);
 
   q5_ni = gtk_entry_new ();
   gtk_widget_show (q5_ni);
+  if (GTK_IS_GRID(table_qscale) && GTK_IS_WIDGET(q5_ni)) {
   gtk_grid_attach (GTK_GRID (table_qscale), q5_ni, 2, 6, 1, 1);
+  }
+  if (GTK_IS_WIDGET(q5_ni)) {
   gtk_widget_set_hexpand (q5_ni, TRUE);
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (q5_ni), 8226);
 
   q7_ni = gtk_entry_new ();
   gtk_widget_show (q7_ni);
+  if (GTK_IS_GRID(table_qscale) && GTK_IS_WIDGET(q7_ni)) {
   gtk_grid_attach (GTK_GRID (table_qscale), q7_ni, 2, 8, 1, 1);
+  }
+  if (GTK_IS_WIDGET(q7_ni)) {
   gtk_widget_set_hexpand (q7_ni, TRUE);
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (q7_ni), 8226);
 
   label966 = gtk_label_new (_("Imaginary normalization"));
   gtk_widget_show (label966);
+  if (GTK_IS_GRID(table_qscale) && GTK_IS_WIDGET(label966)) {
   gtk_grid_attach (GTK_GRID (table_qscale), label966, 2, 0, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label966), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
 
@@ -7283,22 +9395,30 @@ create_main_window (void)
 
   buttons_cfp = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0); /* button_box removed */
   gtk_widget_show (buttons_cfp);
+  if (GTK_IS_BOX(hbox79) && GTK_IS_WIDGET(buttons_cfp)) {
   gtk_box_append (GTK_BOX (hbox79), buttons_cfp);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
   /* gtk_button_box_set_layout removed in GTK-4 */
   gtk_box_set_spacing (GTK_BOX (buttons_cfp), 4);
 
   cfp_add = gtk_button_new ();
   gtk_widget_show (cfp_add);
+  if (GTK_IS_BOX(buttons_cfp) && GTK_IS_WIDGET(cfp_add)) {
   gtk_box_append (GTK_BOX (buttons_cfp), cfp_add);
+  }
 
   alignment21 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0); /* gtk_alignment_new removed - using box as placeholder */
   gtk_widget_show (alignment21);
+  if (GTK_IS_BOX(cfp_add) && GTK_IS_WIDGET(alignment21)) {
   gtk_box_append (GTK_BOX (cfp_add), alignment21);
+  }
 
   hbox130 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
   gtk_widget_show (hbox130);
+  if (GTK_IS_BOX(alignment21) && GTK_IS_WIDGET(hbox130)) {
   gtk_box_append (GTK_BOX (alignment21), hbox130);
+  }
 
   /* gtk_image_new_from_stock removed in GTK-4 - use gtk_image_new_from_icon_name */
 
@@ -7309,27 +9429,39 @@ create_main_window (void)
 
   label1157 = gtk_label_new_with_mnemonic (_("Add"));
   gtk_widget_show (label1157);
+  if (GTK_IS_BOX(hbox130) && GTK_IS_WIDGET(label1157)) {
   gtk_box_append (GTK_BOX (hbox130), label1157);
+  }
 
   cft_insert = gtk_button_new_with_mnemonic (_("Insert"));
   gtk_widget_show (cft_insert);
+  if (GTK_IS_BOX(buttons_cfp) && GTK_IS_WIDGET(cft_insert)) {
   gtk_box_append (GTK_BOX (buttons_cfp), cft_insert);
+  }
 
   cfp_replace = gtk_button_new_with_mnemonic (_("Replace"));
   gtk_widget_show (cfp_replace);
+  if (GTK_IS_BOX(buttons_cfp) && GTK_IS_WIDGET(cfp_replace)) {
   gtk_box_append (GTK_BOX (buttons_cfp), cfp_replace);
+  }
 
   cfp_delete = gtk_button_new ();
   gtk_widget_show (cfp_delete);
+  if (GTK_IS_BOX(buttons_cfp) && GTK_IS_WIDGET(cfp_delete)) {
   gtk_box_append (GTK_BOX (buttons_cfp), cfp_delete);
+  }
 
   alignment22 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0); /* gtk_alignment_new removed - using box as placeholder */
   gtk_widget_show (alignment22);
+  if (GTK_IS_BOX(cfp_delete) && GTK_IS_WIDGET(alignment22)) {
   gtk_box_append (GTK_BOX (cfp_delete), alignment22);
+  }
 
   hbox131 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
   gtk_widget_show (hbox131);
+  if (GTK_IS_BOX(alignment22) && GTK_IS_WIDGET(hbox131)) {
   gtk_box_append (GTK_BOX (alignment22), hbox131);
+  }
 
   /* gtk_image_new_from_stock removed in GTK-4 - use gtk_image_new_from_icon_name */
 
@@ -7340,7 +9472,9 @@ create_main_window (void)
 
   label1158 = gtk_label_new_with_mnemonic (_("Delete"));
   gtk_widget_show (label1158);
+  if (GTK_IS_BOX(hbox131) && GTK_IS_WIDGET(label1158)) {
   gtk_box_append (GTK_BOX (hbox131), label1158);
+  }
 
   label962 = gtk_label_new (_("INEL & CFP information"));
   gtk_widget_show (label962);
@@ -7353,251 +9487,355 @@ create_main_window (void)
 
   statusbar = gtk_statusbar_new ();
   gtk_widget_show (statusbar);
+  if (GTK_IS_BOX(main_vbox) && GTK_IS_WIDGET(statusbar)) {
   gtk_box_append (GTK_BOX (main_vbox), statusbar);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
 
+  if (main_window) {
   g_signal_connect ((gpointer) main_window, "destroy",
                     G_CALLBACK (on_main_window_destroy),
                     NULL);
-  g_signal_connect ((gpointer) file, "activate",
-                    G_CALLBACK (on_file_activate),
-                    NULL);
-  g_signal_connect ((gpointer) New, "activate",
-                    G_CALLBACK (on_New_activate),
-                    NULL);
-  g_signal_connect ((gpointer) Open, "activate",
-                    G_CALLBACK (on_Open_activate),
-                    NULL);
-  g_signal_connect ((gpointer) import, "activate",
-                    G_CALLBACK (on_import_activate),
-                    NULL);
-  g_signal_connect ((gpointer) print, "activate",
-                    G_CALLBACK (on_print_activate),
-                    NULL);
-  g_signal_connect ((gpointer) revert, "activate",
-                    G_CALLBACK (on_revert_activate),
-                    NULL);
-  g_signal_connect ((gpointer) Save, "activate",
-                    G_CALLBACK (on_Save_activate),
-                    NULL);
-  g_signal_connect ((gpointer) Save_as, "activate",
-                    G_CALLBACK (on_Save_as_activate),
-                    NULL);
-  g_signal_connect ((gpointer) Exit, "activate",
-                    G_CALLBACK (on_Exit_activate),
-                    NULL);
-  g_signal_connect ((gpointer) Edit, "activate",
-                    G_CALLBACK (on_Edit_activate),
-                    NULL);
-  g_signal_connect ((gpointer) Show_input, "activate",
-                    G_CALLBACK (on_Show_input_activate),
-                    NULL);
-  g_signal_connect ((gpointer) run, "activate",
-                    G_CALLBACK (on_run_activate),
-                    NULL);
-  g_signal_connect ((gpointer) Run_options, "activate",
-                    G_CALLBACK (on_Run_options_activate),
-                    NULL);
-  g_signal_connect ((gpointer) Run, "activate",
-                    G_CALLBACK (on_Run_activate),
-                    NULL);
-  g_signal_connect ((gpointer) kill_current, "activate",
-                    G_CALLBACK (on_kill_current_activate),
-                    NULL);
+  }
+  /* g_signal_connect ((gpointer) file, "activate", */
+                    /* G_CALLBACK (on_file_activate), */
+                    /* NULL); */
+  /* g_signal_connect ((gpointer) New, "activate", */
+                    /* G_CALLBACK (on_New_activate), */
+                    /* NULL); */
+  /* g_signal_connect ((gpointer) Open, "activate", */
+                    /* G_CALLBACK (on_Open_activate), */
+                    /* NULL); */
+  /* g_signal_connect ((gpointer) import, "activate", */
+                    /* G_CALLBACK (on_import_activate), */
+                    /* NULL); */
+  /* g_signal_connect ((gpointer) print, "activate", */
+                    /* G_CALLBACK (on_print_activate), */
+                    /* NULL); */
+  /* g_signal_connect ((gpointer) revert, "activate", */
+                    /* G_CALLBACK (on_revert_activate), */
+                    /* NULL); */
+  /* g_signal_connect ((gpointer) Save, "activate", */
+                    /* G_CALLBACK (on_Save_activate), */
+                    /* NULL); */
+  /* g_signal_connect ((gpointer) Save_as, "activate", */
+                    /* G_CALLBACK (on_Save_as_activate), */
+                    /* NULL); */
+  /* g_signal_connect ((gpointer) Exit, "activate", */
+                    /* G_CALLBACK (on_Exit_activate), */
+                    /* NULL); */
+  /* g_signal_connect ((gpointer) Edit, "activate", */
+                    /* G_CALLBACK (on_Edit_activate), */
+                    /* NULL); */
+  /* g_signal_connect ((gpointer) Show_input, "activate", */
+                    /* G_CALLBACK (on_Show_input_activate), */
+                    /* NULL); */
+  /* g_signal_connect ((gpointer) run, "activate", */
+                    /* G_CALLBACK (on_run_activate), */
+                    /* NULL); */
+  /* g_signal_connect ((gpointer) Run_options, "activate", */
+                    /* G_CALLBACK (on_Run_options_activate), */
+                    /* NULL); */
+  /* g_signal_connect ((gpointer) Run, "activate", */
+                    /* G_CALLBACK (on_Run_activate), */
+                    /* NULL); */
+  /* g_signal_connect ((gpointer) kill_current, "activate", */
+                    /* G_CALLBACK (on_kill_current_activate), */
+                    /* NULL); */
+  if (check_stdout) {
   g_signal_connect ((gpointer) check_stdout, "activate",
                     G_CALLBACK (on_check_stdout_activate),
                     NULL);
-  g_signal_connect ((gpointer) files, "activate",
-                    G_CALLBACK (on_files_activate),
-                    NULL);
-  g_signal_connect ((gpointer) About, "activate",
-                    G_CALLBACK (on_About_activate),
-                    NULL);
-  g_signal_connect ((gpointer) Version, "activate",
-                    G_CALLBACK (on_Version_activate),
-                    NULL);
+  }
+  /* g_signal_connect ((gpointer) files, "activate", */
+                    /* G_CALLBACK (on_files_activate), */
+                    /* NULL); */
+  /* g_signal_connect ((gpointer) About, "activate", */
+                    /* G_CALLBACK (on_About_activate), */
+                    /* NULL); */
+  /* g_signal_connect ((gpointer) Version, "activate", */
+                    /* G_CALLBACK (on_Version_activate), */
+                    /* NULL); */
   /* g_signal_connect ((gpointer) main_notebook, "key_press_event", - deprecated GTK-2 signal */
   /*                   G_CALLBACK (on_main_notebook_key_press_event), */
   /*                   NULL); */
   /* g_signal_connect ((gpointer) main_notebook, "key_release_event", - deprecated GTK-2 signal */
   /*                   G_CALLBACK (on_main_notebook_key_release_event), */
   /*                   NULL); */
+  if (button_open_ccwf) {
   g_signal_connect ((gpointer) button_open_ccwf, "clicked",
                     G_CALLBACK (on_button_open_ccwf_clicked),
                     NULL);
+  }
+  if (check_use_ccwf) {
   g_signal_connect ((gpointer) check_use_ccwf, "toggled",
                     G_CALLBACK (on_check_use_ccwf_toggled),
                     NULL);
+  }
+  if (button_jbord) {
   g_signal_connect ((gpointer) button_jbord, "clicked",
                     G_CALLBACK (on_button_jbord_clicked),
                     NULL);
+  }
+  if (elab) {
   g_signal_connect ((gpointer) elab, "changed",
                     G_CALLBACK (on_entry_elab_changed),
                     NULL);
+  }
+  if (toggle_elab) {
   g_signal_connect ((gpointer) toggle_elab, "toggled",
                     G_CALLBACK (on_toggle_elab_toggled),
                     NULL);
+  }
+  if (elab1) {
   g_signal_connect ((gpointer) elab1, "changed",
                     G_CALLBACK (on_elab1_changed),
                     NULL);
+  }
+  if (check_mtmin) {
   g_signal_connect ((gpointer) check_mtmin, "toggled",
                     G_CALLBACK (on_check_mtmin_clicked),
                     NULL);
+  }
+  if (toggle_2ntrans) {
   g_signal_connect ((gpointer) toggle_2ntrans, "toggled",
                     G_CALLBACK (on_toggle_2ntrans_toggled),
                     NULL);
+  }
   /* g_signal_connect ((gpointer) label_integration, "button_press_event", - deprecated GTK-2 signal */
   /*                   G_CALLBACK (on_label_integration_button_press_event), */
   /*                   NULL); */
   /* g_signal_connect ((gpointer) opt_lampl, "clicked", - NULL widget */
   /*                   G_CALLBACK (on_opt_lampl_clicked), */
   /*                   NULL); */
+  if (check_ldistrib) {
   g_signal_connect ((gpointer) check_ldistrib, "toggled",
                     G_CALLBACK (on_check_ldistrib_clicked),
                     NULL);
+  }
+  if (button_open_Rmatrix) {
   g_signal_connect ((gpointer) button_open_Rmatrix, "clicked",
                     G_CALLBACK (on_button_open_Rmatrix_clicked),
                     NULL);
+  }
+  if (toggle_pset) {
   g_signal_connect ((gpointer) toggle_pset, "toggled",
                     G_CALLBACK (on_band_clicked),
                     NULL);
+  }
+  if (add_partition) {
   g_signal_connect ((gpointer) add_partition, "clicked",
                     G_CALLBACK (on_partition_add_clicked),
                     NULL);
+  }
+  if (replace_partition) {
   g_signal_connect ((gpointer) replace_partition, "clicked",
                     G_CALLBACK (on_partition_replace_clicked),
                     NULL);
+  }
+  if (insert_partition) {
   g_signal_connect ((gpointer) insert_partition, "clicked",
                     G_CALLBACK (on_partition_insert_clicked),
                     NULL);
+  }
+  if (delete_partition) {
   g_signal_connect ((gpointer) delete_partition, "clicked",
                     G_CALLBACK (on_partition_delete_clicked),
                     NULL);
+  }
   /* Selection callback - updated for GTK-4 */
   xfr_clist_set_selection_callback(GTK_COLUMN_VIEW(part_clist),
                                     G_CALLBACK (on_partitions_select_row),
                                     NULL);
+  if (bandp) {
   g_signal_connect ((gpointer) bandp, "clicked",
                     G_CALLBACK (on_band_clicked),
                     NULL);
+  }
+  if (bandt) {
   g_signal_connect ((gpointer) bandt, "clicked",
                     G_CALLBACK (on_band_clicked),
                     NULL);
+  }
+  if (replace_states) {
   g_signal_connect ((gpointer) replace_states, "clicked",
                     G_CALLBACK (on_states_replace_clicked),
                     NULL);
+  }
+  if (insert_states) {
   g_signal_connect ((gpointer) insert_states, "clicked",
                     G_CALLBACK (on_states_insert_clicked),
                     NULL);
+  }
+  if (add_states) {
   g_signal_connect ((gpointer) add_states, "clicked",
                     G_CALLBACK (on_states_add_clicked),
                     NULL);
+  }
+  if (delete_states) {
   g_signal_connect ((gpointer) delete_states, "clicked",
                     G_CALLBACK (on_states_delete_clicked),
                     NULL);
+  }
   /* Selection callback - updated for GTK-4 */
   xfr_clist_set_selection_callback(GTK_COLUMN_VIEW(states_clist),
                                     G_CALLBACK (on_states_select_row),
                                     NULL);
+  if (entry271) {
   g_signal_connect ((gpointer) entry271, "changed",
                     G_CALLBACK (on_combo_type_changed_selection),
                     NULL);
+  }
+  if (pot_add) {
   g_signal_connect ((gpointer) pot_add, "clicked",
                     G_CALLBACK (on_potential_add_clicked),
                     NULL);
+  }
+  if (pot_insert) {
   g_signal_connect ((gpointer) pot_insert, "clicked",
                     G_CALLBACK (on_potential_insert_clicked),
                     NULL);
+  }
+  if (pot_replace) {
   g_signal_connect ((gpointer) pot_replace, "clicked",
                     G_CALLBACK (on_potential_replace_clicked),
                     NULL);
+  }
+  if (pot_delete) {
   g_signal_connect ((gpointer) pot_delete, "clicked",
                     G_CALLBACK (on_potential_delete_clicked),
                     NULL);
+  }
   /* Selection callback - updated for GTK-4 */
   xfr_clist_set_selection_callback(GTK_COLUMN_VIEW(pot_clist),
                                     G_CALLBACK (on_pot_clist_select_row),
                                     NULL);
+  if (spin_ib) {
   g_signal_connect ((gpointer) spin_ib, "changed",
                     G_CALLBACK (on_step_state_changed_value),
                     NULL);
+  }
+  if (spin_ia) {
   g_signal_connect ((gpointer) spin_ia, "changed",
                     G_CALLBACK (on_step_state_changed_value),
                     NULL);
+  }
+  if (pot0_add) {
   g_signal_connect ((gpointer) pot0_add, "clicked",
                     G_CALLBACK (on_step_add_clicked),
                     NULL);
+  }
+  if (pot0_insert) {
   g_signal_connect ((gpointer) pot0_insert, "clicked",
                     G_CALLBACK (on_step_insert_clicked),
                     NULL);
+  }
+  if (pot0_replace) {
   g_signal_connect ((gpointer) pot0_replace, "clicked",
                     G_CALLBACK (on_step_replace_clicked),
                     NULL);
+  }
+  if (pot0_delete) {
   g_signal_connect ((gpointer) pot0_delete, "clicked",
                     G_CALLBACK (on_step_delete_clicked),
                     NULL);
+  }
   /* Selection callback - updated for GTK-4 */
   xfr_clist_set_selection_callback(GTK_COLUMN_VIEW(step_clist),
                                     G_CALLBACK (on_step_clist_select_row),
                                     NULL);
+  if (entry_kind_overlap) {
   g_signal_connect ((gpointer) entry_kind_overlap, "changed",
                     G_CALLBACK (on_kind_overlap_changed),
                     NULL);
+  }
+  if (over_be) {
   g_signal_connect ((gpointer) over_be, "changed",
                     G_CALLBACK (on_over_be_changed),
                     NULL);
+  }
+  if (check_vary_be) {
   g_signal_connect ((gpointer) check_vary_be, "toggled",
                     G_CALLBACK (on_check_vary_be_clicked),
                     NULL);
+  }
   /* g_signal_connect ((gpointer) label1142, "button_press_event", - deprecated GTK-2 signal */
   /*                   G_CALLBACK (on_misc_bins_press_event), */
   /*                   NULL); */
+  if (button34) {
   g_signal_connect ((gpointer) button34, "clicked",
                     G_CALLBACK (on_overlap_add_clicked),
                     NULL);
+  }
+  if (button35) {
   g_signal_connect ((gpointer) button35, "clicked",
                     G_CALLBACK (on_overlap_insert_clicked),
                     NULL);
+  }
+  if (button36) {
   g_signal_connect ((gpointer) button36, "clicked",
                     G_CALLBACK (on_overlap_replace_clicked),
                     NULL);
+  }
+  if (button37) {
   g_signal_connect ((gpointer) button37, "clicked",
                     G_CALLBACK (on_overlap_delete_clicked),
                     NULL);
+  }
   /* Selection callback - updated for GTK-4 */
   xfr_clist_set_selection_callback(GTK_COLUMN_VIEW(overlap_clist),
                                     G_CALLBACK (on_overlap_clist_select_row),
                                     NULL);
+  if (button40) {
   g_signal_connect ((gpointer) button40, "clicked",
                     G_CALLBACK (on_overlap_add_clicked),
                     NULL);
+  }
+  if (button41) {
   g_signal_connect ((gpointer) button41, "clicked",
                     G_CALLBACK (on_overlap_insert_clicked),
                     NULL);
+  }
+  if (button42) {
   g_signal_connect ((gpointer) button42, "clicked",
                     G_CALLBACK (on_overlap_replace_clicked),
                     NULL);
+  }
+  if (button43) {
   g_signal_connect ((gpointer) button43, "clicked",
                     G_CALLBACK (on_overlap_delete_clicked),
                     NULL);
+  }
+  if (entry275) {
   g_signal_connect ((gpointer) entry275, "changed",
                     G_CALLBACK (on_combo_kind_changed_selection),
                     NULL);
+  }
+  if (check_k8_ip2) {
   g_signal_connect ((gpointer) check_k8_ip2, "clicked",
                     G_CALLBACK (on_check_k8_ip2_clicked),
                     NULL);
+  }
+  if (coup_add) {
   g_signal_connect ((gpointer) coup_add, "clicked",
                     G_CALLBACK (on_coupling_add_clicked),
                     NULL);
+  }
+  if (coup_insert) {
   g_signal_connect ((gpointer) coup_insert, "clicked",
                     G_CALLBACK (on_coupling_insert_clicked),
                     NULL);
+  }
+  if (coup_replace) {
   g_signal_connect ((gpointer) coup_replace, "clicked",
                     G_CALLBACK (on_coupling_replace_clicked),
                     NULL);
+  }
+  if (coup_delete) {
   g_signal_connect ((gpointer) coup_delete, "clicked",
                     G_CALLBACK (on_coupling_delete_clicked),
                     NULL);
+  }
   /* Selection callbacks - updated for GTK-4 */
   xfr_clist_set_selection_callback(GTK_COLUMN_VIEW(coup_clist),
                                     G_CALLBACK (on_coup_clist_select_row),
@@ -7608,12 +9846,16 @@ create_main_window (void)
   /* g_signal_connect ((gpointer) label_inel, "button_press_event", - deprecated GTK-2 signal */
   /*                   G_CALLBACK (on_label_inel_pressed), */
   /*                   NULL); */
+  if (cfp_ia) {
   g_signal_connect ((gpointer) cfp_ia, "changed",
                     G_CALLBACK (on_cfp_ibia_changed),
                     NULL);
+  }
+  if (cfp_ib) {
   g_signal_connect ((gpointer) cfp_ib, "changed",
                     G_CALLBACK (on_cfp_ibia_changed),
                     NULL);
+  }
   /* Selection callback - updated for GTK-4 */
   xfr_clist_set_selection_callback(GTK_COLUMN_VIEW(cfp_clist),
                                     G_CALLBACK (on_cfp_clist_select_row),
@@ -7627,28 +9869,56 @@ create_main_window (void)
                             q5_ni, q7_ni};
     for (int i = 0; i < 18; i++) {
       focus_controller = gtk_event_controller_focus_new();
+      if (focus_controller) {
       g_signal_connect(focus_controller, "leave",
                        G_CALLBACK(on_qscale_focus_out_event), NULL);
+      }
       gtk_widget_add_controller(widgets[i], focus_controller);
     }
   }
+  if (cfp_add) {
   g_signal_connect ((gpointer) cfp_add, "clicked",
                     G_CALLBACK (on_cfp_add_clicked),
                     NULL);
+  }
+  if (cft_insert) {
   g_signal_connect ((gpointer) cft_insert, "clicked",
                     G_CALLBACK (on_cfp_insert_clicked),
                     NULL);
+  }
+  if (cfp_replace) {
   g_signal_connect ((gpointer) cfp_replace, "clicked",
                     G_CALLBACK (on_cfp_replace_clicked),
                     NULL);
+  }
+  if (cfp_delete) {
   g_signal_connect ((gpointer) cfp_delete, "clicked",
                     G_CALLBACK (on_cfp_delete_clicked),
                     NULL);
+  }
 
   /* Store pointers to all widgets, for use by lookup_widget(). */
   GLADE_HOOKUP_OBJECT_NO_REF (main_window, main_window, "main_window");
   GLADE_HOOKUP_OBJECT (main_window, main_vbox, "main_vbox");
   GLADE_HOOKUP_OBJECT (main_window, menubar, "menubar");
+
+  /* Connect menu button signals to existing callbacks */
+  g_signal_connect((gpointer) file_new_btn, "clicked", G_CALLBACK(on_New_activate), NULL);
+  g_signal_connect((gpointer) file_open_btn, "clicked", G_CALLBACK(on_Open_activate), NULL);
+  g_signal_connect((gpointer) file_import_btn, "clicked", G_CALLBACK(on_import_activate), NULL);
+  g_signal_connect((gpointer) file_print_btn, "clicked", G_CALLBACK(on_print_activate), NULL);
+  g_signal_connect((gpointer) file_revert_btn, "clicked", G_CALLBACK(on_revert_activate), NULL);
+  g_signal_connect((gpointer) file_save_btn, "clicked", G_CALLBACK(on_Save_activate), NULL);
+  g_signal_connect((gpointer) file_saveas_btn, "clicked", G_CALLBACK(on_Save_as_activate), NULL);
+  g_signal_connect((gpointer) file_exit_btn, "clicked", G_CALLBACK(on_Exit_activate), NULL);
+  g_signal_connect((gpointer) edit_showinput_btn, "clicked", G_CALLBACK(on_Show_input_activate), NULL);
+  g_signal_connect((gpointer) run_options_btn, "clicked", G_CALLBACK(on_Run_options_activate), NULL);
+  g_signal_connect((gpointer) run_run_btn, "clicked", G_CALLBACK(on_Run_activate), NULL);
+  g_signal_connect((gpointer) run_kill_btn, "clicked", G_CALLBACK(on_kill_current_activate), NULL);
+  g_signal_connect((gpointer) options_stdout_btn, "clicked", G_CALLBACK(on_check_stdout_activate), NULL);
+  g_signal_connect((gpointer) options_files_btn, "clicked", G_CALLBACK(on_files_activate), NULL);
+  g_signal_connect((gpointer) about_about_btn, "clicked", G_CALLBACK(on_About_activate), NULL);
+  g_signal_connect((gpointer) about_version_btn, "clicked", G_CALLBACK(on_Version_activate), NULL);
   GLADE_HOOKUP_OBJECT (main_window, file, "file");
   GLADE_HOOKUP_OBJECT (main_window, file_menu, "file_menu");
   GLADE_HOOKUP_OBJECT (main_window, New, "New");
@@ -8695,33 +10965,53 @@ GtkWidget*
 create_open_filesel (void)
 {
   GtkWidget *open_filesel;
-  GtkWidget *ok_button;
-  GtkWidget *cancel_button;
+  GtkFileFilter *filter_all, *filter_fresco;
 
-  /* TODO: Replace gtk_file_selection with GtkFileChooserDialog */
-  open_filesel = gtk_window_new (); /* Placeholder - was gtk_file_selection_new */
-  gtk_window_set_title (GTK_WINDOW (open_filesel), _("Open File"));
+  /* Use GtkFileChooserDialog for GTK-4 */
+  open_filesel = gtk_file_chooser_dialog_new (
+    _("Open File"),
+    GTK_WINDOW (main_window),
+    GTK_FILE_CHOOSER_ACTION_OPEN,
+    _("_Cancel"), GTK_RESPONSE_CANCEL,
+    _("_Open"), GTK_RESPONSE_ACCEPT,
+    NULL);
 
-  ok_button = gtk_button_new_with_label("OK");
-  cancel_button = gtk_button_new_with_label("Cancel");
+  /* Set modal to prevent interaction with main window */
+  gtk_window_set_modal (GTK_WINDOW (open_filesel), TRUE);
 
-  /* gtk_container_set_border_width removed in GTK-3 */
-  /* gtk_window_set_type_hint - removed in GTK-4 */
+  /* Configure file chooser for better usability */
+  gtk_file_chooser_set_select_multiple (GTK_FILE_CHOOSER (open_filesel), FALSE);
+  gtk_file_chooser_set_create_folders (GTK_FILE_CHOOSER (open_filesel), FALSE);
 
-  g_signal_connect ((gpointer) open_filesel, "delete_event",
-                    G_CALLBACK (on_open_filesel_delete_ev),
-                    NULL);
-  g_signal_connect ((gpointer) ok_button, "clicked",
-                    G_CALLBACK (on_open_filesel_ok_button_clicked),
-                    NULL);
-  g_signal_connect ((gpointer) cancel_button, "clicked",
-                    G_CALLBACK (on_open_filesel_cancel_button_clicked),
+  /* Set a reasonable default size for the dialog */
+  gtk_window_set_default_size (GTK_WINDOW (open_filesel), 800, 600);
+
+  /* Add file filters for better file browsing */
+  /* Add "All Files" first so it's the default */
+  filter_all = gtk_file_filter_new ();
+  gtk_file_filter_set_name (filter_all, "All Files");
+  gtk_file_filter_add_pattern (filter_all, "*");
+  gtk_file_chooser_add_filter (GTK_FILE_CHOOSER (open_filesel), filter_all);
+
+  /* Add FRESCO-specific filter with both uppercase and lowercase patterns */
+  filter_fresco = gtk_file_filter_new ();
+  gtk_file_filter_set_name (filter_fresco, "FRESCO Files (*.in, *.dat, *.fresco)");
+  gtk_file_filter_add_pattern (filter_fresco, "*.in");
+  gtk_file_filter_add_pattern (filter_fresco, "*.IN");
+  gtk_file_filter_add_pattern (filter_fresco, "*.dat");
+  gtk_file_filter_add_pattern (filter_fresco, "*.DAT");
+  gtk_file_filter_add_pattern (filter_fresco, "*.fresco");
+  gtk_file_filter_add_pattern (filter_fresco, "*.FRESCO");
+  gtk_file_filter_add_pattern (filter_fresco, "*.Fresco");
+  gtk_file_chooser_add_filter (GTK_FILE_CHOOSER (open_filesel), filter_fresco);
+
+  /* Connect response signal */
+  g_signal_connect (open_filesel, "response",
+                    G_CALLBACK (on_open_filesel_response),
                     NULL);
 
   /* Store pointers to all widgets, for use by lookup_widget(). */
   GLADE_HOOKUP_OBJECT_NO_REF (open_filesel, open_filesel, "open_filesel");
-  GLADE_HOOKUP_OBJECT_NO_REF (open_filesel, ok_button, "ok_button");
-  GLADE_HOOKUP_OBJECT_NO_REF (open_filesel, cancel_button, "cancel_button");
 
   return open_filesel;
 }
@@ -8742,10 +11032,12 @@ create_window_constants (void)
 
   vbox65 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
   gtk_widget_show (vbox65);
-  gtk_box_append (GTK_BOX (window_constants), vbox65);
+  gtk_window_set_child (GTK_WINDOW (window_constants), vbox65);  /* GTK-4: windows use set_child, not box_append */
 
   frame111 = gtk_frame_new (NULL);
+  if (GTK_IS_BOX(vbox65) && GTK_IS_WIDGET(frame111)) {
   gtk_box_append (GTK_BOX (vbox65), frame111);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
 
   vbox70 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 3);
@@ -8755,26 +11047,36 @@ create_window_constants (void)
 
   label909 = gtk_label_new (_("Project description :"));
   gtk_widget_show (label909);
+  if (GTK_IS_BOX(vbox70) && GTK_IS_WIDGET(label909)) {
   gtk_box_append (GTK_BOX (vbox70), label909);
+  }
   gtk_label_set_justify (GTK_LABEL (label909), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
 
   hbuttonbox4 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0); /* button_box removed */
   gtk_widget_show (hbuttonbox4);
+  if (GTK_IS_BOX(vbox65) && GTK_IS_WIDGET(hbuttonbox4)) {
   gtk_box_append (GTK_BOX (vbox65), hbuttonbox4);
+  }
   gtk_box_set_spacing (GTK_BOX (hbuttonbox4), 30);
 
   button_constants_close = gtk_button_new_with_mnemonic (_("Close"));
   gtk_widget_show (button_constants_close);
+  if (GTK_IS_BOX(hbuttonbox4) && GTK_IS_WIDGET(button_constants_close)) {
   gtk_box_append (GTK_BOX (hbuttonbox4), button_constants_close);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
 
+  if (window_constants) {
   g_signal_connect ((gpointer) window_constants, "delete_event",
                     G_CALLBACK (on_window_constants_delete_event),
                     NULL);
+  }
+  if (button_constants_close) {
   g_signal_connect ((gpointer) button_constants_close, "clicked",
                     G_CALLBACK (on_button_constants_close_clicked),
                     NULL);
+  }
 
   /* Store pointers to all widgets, for use by lookup_widget(). */
   GLADE_HOOKUP_OBJECT_NO_REF (window_constants, window_constants, "window_constants");
@@ -8813,11 +11115,13 @@ create_window_ccwf (void)
 
   vbox60 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
   gtk_widget_show (vbox60);
-  gtk_box_append (GTK_BOX (window_ccwf), vbox60);
+  gtk_window_set_child (GTK_WINDOW (window_ccwf), vbox60);  /* GTK-4: windows use set_child, not box_append */
 
   frame_ccwf = gtk_frame_new (NULL);
   gtk_widget_show (frame_ccwf);
+  if (GTK_IS_BOX(vbox60) && GTK_IS_WIDGET(frame_ccwf)) {
   gtk_box_append (GTK_BOX (vbox60), frame_ccwf);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
 
   vbox10 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
@@ -8826,92 +11130,156 @@ create_window_ccwf (void)
 
   table_ccwf = gtk_grid_new(); /* gtk_table_new removed - using gtk_grid_new */
   gtk_widget_show (table_ccwf);
+  if (GTK_IS_BOX(vbox10) && GTK_IS_WIDGET(table_ccwf)) {
   gtk_box_append (GTK_BOX (vbox10), table_ccwf);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
   /* gtk_table_set_row_spacings removed - use gtk_grid_set_row_spacing */
 
   label184 = gtk_label_new (_("RASYM:"));
   gtk_widget_show (label184);
+  if (GTK_IS_GRID(table_ccwf) && GTK_IS_WIDGET(label184)) {
   gtk_grid_attach (GTK_GRID (table_ccwf), label184, 0, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(label184)) {
   gtk_widget_set_hexpand (label184, TRUE);
+  }
+  if (GTK_IS_WIDGET(label184)) {
   gtk_widget_set_vexpand (label184, TRUE);
+  }
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
 
   label185 = gtk_label_new (_("ACCUR:"));
   gtk_widget_show (label185);
+  if (GTK_IS_GRID(table_ccwf) && GTK_IS_WIDGET(label185)) {
   gtk_grid_attach (GTK_GRID (table_ccwf), label185, 0, 2, 1, 1);
+  }
+  if (GTK_IS_WIDGET(label185)) {
   gtk_widget_set_hexpand (label185, TRUE);
+  }
+  if (GTK_IS_WIDGET(label185)) {
   gtk_widget_set_vexpand (label185, TRUE);
+  }
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
 
   label186 = gtk_label_new (_("SWITCH:"));
   gtk_widget_show (label186);
+  if (GTK_IS_GRID(table_ccwf) && GTK_IS_WIDGET(label186)) {
   gtk_grid_attach (GTK_GRID (table_ccwf), label186, 0, 3, 1, 1);
+  }
+  if (GTK_IS_WIDGET(label186)) {
   gtk_widget_set_hexpand (label186, TRUE);
+  }
+  if (GTK_IS_WIDGET(label186)) {
   gtk_widget_set_vexpand (label186, TRUE);
+  }
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
 
   label187 = gtk_label_new (_("AJSWITCH:"));
   gtk_widget_show (label187);
+  if (GTK_IS_GRID(table_ccwf) && GTK_IS_WIDGET(label187)) {
   gtk_grid_attach (GTK_GRID (table_ccwf), label187, 0, 4, 1, 1);
+  }
+  if (GTK_IS_WIDGET(label187)) {
   gtk_widget_set_hexpand (label187, TRUE);
+  }
+  if (GTK_IS_WIDGET(label187)) {
   gtk_widget_set_vexpand (label187, TRUE);
+  }
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
 
   entry_rasym = gtk_entry_new ();
   gtk_widget_show (entry_rasym);
+  if (GTK_IS_GRID(table_ccwf) && GTK_IS_WIDGET(entry_rasym)) {
   gtk_grid_attach (GTK_GRID (table_ccwf), entry_rasym, 1, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(entry_rasym)) {
   gtk_widget_set_hexpand (entry_rasym, TRUE);
+  }
+  if (GTK_IS_WIDGET(entry_rasym)) {
   gtk_widget_set_vexpand (entry_rasym, TRUE);
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_rasym), 8226);
 
   entry_accrcy = gtk_entry_new ();
   gtk_widget_show (entry_accrcy);
+  if (GTK_IS_GRID(table_ccwf) && GTK_IS_WIDGET(entry_accrcy)) {
   gtk_grid_attach (GTK_GRID (table_ccwf), entry_accrcy, 1, 2, 1, 1);
+  }
+  if (GTK_IS_WIDGET(entry_accrcy)) {
   gtk_widget_set_hexpand (entry_accrcy, TRUE);
+  }
+  if (GTK_IS_WIDGET(entry_accrcy)) {
   gtk_widget_set_vexpand (entry_accrcy, TRUE);
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_accrcy), 8226);
 
   entry_switch = gtk_entry_new ();
   gtk_widget_show (entry_switch);
+  if (GTK_IS_GRID(table_ccwf) && GTK_IS_WIDGET(entry_switch)) {
   gtk_grid_attach (GTK_GRID (table_ccwf), entry_switch, 1, 3, 1, 1);
+  }
+  if (GTK_IS_WIDGET(entry_switch)) {
   gtk_widget_set_hexpand (entry_switch, TRUE);
+  }
+  if (GTK_IS_WIDGET(entry_switch)) {
   gtk_widget_set_vexpand (entry_switch, TRUE);
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_switch), 8226);
 
   entry_ajswtch = gtk_entry_new ();
   gtk_widget_show (entry_ajswtch);
+  if (GTK_IS_GRID(table_ccwf) && GTK_IS_WIDGET(entry_ajswtch)) {
   gtk_grid_attach (GTK_GRID (table_ccwf), entry_ajswtch, 1, 4, 1, 1);
+  }
+  if (GTK_IS_WIDGET(entry_ajswtch)) {
   gtk_widget_set_hexpand (entry_ajswtch, TRUE);
+  }
+  if (GTK_IS_WIDGET(entry_ajswtch)) {
   gtk_widget_set_vexpand (entry_ajswtch, TRUE);
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_ajswtch), 8226);
 
   check_rasym = gtk_check_button_new_with_mnemonic (_("Determine automatically"));
   gtk_widget_show (check_rasym);
+  if (GTK_IS_GRID(table_ccwf) && GTK_IS_WIDGET(check_rasym)) {
   gtk_grid_attach (GTK_GRID (table_ccwf), check_rasym, 0, 1, 2, 1);
+  }
+  if (GTK_IS_WIDGET(check_rasym)) {
   gtk_widget_set_hexpand (check_rasym, TRUE);
+  }
+  if (GTK_IS_WIDGET(check_rasym)) {
   gtk_widget_set_vexpand (check_rasym, TRUE);
+  }
 
   hbuttonbox2 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0); /* button_box removed */
   gtk_widget_show (hbuttonbox2);
+  if (GTK_IS_BOX(vbox60) && GTK_IS_WIDGET(hbuttonbox2)) {
   gtk_box_append (GTK_BOX (vbox60), hbuttonbox2);
+  }
   gtk_box_set_spacing (GTK_BOX (hbuttonbox2), 30);
 
   ccwf_ok_button = gtk_button_new_with_mnemonic (_("Close"));
   gtk_widget_show (ccwf_ok_button);
+  if (GTK_IS_BOX(hbuttonbox2) && GTK_IS_WIDGET(ccwf_ok_button)) {
   gtk_box_append (GTK_BOX (hbuttonbox2), ccwf_ok_button);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
 
+  if (window_ccwf) {
   g_signal_connect ((gpointer) window_ccwf, "delete_event",
                     G_CALLBACK (on_window_ccwf_delete_event),
                     NULL);
+  }
+  if (ccwf_ok_button) {
   g_signal_connect ((gpointer) ccwf_ok_button, "clicked",
                     G_CALLBACK (on_ccwf_ok_button_clicked),
                     NULL);
+  }
 
   /* Store pointers to all widgets, for use by lookup_widget(). */
   GLADE_HOOKUP_OBJECT_NO_REF (window_ccwf, window_ccwf, "window_ccwf");
@@ -8973,11 +11341,13 @@ create_window_jbord (void)
 
   vbox61 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 7);
   gtk_widget_show (vbox61);
-  gtk_box_append (GTK_BOX (window_jbord), vbox61);
+  gtk_window_set_child (GTK_WINDOW (window_jbord), vbox61);  /* GTK-4: windows use set_child, not box_append */
 
   frame_jinterval = gtk_frame_new (NULL);
   gtk_widget_show (frame_jinterval);
+  if (GTK_IS_BOX(vbox61) && GTK_IS_WIDGET(frame_jinterval)) {
   gtk_box_append (GTK_BOX (vbox61), frame_jinterval);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
 
   table18 = gtk_grid_new(); /* gtk_table_new removed - using gtk_grid_new */
@@ -8989,152 +11359,272 @@ create_window_jbord (void)
 
   label188 = gtk_label_new (_("JMIN (=J1):"));
   gtk_widget_show (label188);
+  if (GTK_IS_GRID(table18) && GTK_IS_WIDGET(label188)) {
   gtk_grid_attach (GTK_GRID (table18), label188, 0, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(label188)) {
   gtk_widget_set_hexpand (label188, TRUE);
+  }
+  if (GTK_IS_WIDGET(label188)) {
   gtk_widget_set_vexpand (label188, TRUE);
+  }
   gtk_label_set_justify (GTK_LABEL (label188), GTK_JUSTIFY_CENTER);
 
   label189 = gtk_label_new (_("JMAX (=J5):"));
   gtk_widget_show (label189);
+  if (GTK_IS_GRID(table18) && GTK_IS_WIDGET(label189)) {
   gtk_grid_attach (GTK_GRID (table18), label189, 2, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(label189)) {
   gtk_widget_set_hexpand (label189, TRUE);
+  }
+  if (GTK_IS_WIDGET(label189)) {
   gtk_widget_set_vexpand (label189, TRUE);
+  }
   gtk_label_set_justify (GTK_LABEL (label189), GTK_JUSTIFY_CENTER);
 
   label854 = gtk_label_new (_("From J1 to J2="));
   gtk_widget_show (label854);
+  if (GTK_IS_GRID(table18) && GTK_IS_WIDGET(label854)) {
   gtk_grid_attach (GTK_GRID (table18), label854, 0, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(label854)) {
   gtk_widget_set_hexpand (label854, TRUE);
+  }
+  if (GTK_IS_WIDGET(label854)) {
   gtk_widget_set_vexpand (label854, TRUE);
+  }
   gtk_label_set_justify (GTK_LABEL (label854), GTK_JUSTIFY_CENTER);
 
   label855 = gtk_label_new (_("at intervals of "));
   gtk_widget_show (label855);
+  if (GTK_IS_GRID(table18) && GTK_IS_WIDGET(label855)) {
   gtk_grid_attach (GTK_GRID (table18), label855, 2, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(label855)) {
   gtk_widget_set_hexpand (label855, TRUE);
+  }
+  if (GTK_IS_WIDGET(label855)) {
   gtk_widget_set_vexpand (label855, TRUE);
+  }
   gtk_label_set_justify (GTK_LABEL (label855), GTK_JUSTIFY_CENTER);
 
   entry_jtmin = gtk_entry_new ();
   gtk_widget_show (entry_jtmin);
+  if (GTK_IS_GRID(table18) && GTK_IS_WIDGET(entry_jtmin)) {
   gtk_grid_attach (GTK_GRID (table18), entry_jtmin, 1, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(entry_jtmin)) {
   gtk_widget_set_hexpand (entry_jtmin, TRUE);
+  }
+  if (GTK_IS_WIDGET(entry_jtmin)) {
   gtk_widget_set_vexpand (entry_jtmin, TRUE);
+  }
   gtk_editable_set_editable (GTK_EDITABLE (entry_jtmin), FALSE);
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_jtmin), 8226);
 
   jbord2 = gtk_entry_new ();
   gtk_widget_show (jbord2);
+  if (GTK_IS_GRID(table18) && GTK_IS_WIDGET(jbord2)) {
   gtk_grid_attach (GTK_GRID (table18), jbord2, 1, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(jbord2)) {
   gtk_widget_set_hexpand (jbord2, TRUE);
+  }
+  if (GTK_IS_WIDGET(jbord2)) {
   gtk_widget_set_vexpand (jbord2, TRUE);
+  }
   gtk_editable_set_text (GTK_EDITABLE (jbord2), _("0"));
   gtk_entry_set_invisible_char (GTK_ENTRY (jbord2), 8226);
 
   jump2 = gtk_entry_new ();
   gtk_widget_show (jump2);
+  if (GTK_IS_GRID(table18) && GTK_IS_WIDGET(jump2)) {
   gtk_grid_attach (GTK_GRID (table18), jump2, 3, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(jump2)) {
   gtk_widget_set_hexpand (jump2, TRUE);
+  }
+  if (GTK_IS_WIDGET(jump2)) {
   gtk_widget_set_vexpand (jump2, TRUE);
+  }
   gtk_editable_set_text (GTK_EDITABLE (jump2), _("0"));
   gtk_entry_set_invisible_char (GTK_ENTRY (jump2), 8226);
 
   entry_jtmax = gtk_entry_new ();
   gtk_widget_show (entry_jtmax);
+  if (GTK_IS_GRID(table18) && GTK_IS_WIDGET(entry_jtmax)) {
   gtk_grid_attach (GTK_GRID (table18), entry_jtmax, 3, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(entry_jtmax)) {
   gtk_widget_set_hexpand (entry_jtmax, TRUE);
+  }
+  if (GTK_IS_WIDGET(entry_jtmax)) {
   gtk_widget_set_vexpand (entry_jtmax, TRUE);
+  }
   gtk_editable_set_editable (GTK_EDITABLE (entry_jtmax), FALSE);
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_jtmax), 8226);
 
   label856 = gtk_label_new (_("at intervals of"));
   gtk_widget_show (label856);
+  if (GTK_IS_GRID(table18) && GTK_IS_WIDGET(label856)) {
   gtk_grid_attach (GTK_GRID (table18), label856, 2, 2, 1, 1);
+  }
+  if (GTK_IS_WIDGET(label856)) {
   gtk_widget_set_hexpand (label856, TRUE);
+  }
+  if (GTK_IS_WIDGET(label856)) {
   gtk_widget_set_vexpand (label856, TRUE);
+  }
   gtk_label_set_justify (GTK_LABEL (label856), GTK_JUSTIFY_CENTER);
 
   label857 = gtk_label_new (_("From J2 to J3="));
   gtk_widget_show (label857);
+  if (GTK_IS_GRID(table18) && GTK_IS_WIDGET(label857)) {
   gtk_grid_attach (GTK_GRID (table18), label857, 0, 2, 1, 1);
+  }
+  if (GTK_IS_WIDGET(label857)) {
   gtk_widget_set_hexpand (label857, TRUE);
+  }
+  if (GTK_IS_WIDGET(label857)) {
   gtk_widget_set_vexpand (label857, TRUE);
+  }
   gtk_label_set_justify (GTK_LABEL (label857), GTK_JUSTIFY_CENTER);
 
   jbord3 = gtk_entry_new ();
   gtk_widget_show (jbord3);
+  if (GTK_IS_GRID(table18) && GTK_IS_WIDGET(jbord3)) {
   gtk_grid_attach (GTK_GRID (table18), jbord3, 1, 2, 1, 1);
+  }
+  if (GTK_IS_WIDGET(jbord3)) {
   gtk_widget_set_hexpand (jbord3, TRUE);
+  }
+  if (GTK_IS_WIDGET(jbord3)) {
   gtk_widget_set_vexpand (jbord3, TRUE);
+  }
   gtk_editable_set_text (GTK_EDITABLE (jbord3), _("0"));
   gtk_entry_set_invisible_char (GTK_ENTRY (jbord3), 8226);
 
   label858 = gtk_label_new (_("From J3 to J4="));
   gtk_widget_show (label858);
+  if (GTK_IS_GRID(table18) && GTK_IS_WIDGET(label858)) {
   gtk_grid_attach (GTK_GRID (table18), label858, 0, 3, 1, 1);
+  }
+  if (GTK_IS_WIDGET(label858)) {
   gtk_widget_set_hexpand (label858, TRUE);
+  }
+  if (GTK_IS_WIDGET(label858)) {
   gtk_widget_set_vexpand (label858, TRUE);
+  }
   gtk_label_set_justify (GTK_LABEL (label858), GTK_JUSTIFY_CENTER);
 
   label859 = gtk_label_new (_("at intervals of"));
   gtk_widget_show (label859);
+  if (GTK_IS_GRID(table18) && GTK_IS_WIDGET(label859)) {
   gtk_grid_attach (GTK_GRID (table18), label859, 2, 3, 1, 1);
+  }
+  if (GTK_IS_WIDGET(label859)) {
   gtk_widget_set_hexpand (label859, TRUE);
+  }
+  if (GTK_IS_WIDGET(label859)) {
   gtk_widget_set_vexpand (label859, TRUE);
+  }
   gtk_label_set_justify (GTK_LABEL (label859), GTK_JUSTIFY_CENTER);
 
   label860 = gtk_label_new (_("From J4 to J5="));
   gtk_widget_show (label860);
+  if (GTK_IS_GRID(table18) && GTK_IS_WIDGET(label860)) {
   gtk_grid_attach (GTK_GRID (table18), label860, 0, 4, 1, 1);
+  }
+  if (GTK_IS_WIDGET(label860)) {
   gtk_widget_set_hexpand (label860, TRUE);
+  }
+  if (GTK_IS_WIDGET(label860)) {
   gtk_widget_set_vexpand (label860, TRUE);
+  }
   gtk_label_set_justify (GTK_LABEL (label860), GTK_JUSTIFY_CENTER);
 
   jbord4 = gtk_entry_new ();
   gtk_widget_show (jbord4);
+  if (GTK_IS_GRID(table18) && GTK_IS_WIDGET(jbord4)) {
   gtk_grid_attach (GTK_GRID (table18), jbord4, 1, 3, 1, 1);
+  }
+  if (GTK_IS_WIDGET(jbord4)) {
   gtk_widget_set_hexpand (jbord4, TRUE);
+  }
+  if (GTK_IS_WIDGET(jbord4)) {
   gtk_widget_set_vexpand (jbord4, TRUE);
+  }
   gtk_editable_set_text (GTK_EDITABLE (jbord4), _("0"));
   gtk_entry_set_invisible_char (GTK_ENTRY (jbord4), 8226);
 
   jbord5 = gtk_entry_new ();
   gtk_widget_show (jbord5);
+  if (GTK_IS_GRID(table18) && GTK_IS_WIDGET(jbord5)) {
   gtk_grid_attach (GTK_GRID (table18), jbord5, 1, 4, 1, 1);
+  }
+  if (GTK_IS_WIDGET(jbord5)) {
   gtk_widget_set_hexpand (jbord5, TRUE);
+  }
+  if (GTK_IS_WIDGET(jbord5)) {
   gtk_widget_set_vexpand (jbord5, TRUE);
+  }
   gtk_editable_set_text (GTK_EDITABLE (jbord5), _("0"));
   gtk_entry_set_invisible_char (GTK_ENTRY (jbord5), 8226);
 
   jump4 = gtk_entry_new ();
   gtk_widget_show (jump4);
+  if (GTK_IS_GRID(table18) && GTK_IS_WIDGET(jump4)) {
   gtk_grid_attach (GTK_GRID (table18), jump4, 3, 3, 1, 1);
+  }
+  if (GTK_IS_WIDGET(jump4)) {
   gtk_widget_set_hexpand (jump4, TRUE);
+  }
+  if (GTK_IS_WIDGET(jump4)) {
   gtk_widget_set_vexpand (jump4, TRUE);
+  }
   gtk_editable_set_text (GTK_EDITABLE (jump4), _("0"));
   gtk_entry_set_invisible_char (GTK_ENTRY (jump4), 8226);
 
   jump3 = gtk_entry_new ();
   gtk_widget_show (jump3);
+  if (GTK_IS_GRID(table18) && GTK_IS_WIDGET(jump3)) {
   gtk_grid_attach (GTK_GRID (table18), jump3, 3, 2, 1, 1);
+  }
+  if (GTK_IS_WIDGET(jump3)) {
   gtk_widget_set_hexpand (jump3, TRUE);
+  }
+  if (GTK_IS_WIDGET(jump3)) {
   gtk_widget_set_vexpand (jump3, TRUE);
+  }
   gtk_editable_set_text (GTK_EDITABLE (jump3), _("0"));
   gtk_entry_set_invisible_char (GTK_ENTRY (jump3), 8226);
 
   jump5 = gtk_entry_new ();
   gtk_widget_show (jump5);
+  if (GTK_IS_GRID(table18) && GTK_IS_WIDGET(jump5)) {
   gtk_grid_attach (GTK_GRID (table18), jump5, 3, 4, 1, 1);
+  }
+  if (GTK_IS_WIDGET(jump5)) {
   gtk_widget_set_hexpand (jump5, TRUE);
+  }
+  if (GTK_IS_WIDGET(jump5)) {
   gtk_widget_set_vexpand (jump5, TRUE);
+  }
   gtk_editable_set_text (GTK_EDITABLE (jump5), _("0"));
   gtk_entry_set_invisible_char (GTK_ENTRY (jump5), 8226);
 
   label861 = gtk_label_new (_("at intervals of"));
   gtk_widget_show (label861);
+  if (GTK_IS_GRID(table18) && GTK_IS_WIDGET(label861)) {
   gtk_grid_attach (GTK_GRID (table18), label861, 2, 4, 1, 1);
+  }
+  if (GTK_IS_WIDGET(label861)) {
   gtk_widget_set_hexpand (label861, TRUE);
+  }
+  if (GTK_IS_WIDGET(label861)) {
   gtk_widget_set_vexpand (label861, TRUE);
+  }
   gtk_label_set_justify (GTK_LABEL (label861), GTK_JUSTIFY_CENTER);
 
   label977 = gtk_label_new (_("J intervals"));
@@ -9143,24 +11633,34 @@ create_window_jbord (void)
 
   hseparator5 = gtk_separator_new(GTK_ORIENTATION_VERTICAL); /* vseparator/hseparator removed */
   gtk_widget_show (hseparator5);
+  if (GTK_IS_BOX(vbox61) && GTK_IS_WIDGET(hseparator5)) {
   gtk_box_append (GTK_BOX (vbox61), hseparator5);
+  }
 
   hbuttonbox3 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0); /* button_box removed */
   gtk_widget_show (hbuttonbox3);
+  if (GTK_IS_BOX(vbox61) && GTK_IS_WIDGET(hbuttonbox3)) {
   gtk_box_append (GTK_BOX (vbox61), hbuttonbox3);
+  }
   gtk_box_set_spacing (GTK_BOX (hbuttonbox3), 25);
 
   jbord_ok_button = gtk_button_new_with_mnemonic (_("OK"));
   gtk_widget_show (jbord_ok_button);
+  if (GTK_IS_BOX(hbuttonbox3) && GTK_IS_WIDGET(jbord_ok_button)) {
   gtk_box_append (GTK_BOX (hbuttonbox3), jbord_ok_button);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
 
+  if (window_jbord) {
   g_signal_connect ((gpointer) window_jbord, "delete_event",
                     G_CALLBACK (on_window_jbord_delete_event),
                     NULL);
+  }
+  if (jbord_ok_button) {
   g_signal_connect ((gpointer) jbord_ok_button, "clicked",
                     G_CALLBACK (on_jbord_ok_button_clicked),
                     NULL);
+  }
 
   /* Store pointers to all widgets, for use by lookup_widget(). */
   GLADE_HOOKUP_OBJECT_NO_REF (window_jbord, window_jbord, "window_jbord");
@@ -9199,30 +11699,53 @@ GtkWidget*
 create_save_filesel (void)
 {
   GtkWidget *save_filesel;
-  GtkWidget *ok_button;
-  GtkWidget *cancel_button;
+  GtkFileFilter *filter_all, *filter_fresco;
 
-  /* TODO: Replace gtk_file_selection with GtkFileChooserDialog */
-  save_filesel = gtk_window_new (); /* Placeholder - was gtk_file_selection_new */
-  gtk_window_set_title (GTK_WINDOW (save_filesel), _("Save project"));
+  /* Use GtkFileChooserDialog for GTK-4 */
+  save_filesel = gtk_file_chooser_dialog_new (
+    _("Save project"),
+    GTK_WINDOW (main_window),
+    GTK_FILE_CHOOSER_ACTION_SAVE,
+    _("_Cancel"), GTK_RESPONSE_CANCEL,
+    _("_Save"), GTK_RESPONSE_ACCEPT,
+    NULL);
 
-  ok_button = gtk_button_new_with_label("OK");
-  cancel_button = gtk_button_new_with_label("Cancel");
+  /* Set modal to prevent interaction with main window */
+  gtk_window_set_modal (GTK_WINDOW (save_filesel), TRUE);
 
-  /* gtk_container_set_border_width removed in GTK-3 */
-  /* gtk_window_set_type_hint - removed in GTK-4 */
+  /* GTK-4 handles overwrite confirmation automatically */
 
-  g_signal_connect ((gpointer) ok_button, "clicked",
-                    G_CALLBACK (on_save_filesel_ok_button_clicked),
+  /* Configure file chooser for better usability */
+  gtk_file_chooser_set_select_multiple (GTK_FILE_CHOOSER (save_filesel), FALSE);
+  gtk_file_chooser_set_create_folders (GTK_FILE_CHOOSER (save_filesel), TRUE);
+
+  /* Set a reasonable default size for the dialog */
+  gtk_window_set_default_size (GTK_WINDOW (save_filesel), 800, 600);
+
+  /* Add "All Files" first so it's the default */
+  filter_all = gtk_file_filter_new ();
+  gtk_file_filter_set_name (filter_all, "All Files");
+  gtk_file_filter_add_pattern (filter_all, "*");
+  gtk_file_chooser_add_filter (GTK_FILE_CHOOSER (save_filesel), filter_all);
+
+  /* Add FRESCO-specific filter with both uppercase and lowercase patterns */
+  filter_fresco = gtk_file_filter_new ();
+  gtk_file_filter_set_name (filter_fresco, "FRESCO Files (*.in, *.dat, *.fresco)");
+  gtk_file_filter_add_pattern (filter_fresco, "*.in");
+  gtk_file_filter_add_pattern (filter_fresco, "*.IN");
+  gtk_file_filter_add_pattern (filter_fresco, "*.dat");
+  gtk_file_filter_add_pattern (filter_fresco, "*.DAT");
+  gtk_file_filter_add_pattern (filter_fresco, "*.fresco");
+  gtk_file_filter_add_pattern (filter_fresco, "*.FRESCO");
+  gtk_file_filter_add_pattern (filter_fresco, "*.Fresco");
+  gtk_file_chooser_add_filter (GTK_FILE_CHOOSER (save_filesel), filter_fresco);
+
+  /* Connect response signal */
+  g_signal_connect (save_filesel, "response",
+                    G_CALLBACK (on_save_filesel_response),
                     NULL);
-  g_signal_connect ((gpointer) cancel_button, "clicked",
-                    G_CALLBACK (on_save_filesel_cancel_button_clicked),
-                    NULL);
 
-  /* Store pointers to all widgets, for use by lookup_widget(). */
   GLADE_HOOKUP_OBJECT_NO_REF (save_filesel, save_filesel, "save_filesel");
-  GLADE_HOOKUP_OBJECT_NO_REF (save_filesel, ok_button, "ok_button");
-  GLADE_HOOKUP_OBJECT_NO_REF (save_filesel, cancel_button, "cancel_button");
 
   return save_filesel;
 }
@@ -9260,12 +11783,14 @@ create_window_nlab (void)
 
   vbox67 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 9);
   gtk_widget_show (vbox67);
-  gtk_box_append (GTK_BOX (window_nlab), vbox67);
+  gtk_window_set_child (GTK_WINDOW (window_nlab), vbox67);  /* GTK-4: windows use set_child, not box_append */
   /* gtk_container_set_border_width removed in GTK-3 */
 
   frame_nlab = gtk_frame_new (NULL);
   gtk_widget_show (frame_nlab);
+  if (GTK_IS_BOX(vbox67) && GTK_IS_WIDGET(frame_nlab)) {
   gtk_box_append (GTK_BOX (vbox67), frame_nlab);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
 
   table60 = gtk_grid_new(); /* gtk_table_new removed - using gtk_grid_new */
@@ -9277,93 +11802,155 @@ create_window_nlab (void)
 
   entry_nlab1 = gtk_entry_new ();
   gtk_widget_show (entry_nlab1);
+  if (GTK_IS_GRID(table60) && GTK_IS_WIDGET(entry_nlab1)) {
   gtk_grid_attach (GTK_GRID (table60), entry_nlab1, 3, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(entry_nlab1)) {
   gtk_widget_set_hexpand (entry_nlab1, TRUE);
+  }
+  if (GTK_IS_WIDGET(entry_nlab1)) {
   gtk_widget_set_vexpand (entry_nlab1, TRUE);
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_nlab1), 8226);
 
   label841 = gtk_label_new (_("From E2 to E3="));
   gtk_widget_show (label841);
+  if (GTK_IS_GRID(table60) && GTK_IS_WIDGET(label841)) {
   gtk_grid_attach (GTK_GRID (table60), label841, 0, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(label841)) {
   gtk_widget_set_hexpand (label841, TRUE);
+  }
+  if (GTK_IS_WIDGET(label841)) {
   gtk_widget_set_vexpand (label841, TRUE);
+  }
   gtk_label_set_justify (GTK_LABEL (label841), GTK_JUSTIFY_CENTER);
 
   label842 = gtk_label_new (_("From E3 to E4="));
   gtk_widget_show (label842);
+  if (GTK_IS_GRID(table60) && GTK_IS_WIDGET(label842)) {
   gtk_grid_attach (GTK_GRID (table60), label842, 0, 2, 1, 1);
+  }
+  if (GTK_IS_WIDGET(label842)) {
   gtk_widget_set_hexpand (label842, TRUE);
+  }
+  if (GTK_IS_WIDGET(label842)) {
   gtk_widget_set_vexpand (label842, TRUE);
+  }
   gtk_label_set_justify (GTK_LABEL (label842), GTK_JUSTIFY_CENTER);
 
   entry_nlab2 = gtk_entry_new ();
   gtk_widget_show (entry_nlab2);
+  if (GTK_IS_GRID(table60) && GTK_IS_WIDGET(entry_nlab2)) {
   gtk_grid_attach (GTK_GRID (table60), entry_nlab2, 3, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(entry_nlab2)) {
   gtk_widget_set_hexpand (entry_nlab2, TRUE);
+  }
+  if (GTK_IS_WIDGET(entry_nlab2)) {
   gtk_widget_set_vexpand (entry_nlab2, TRUE);
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_nlab2), 8226);
 
   entry_nlab4 = gtk_entry_new ();
   gtk_widget_show (entry_nlab4);
+  if (GTK_IS_GRID(table60) && GTK_IS_WIDGET(entry_nlab4)) {
   gtk_grid_attach (GTK_GRID (table60), entry_nlab4, 3, 2, 1, 1);
+  }
+  if (GTK_IS_WIDGET(entry_nlab4)) {
   gtk_widget_set_hexpand (entry_nlab4, TRUE);
+  }
+  if (GTK_IS_WIDGET(entry_nlab4)) {
   gtk_widget_set_vexpand (entry_nlab4, TRUE);
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_nlab4), 8226);
 
   entry_e3 = gtk_entry_new ();
   gtk_widget_show (entry_e3);
+  if (GTK_IS_GRID(table60) && GTK_IS_WIDGET(entry_e3)) {
   gtk_grid_attach (GTK_GRID (table60), entry_e3, 1, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(entry_e3)) {
   gtk_widget_set_hexpand (entry_e3, TRUE);
+  }
+  if (GTK_IS_WIDGET(entry_e3)) {
   gtk_widget_set_vexpand (entry_e3, TRUE);
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_e3), 8226);
 
   label908 = gtk_label_new (_("From E0 to E1="));
   gtk_widget_show (label908);
+  if (GTK_IS_GRID(table60) && GTK_IS_WIDGET(label908)) {
   gtk_grid_attach (GTK_GRID (table60), label908, 0, 0, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label908), GTK_JUSTIFY_CENTER);
 
   label845 = gtk_label_new (_("in"));
   gtk_widget_show (label845);
+  if (GTK_IS_GRID(table60) && GTK_IS_WIDGET(label845)) {
   gtk_grid_attach (GTK_GRID (table60), label845, 2, 1, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label845), GTK_JUSTIFY_CENTER);
 
   label839 = gtk_label_new (_("in"));
   gtk_widget_show (label839);
+  if (GTK_IS_GRID(table60) && GTK_IS_WIDGET(label839)) {
   gtk_grid_attach (GTK_GRID (table60), label839, 2, 0, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label839), GTK_JUSTIFY_CENTER);
 
   label846 = gtk_label_new (_("in "));
   gtk_widget_show (label846);
+  if (GTK_IS_GRID(table60) && GTK_IS_WIDGET(label846)) {
   gtk_grid_attach (GTK_GRID (table60), label846, 2, 2, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label846), GTK_JUSTIFY_CENTER);
 
   label910 = gtk_label_new (_("intervals"));
   gtk_widget_show (label910);
+  if (GTK_IS_GRID(table60) && GTK_IS_WIDGET(label910)) {
   gtk_grid_attach (GTK_GRID (table60), label910, 4, 0, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label910), GTK_JUSTIFY_CENTER);
 
   label911 = gtk_label_new (_("intervals"));
   gtk_widget_show (label911);
+  if (GTK_IS_GRID(table60) && GTK_IS_WIDGET(label911)) {
   gtk_grid_attach (GTK_GRID (table60), label911, 4, 1, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label911), GTK_JUSTIFY_CENTER);
 
   label912 = gtk_label_new (_("intervals"));
   gtk_widget_show (label912);
+  if (GTK_IS_GRID(table60) && GTK_IS_WIDGET(label912)) {
   gtk_grid_attach (GTK_GRID (table60), label912, 4, 2, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label912), GTK_JUSTIFY_CENTER);
 
   entry_e1 = gtk_entry_new ();
   gtk_widget_show (entry_e1);
+  if (GTK_IS_GRID(table60) && GTK_IS_WIDGET(entry_e1)) {
   gtk_grid_attach (GTK_GRID (table60), entry_e1, 1, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(entry_e1)) {
   gtk_widget_set_hexpand (entry_e1, TRUE);
+  }
+  if (GTK_IS_WIDGET(entry_e1)) {
   gtk_widget_set_vexpand (entry_e1, TRUE);
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_e1), 8226);
 
   entry_e4 = gtk_entry_new ();
   gtk_widget_show (entry_e4);
+  if (GTK_IS_GRID(table60) && GTK_IS_WIDGET(entry_e4)) {
   gtk_grid_attach (GTK_GRID (table60), entry_e4, 1, 2, 1, 1);
+  }
+  if (GTK_IS_WIDGET(entry_e4)) {
   gtk_widget_set_hexpand (entry_e4, TRUE);
+  }
+  if (GTK_IS_WIDGET(entry_e4)) {
   gtk_widget_set_vexpand (entry_e4, TRUE);
+  }
   gtk_editable_set_editable (GTK_EDITABLE (entry_e4), FALSE);
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_e4), 8226);
 
@@ -9373,23 +11960,33 @@ create_window_nlab (void)
 
   hseparator1 = gtk_separator_new(GTK_ORIENTATION_VERTICAL); /* vseparator/hseparator removed */
   gtk_widget_show (hseparator1);
+  if (GTK_IS_BOX(vbox67) && GTK_IS_WIDGET(hseparator1)) {
   gtk_box_append (GTK_BOX (vbox67), hseparator1);
+  }
 
   hbuttonbox6 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0); /* button_box removed */
   gtk_widget_show (hbuttonbox6);
+  if (GTK_IS_BOX(vbox67) && GTK_IS_WIDGET(hbuttonbox6)) {
   gtk_box_append (GTK_BOX (vbox67), hbuttonbox6);
+  }
   gtk_box_set_spacing (GTK_BOX (hbuttonbox6), 30);
 
   window_nlab_ok_button = gtk_button_new_with_mnemonic (_("OK"));
   gtk_widget_show (window_nlab_ok_button);
+  if (GTK_IS_BOX(hbuttonbox6) && GTK_IS_WIDGET(window_nlab_ok_button)) {
   gtk_box_append (GTK_BOX (hbuttonbox6), window_nlab_ok_button);
+  }
 
+  if (window_nlab) {
   g_signal_connect ((gpointer) window_nlab, "delete_event",
                     G_CALLBACK (on_window_nlab_delete_event),
                     NULL);
+  }
+  if (window_nlab_ok_button) {
   g_signal_connect ((gpointer) window_nlab_ok_button, "clicked",
                     G_CALLBACK (on_window_nlab_ok_clicked),
                     NULL);
+  }
 
   /* Store pointers to all widgets, for use by lookup_widget(). */
   GLADE_HOOKUP_OBJECT_NO_REF (window_nlab, window_nlab, "window_nlab");
@@ -9435,30 +12032,40 @@ create_window_about (void)
 
   vbox69 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
   gtk_widget_show (vbox69);
-  gtk_box_append (GTK_BOX (window_about), vbox69);
+  gtk_window_set_child (GTK_WINDOW (window_about), vbox69);  /* GTK-4: windows use set_child, not box_append */
   /* gtk_container_set_border_width removed in GTK-3 */
 
   pixmap1 = create_pixmap (window_about, "xfresco_logo3.xpm");
   gtk_widget_show (pixmap1);
+  if (GTK_IS_BOX(vbox69) && GTK_IS_WIDGET(pixmap1)) {
   gtk_box_append (GTK_BOX (vbox69), pixmap1);
+  }
 
   hseparator3 = gtk_separator_new(GTK_ORIENTATION_VERTICAL); /* vseparator/hseparator removed */
   gtk_widget_show (hseparator3);
+  if (GTK_IS_BOX(vbox69) && GTK_IS_WIDGET(hseparator3)) {
   gtk_box_append (GTK_BOX (vbox69), hseparator3);
+  }
 
   label901 = gtk_label_new (_("Xfresco version 2.2\nby A. Moro (1999-2009)"));
   gtk_widget_show (label901);
+  if (GTK_IS_BOX(vbox69) && GTK_IS_WIDGET(label901)) {
   gtk_box_append (GTK_BOX (vbox69), label901);
+  }
   gtk_label_set_justify (GTK_LABEL (label901), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
 
   hseparator4 = gtk_separator_new(GTK_ORIENTATION_VERTICAL); /* vseparator/hseparator removed */
   gtk_widget_show (hseparator4);
+  if (GTK_IS_BOX(vbox69) && GTK_IS_WIDGET(hseparator4)) {
   gtk_box_append (GTK_BOX (vbox69), hseparator4);
+  }
 
   about_button_ok = gtk_button_new_with_mnemonic (_("Close"));
   gtk_widget_show (about_button_ok);
+  if (GTK_IS_BOX(vbox69) && GTK_IS_WIDGET(about_button_ok)) {
   gtk_box_append (GTK_BOX (vbox69), about_button_ok);
+  }
 
   g_signal_connect_swapped ((gpointer) about_button_ok, "clicked",
                             G_CALLBACK (gtk_window_destroy), /* was gtk_widget_destroy */
@@ -9523,50 +12130,68 @@ create_window2 (void)
 
   fixed18 = gtk_fixed_new ();
   gtk_widget_show (fixed18);
+  if (GTK_IS_BOX(window2) && GTK_IS_WIDGET(fixed18)) {
   gtk_box_append (GTK_BOX (window2), fixed18);
+  }
 
   over_ic1_adj = gtk_adjustment_new (1, 0, 100, 1, 10, 10);
   over_ic1 = gtk_spin_button_new (GTK_ADJUSTMENT (over_ic1_adj), 1, 0);
   gtk_widget_show (over_ic1);
   gtk_fixed_put (GTK_FIXED (fixed18), over_ic1, 168, 56);
+  if (GTK_IS_WIDGET(over_ic1)) {
   gtk_widget_set_size_request (over_ic1, 0, 0); /* added missing args */
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
 
   over_ic2_adj = gtk_adjustment_new (1, 0, 100, 1, 10, 10);
   over_ic2 = gtk_spin_button_new (GTK_ADJUSTMENT (over_ic2_adj), 1, 0);
   gtk_widget_show (over_ic2);
   gtk_fixed_put (GTK_FIXED (fixed18), over_ic2, 224, 56);
+  if (GTK_IS_WIDGET(over_ic2)) {
   gtk_widget_set_size_request (over_ic2, 0, 0); /* added missing args */
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
 
   clist1 = gtk_tree_view_new ();
   gtk_widget_show (clist1);
   gtk_fixed_put (GTK_FIXED (fixed18), clist1, 640, 152);
+  if (GTK_IS_WIDGET(clist1)) {
   gtk_widget_set_size_request (clist1, 0, 0); /* added missing args */
+  }
 
   vbox25 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
   gtk_widget_show (vbox25);
   gtk_fixed_put (GTK_FIXED (fixed18), vbox25, 0, 0);
+  if (GTK_IS_WIDGET(vbox25)) {
   gtk_widget_set_size_request (vbox25, 0, 0); /* added missing args */
+  }
 
   vpaned1 = gtk_paned_new (GTK_ORIENTATION_VERTICAL); /* was gtk_vpaned_new() */
   gtk_widget_show (vpaned1);
+  if (GTK_IS_BOX(vbox25) && GTK_IS_WIDGET(vpaned1)) {
   gtk_box_append (GTK_BOX (vbox25), vpaned1);
+  }
 
   hbox92 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   gtk_widget_show (hbox92);
   gtk_fixed_put (GTK_FIXED (fixed18), hbox92, 0, 0);
+  if (GTK_IS_WIDGET(hbox92)) {
   gtk_widget_set_size_request (hbox92, 0, 0); /* added missing args */
+  }
 
   frame118 = gtk_frame_new (NULL);
   gtk_widget_show (frame118);
   gtk_fixed_put (GTK_FIXED (fixed18), frame118, 0, 0);
+  if (GTK_IS_WIDGET(frame118)) {
   gtk_widget_set_size_request (frame118, 0, 0); /* added missing args */
+  }
 
   frame_nearfa = gtk_frame_new (NULL);
   gtk_widget_show (frame_nearfa);
   gtk_fixed_put (GTK_FIXED (fixed18), frame_nearfa, 72, 432);
+  if (GTK_IS_WIDGET(frame_nearfa)) {
   gtk_widget_set_size_request (frame_nearfa, 0, 0); /* added missing args */
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
 
   vbox13 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
@@ -9575,11 +12200,15 @@ create_window2 (void)
 
   hbox64 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   gtk_widget_show (hbox64);
+  if (GTK_IS_BOX(vbox13) && GTK_IS_WIDGET(hbox64)) {
   gtk_box_append (GTK_BOX (vbox13), hbox64);
+  }
 
   frame68 = gtk_frame_new (NULL);
   gtk_widget_show (frame68);
+  if (GTK_IS_BOX(hbox64) && GTK_IS_WIDGET(frame68)) {
   gtk_box_append (GTK_BOX (hbox64), frame68);
+  }
 
   hbox65 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   gtk_widget_show (hbox65);
@@ -9587,16 +12216,22 @@ create_window2 (void)
 
   rb_nearfa_el = gtk_check_button_new_with_mnemonic (_("Elastic channel")) /* was gtk_radio_button */;
   gtk_widget_show (rb_nearfa_el);
+  if (GTK_IS_BOX(hbox65) && GTK_IS_WIDGET(rb_nearfa_el)) {
   gtk_box_append (GTK_BOX (hbox65), rb_nearfa_el);
+  }
 
   rb_nearfa_all = gtk_check_button_new_with_mnemonic (_("All channels")) /* was gtk_radio_button */;
   gtk_widget_show (rb_nearfa_all);
+  if (GTK_IS_BOX(hbox65) && GTK_IS_WIDGET(rb_nearfa_all)) {
   gtk_box_append (GTK_BOX (hbox65), rb_nearfa_all);
+  }
   gtk_check_button_set_group (GTK_CHECK_BUTTON (rb_nearfa_all), GTK_CHECK_BUTTON (rb_nearfa_el));
 
   frame69 = gtk_frame_new (NULL);
   gtk_widget_show (frame69);
+  if (GTK_IS_BOX(vbox13) && GTK_IS_WIDGET(frame69)) {
   gtk_box_append (GTK_BOX (vbox13), frame69);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
 
   vbox39 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
@@ -9605,16 +12240,22 @@ create_window2 (void)
 
   rb_usualcs = gtk_check_button_new_with_mnemonic (_("Usual cross sections")) /* was gtk_radio_button */;
   gtk_widget_show (rb_usualcs);
+  if (GTK_IS_BOX(vbox39) && GTK_IS_WIDGET(rb_usualcs)) {
   gtk_box_append (GTK_BOX (vbox39), rb_usualcs);
+  }
 
   rb_fs = gtk_check_button_new_with_mnemonic (_("Usual + far side")) /* was gtk_radio_button */;
   gtk_widget_show (rb_fs);
+  if (GTK_IS_BOX(vbox39) && GTK_IS_WIDGET(rb_fs)) {
   gtk_box_append (GTK_BOX (vbox39), rb_fs);
+  }
   gtk_check_button_set_group (GTK_CHECK_BUTTON (rb_fs), GTK_CHECK_BUTTON (rb_usualcs));
 
   rb_fsns = gtk_check_button_new_with_mnemonic (_("Usual + far side + near side")) /* was gtk_radio_button */;
   gtk_widget_show (rb_fsns);
+  if (GTK_IS_BOX(vbox39) && GTK_IS_WIDGET(rb_fsns)) {
   gtk_box_append (GTK_BOX (vbox39), rb_fsns);
+  }
   gtk_check_button_set_group (GTK_CHECK_BUTTON (rb_fsns), GTK_CHECK_BUTTON (rb_usualcs));
 
   label979 = gtk_label_new (_("Near-side / Far-side analysis"));
@@ -9624,7 +12265,9 @@ create_window2 (void)
   frame_nnu = gtk_frame_new (NULL);
   gtk_widget_show (frame_nnu);
   gtk_fixed_put (GTK_FIXED (fixed18), frame_nnu, 0, 0);
+  if (GTK_IS_WIDGET(frame_nnu)) {
   gtk_widget_set_size_request (frame_nnu, 0, 0); /* added missing args */
+  }
 
   table51 = gtk_grid_new(); /* gtk_table_new removed - using gtk_grid_new */
   gtk_widget_show (table51);
@@ -9640,7 +12283,9 @@ create_window2 (void)
   /* opt_isc = gtk_option_menu_new...; */ opt_isc = NULL;
   /* gtk_widget_show (opt_isc);  - NULL widget */
   gtk_fixed_put (GTK_FIXED (fixed18), opt_isc, 128, 272);
+  if (GTK_IS_WIDGET(opt_isc)) {
   gtk_widget_set_size_request (opt_isc, 0, 0); /* added missing args */
+  }
 
   /* GtkMenu removed in GTK-4 */
 
@@ -9687,7 +12332,9 @@ create_window2 (void)
   frame112 = gtk_frame_new (NULL);
   gtk_widget_show (frame112);
   gtk_fixed_put (GTK_FIXED (fixed18), frame112, 40, 80);
+  if (GTK_IS_WIDGET(frame112)) {
   gtk_widget_set_size_request (frame112, 0, 0); /* added missing args */
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
 
   label961 = gtk_label_new (_("For this overlap"));
@@ -9767,16 +12414,20 @@ create_window_files (void)
 
   vbox72 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
   gtk_widget_show (vbox72);
-  gtk_box_append (GTK_BOX (window_files), vbox72);
+  gtk_window_set_child (GTK_WINDOW (window_files), vbox72);  /* GTK-4: windows use set_child, not box_append */
 
   label919 = gtk_label_new (_("I/O files"));
   gtk_widget_show (label919);
+  if (GTK_IS_BOX(vbox72) && GTK_IS_WIDGET(label919)) {
   gtk_box_append (GTK_BOX (vbox72), label919);
+  }
   gtk_label_set_justify (GTK_LABEL (label919), GTK_JUSTIFY_CENTER);
 
   scrolledwindow10 = gtk_scrolled_window_new ();
   gtk_widget_show (scrolledwindow10);
+  if (GTK_IS_BOX(vbox72) && GTK_IS_WIDGET(scrolledwindow10)) {
   gtk_box_append (GTK_BOX (vbox72), scrolledwindow10);
+  }
   /* GTK_WIDGET_UNSET_FLAGS removed in GTK-3 */
 
   viewport1 = gtk_viewport_new (NULL, NULL);
@@ -9789,97 +12440,153 @@ create_window_files (void)
 
   entry_file40 = gtk_entry_new ();
   gtk_widget_show (entry_file40);
+  if (GTK_IS_GRID(table74) && GTK_IS_WIDGET(entry_file40)) {
   gtk_grid_attach (GTK_GRID (table74), entry_file40, 1, 4, 1, 1);
+  }
+  if (GTK_IS_WIDGET(entry_file40)) {
   gtk_widget_set_hexpand (entry_file40, TRUE);
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_file40), 8226);
 
   entry_file48 = gtk_entry_new ();
   gtk_widget_show (entry_file48);
+  if (GTK_IS_GRID(table74) && GTK_IS_WIDGET(entry_file48)) {
   gtk_grid_attach (GTK_GRID (table74), entry_file48, 1, 6, 1, 1);
+  }
+  if (GTK_IS_WIDGET(entry_file48)) {
   gtk_widget_set_hexpand (entry_file48, TRUE);
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_file48), 8226);
 
   entry_file46 = gtk_entry_new ();
   gtk_widget_show (entry_file46);
+  if (GTK_IS_GRID(table74) && GTK_IS_WIDGET(entry_file46)) {
   gtk_grid_attach (GTK_GRID (table74), entry_file46, 1, 5, 1, 1);
+  }
+  if (GTK_IS_WIDGET(entry_file46)) {
   gtk_widget_set_hexpand (entry_file46, TRUE);
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_file46), 8226);
 
   entry_fil39 = gtk_entry_new ();
   gtk_widget_show (entry_fil39);
+  if (GTK_IS_GRID(table74) && GTK_IS_WIDGET(entry_fil39)) {
   gtk_grid_attach (GTK_GRID (table74), entry_fil39, 1, 3, 1, 1);
+  }
+  if (GTK_IS_WIDGET(entry_fil39)) {
   gtk_widget_set_hexpand (entry_fil39, TRUE);
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_fil39), 8226);
 
   entry_file16 = gtk_entry_new ();
   gtk_widget_show (entry_file16);
+  if (GTK_IS_GRID(table74) && GTK_IS_WIDGET(entry_file16)) {
   gtk_grid_attach (GTK_GRID (table74), entry_file16, 1, 2, 1, 1);
+  }
+  if (GTK_IS_WIDGET(entry_file16)) {
   gtk_widget_set_hexpand (entry_file16, TRUE);
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_file16), 8226);
 
   entry_file13 = gtk_entry_new ();
   gtk_widget_show (entry_file13);
+  if (GTK_IS_GRID(table74) && GTK_IS_WIDGET(entry_file13)) {
   gtk_grid_attach (GTK_GRID (table74), entry_file13, 1, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(entry_file13)) {
   gtk_widget_set_hexpand (entry_file13, TRUE);
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_file13), 8226);
 
   entry_file10 = gtk_entry_new ();
   gtk_widget_show (entry_file10);
+  if (GTK_IS_GRID(table74) && GTK_IS_WIDGET(entry_file10)) {
   gtk_grid_attach (GTK_GRID (table74), entry_file10, 1, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(entry_file10)) {
   gtk_widget_set_hexpand (entry_file10, TRUE);
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_file10), 8226);
 
   entry_file56 = gtk_entry_new ();
   gtk_widget_show (entry_file56);
+  if (GTK_IS_GRID(table74) && GTK_IS_WIDGET(entry_file56)) {
   gtk_grid_attach (GTK_GRID (table74), entry_file56, 1, 7, 1, 1);
+  }
+  if (GTK_IS_WIDGET(entry_file56)) {
   gtk_widget_set_hexpand (entry_file56, TRUE);
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_file56), 8226);
 
   check_file48 = gtk_check_button_new_with_mnemonic (_("48 -Concurreny log file"));
   gtk_widget_show (check_file48);
+  if (GTK_IS_GRID(table74) && GTK_IS_WIDGET(check_file48)) {
   gtk_grid_attach (GTK_GRID (table74), check_file48, 0, 6, 1, 1);
+  }
 
   check_file56 = gtk_check_button_new_with_mnemonic (_("56 -Fusion for each Jtotal"));
   gtk_widget_show (check_file56);
+  if (GTK_IS_GRID(table74) && GTK_IS_WIDGET(check_file56)) {
   gtk_grid_attach (GTK_GRID (table74), check_file56, 0, 7, 1, 1);
+  }
 
   check_file40 = gtk_check_button_new_with_mnemonic (_("40 -All x-sections for each Elab"));
   gtk_widget_show (check_file40);
+  if (GTK_IS_GRID(table74) && GTK_IS_WIDGET(check_file40)) {
   gtk_grid_attach (GTK_GRID (table74), check_file40, 0, 4, 1, 1);
+  }
 
   check_file39 = gtk_check_button_new_with_mnemonic (_("39 -Cross sections for each Ecm"));
   gtk_widget_show (check_file39);
+  if (GTK_IS_GRID(table74) && GTK_IS_WIDGET(check_file39)) {
   gtk_grid_attach (GTK_GRID (table74), check_file39, 0, 3, 1, 1);
+  }
 
   check_file13 = gtk_check_button_new_with_mnemonic (_("13 -Total x-sections/state"));
   gtk_widget_show (check_file13);
+  if (GTK_IS_GRID(table74) && GTK_IS_WIDGET(check_file13)) {
   gtk_grid_attach (GTK_GRID (table74), check_file13, 0, 1, 1, 1);
+  }
 
   check_file10 = gtk_check_button_new_with_mnemonic (_("10 -S-matrix elements"));
   gtk_widget_show (check_file10);
+  if (GTK_IS_GRID(table74) && GTK_IS_WIDGET(check_file10)) {
   gtk_grid_attach (GTK_GRID (table74), check_file10, 0, 0, 1, 1);
+  }
 
   check_file16 = gtk_check_button_new_with_mnemonic (_("16 -Tables of x-sections"));
   gtk_widget_show (check_file16);
+  if (GTK_IS_GRID(table74) && GTK_IS_WIDGET(check_file16)) {
   gtk_grid_attach (GTK_GRID (table74), check_file16, 0, 2, 1, 1);
+  }
 
   check_file46 = gtk_check_button_new_with_mnemonic (_("46 -bs wave functions & ANC ratios"));
   gtk_widget_show (check_file46);
+  if (GTK_IS_GRID(table74) && GTK_IS_WIDGET(check_file46)) {
   gtk_grid_attach (GTK_GRID (table74), check_file46, 0, 5, 1, 1);
+  }
 
   check_file2xx = gtk_check_button_new_with_mnemonic (_("2xx -Separate x-sections"));
   gtk_widget_show (check_file2xx);
+  if (GTK_IS_GRID(table74) && GTK_IS_WIDGET(check_file2xx)) {
   gtk_grid_attach (GTK_GRID (table74), check_file2xx, 0, 8, 1, 1);
+  }
 
   entry_file2xx = gtk_entry_new ();
   gtk_widget_show (entry_file2xx);
+  if (GTK_IS_GRID(table74) && GTK_IS_WIDGET(entry_file2xx)) {
   gtk_grid_attach (GTK_GRID (table74), entry_file2xx, 1, 8, 1, 1);
+  }
+  if (GTK_IS_WIDGET(entry_file2xx)) {
   gtk_widget_set_hexpand (entry_file2xx, TRUE);
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_file2xx), 8226);
 
+  if (window_files) {
   g_signal_connect ((gpointer) window_files, "delete_event",
                     G_CALLBACK (on_window_files_delete_event),
                     NULL);
+  }
 
   /* Store pointers to all widgets, for use by lookup_widget(). */
   GLADE_HOOKUP_OBJECT_NO_REF (window_files, window_files, "window_files");
@@ -9963,12 +12670,14 @@ create_window_Rmatrix (void)
 
   vbox_rmatrix = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
   gtk_widget_show (vbox_rmatrix);
-  gtk_box_append (GTK_BOX (window_Rmatrix), vbox_rmatrix);
+  gtk_window_set_child (GTK_WINDOW (window_Rmatrix), vbox_rmatrix);  /* GTK-4: windows use set_child, not box_append */
   /* gtk_container_set_border_width removed in GTK-3 */
 
   frame_Rmatrix = gtk_frame_new (NULL);
   gtk_widget_show (frame_Rmatrix);
+  if (GTK_IS_BOX(vbox_rmatrix) && GTK_IS_WIDGET(frame_Rmatrix)) {
   gtk_box_append (GTK_BOX (vbox_rmatrix), frame_Rmatrix);
+  }
 
   table75 = gtk_grid_new(); /* gtk_table_new removed - using gtk_grid_new */
   gtk_widget_show (table75);
@@ -9976,49 +12685,67 @@ create_window_Rmatrix (void)
 
   label925 = gtk_label_new (_("NRBASES: "));
   gtk_widget_show (label925);
+  if (GTK_IS_GRID(table75) && GTK_IS_WIDGET(label925)) {
   gtk_grid_attach (GTK_GRID (table75), label925, 0, 0, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label925), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
 
   label926 = gtk_label_new (_("NRBMIN:"));
   gtk_widget_show (label926);
+  if (GTK_IS_GRID(table75) && GTK_IS_WIDGET(label926)) {
   gtk_grid_attach (GTK_GRID (table75), label926, 0, 1, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label926), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
 
   label927 = gtk_label_new (_("PRALPHA:"));
   gtk_widget_show (label927);
+  if (GTK_IS_GRID(table75) && GTK_IS_WIDGET(label927)) {
   gtk_grid_attach (GTK_GRID (table75), label927, 0, 3, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label927), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
 
   label928 = gtk_label_new (_("MEIGS:"));
   gtk_widget_show (label928);
+  if (GTK_IS_GRID(table75) && GTK_IS_WIDGET(label928)) {
   gtk_grid_attach (GTK_GRID (table75), label928, 0, 5, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label928), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
 
   label929 = gtk_label_new (_("RMATR:"));
   gtk_widget_show (label929);
+  if (GTK_IS_GRID(table75) && GTK_IS_WIDGET(label929)) {
   gtk_grid_attach (GTK_GRID (table75), label929, 0, 6, 1, 1);
+  }
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
 
   label930 = gtk_label_new (_("EBETA(1,2):"));
   gtk_widget_show (label930);
+  if (GTK_IS_GRID(table75) && GTK_IS_WIDGET(label930)) {
   gtk_grid_attach (GTK_GRID (table75), label930, 0, 7, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label930), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
 
   label931 = gtk_label_new (_("PCON:"));
   gtk_widget_show (label931);
+  if (GTK_IS_GRID(table75) && GTK_IS_WIDGET(label931)) {
   gtk_grid_attach (GTK_GRID (table75), label931, 0, 4, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label931), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
 
   entry_rmatr = gtk_entry_new ();
   gtk_widget_show (entry_rmatr);
+  if (GTK_IS_GRID(table75) && GTK_IS_WIDGET(entry_rmatr)) {
   gtk_grid_attach (GTK_GRID (table75), entry_rmatr, 1, 6, 1, 1);
+  }
+  if (GTK_IS_WIDGET(entry_rmatr)) {
   gtk_widget_set_hexpand (entry_rmatr, TRUE);
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
   gtk_editable_set_text (GTK_EDITABLE (entry_rmatr), _("0.0"));
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_rmatr), 8226);
@@ -10028,7 +12755,9 @@ create_window_Rmatrix (void)
 
   /* opt_pcon = gtk_option_menu_new...; */ opt_pcon = NULL;
   /* gtk_widget_show (opt_pcon);  - NULL widget */
+  if (GTK_IS_GRID(table75) && GTK_IS_WIDGET(opt_pcon)) {
   gtk_grid_attach (GTK_GRID (table75), opt_pcon, 1, 4, 1, 1);
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
 
   /* GtkMenu removed in GTK-4 */
@@ -10075,28 +12804,42 @@ create_window_Rmatrix (void)
 
   check_pralpha = gtk_check_button_new_with_mnemonic ("");
   gtk_widget_show (check_pralpha);
+  if (GTK_IS_GRID(table75) && GTK_IS_WIDGET(check_pralpha)) {
   gtk_grid_attach (GTK_GRID (table75), check_pralpha, 1, 3, 1, 1);
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
 
   spin_meigs_adj = gtk_adjustment_new (0, 0, 100, 1, 10, 10);
   spin_meigs = gtk_spin_button_new (GTK_ADJUSTMENT (spin_meigs_adj), 1, 0);
   gtk_widget_show (spin_meigs);
+  if (GTK_IS_GRID(table75) && GTK_IS_WIDGET(spin_meigs)) {
   gtk_grid_attach (GTK_GRID (table75), spin_meigs, 1, 5, 1, 1);
+  }
+  if (GTK_IS_WIDGET(spin_meigs)) {
   gtk_widget_set_hexpand (spin_meigs, TRUE);
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
 
   spin_nrbmin_adj = gtk_adjustment_new (0, 0, 100, 1, 10, 10);
   spin_nrbmin = gtk_spin_button_new (GTK_ADJUSTMENT (spin_nrbmin_adj), 1, 0);
   gtk_widget_show (spin_nrbmin);
+  if (GTK_IS_GRID(table75) && GTK_IS_WIDGET(spin_nrbmin)) {
   gtk_grid_attach (GTK_GRID (table75), spin_nrbmin, 1, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(spin_nrbmin)) {
   gtk_widget_set_hexpand (spin_nrbmin, TRUE);
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
 
   spin_nrbases_adj = gtk_adjustment_new (0, 0, 100, 1, 10, 10);
   spin_nrbases = gtk_spin_button_new (GTK_ADJUSTMENT (spin_nrbases_adj), 1, 0);
   gtk_widget_show (spin_nrbases);
+  if (GTK_IS_GRID(table75) && GTK_IS_WIDGET(spin_nrbases)) {
   gtk_grid_attach (GTK_GRID (table75), spin_nrbases, 1, 0, 1, 1);
+  }
+  if (GTK_IS_WIDGET(spin_nrbases)) {
   gtk_widget_set_hexpand (spin_nrbases, TRUE);
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
 
   /* GtkOptionMenu removed - use GtkDropDown */
@@ -10104,7 +12847,9 @@ create_window_Rmatrix (void)
 
   /* opt_buttle = gtk_option_menu_new...; */ opt_buttle = NULL;
   /* gtk_widget_show (opt_buttle);  - NULL widget */
+  if (GTK_IS_GRID(table75) && GTK_IS_WIDGET(opt_buttle)) {
   gtk_grid_attach (GTK_GRID (table75), opt_buttle, 1, 2, 1, 1);
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
 
   /* GtkMenu removed in GTK-4 */
@@ -10151,50 +12896,68 @@ create_window_Rmatrix (void)
 
   label942 = gtk_label_new (_("BUTTLE:"));
   gtk_widget_show (label942);
+  if (GTK_IS_GRID(table75) && GTK_IS_WIDGET(label942)) {
   gtk_grid_attach (GTK_GRID (table75), label942, 0, 2, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label942), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
 
   label944 = gtk_label_new (_("WEAK:"));
   gtk_widget_show (label944);
+  if (GTK_IS_GRID(table75) && GTK_IS_WIDGET(label944)) {
   gtk_grid_attach (GTK_GRID (table75), label944, 0, 8, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label944), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_alignment removed in GTK-4 - use CSS */
 
   entry_weak = gtk_entry_new ();
   gtk_widget_show (entry_weak);
+  if (GTK_IS_GRID(table75) && GTK_IS_WIDGET(entry_weak)) {
   gtk_grid_attach (GTK_GRID (table75), entry_weak, 1, 8, 1, 1);
+  }
+  if (GTK_IS_WIDGET(entry_weak)) {
   gtk_widget_set_hexpand (entry_weak, TRUE);
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
   gtk_editable_set_text (GTK_EDITABLE (entry_weak), _("0.0"));
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_weak), 8226);
 
   hbox89 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   gtk_widget_show (hbox89);
+  if (GTK_IS_GRID(table75) && GTK_IS_WIDGET(hbox89)) {
   gtk_grid_attach (GTK_GRID (table75), hbox89, 1, 7, 1, 1);
+  }
 
   label_ebeta1 = gtk_label_new (_("1: "));
   gtk_widget_show (label_ebeta1);
+  if (GTK_IS_BOX(hbox89) && GTK_IS_WIDGET(label_ebeta1)) {
   gtk_box_append (GTK_BOX (hbox89), label_ebeta1);
+  }
   gtk_label_set_justify (GTK_LABEL (label_ebeta1), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
 
   entry_ebeta = gtk_entry_new ();
   gtk_widget_show (entry_ebeta);
+  if (GTK_IS_BOX(hbox89) && GTK_IS_WIDGET(entry_ebeta)) {
   gtk_box_append (GTK_BOX (hbox89), entry_ebeta);
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
   gtk_editable_set_text (GTK_EDITABLE (entry_ebeta), _("0.0"));
   gtk_entry_set_invisible_char (GTK_ENTRY (entry_ebeta), 8226);
 
   label_ebeta2 = gtk_label_new (_("2: "));
   gtk_widget_show (label_ebeta2);
+  if (GTK_IS_BOX(hbox89) && GTK_IS_WIDGET(label_ebeta2)) {
   gtk_box_append (GTK_BOX (hbox89), label_ebeta2);
+  }
   gtk_label_set_justify (GTK_LABEL (label_ebeta2), GTK_JUSTIFY_CENTER);
   /* gtk_misc_set_padding removed in GTK-4 - use CSS */
 
   entry280 = gtk_entry_new ();
   gtk_widget_show (entry280);
+  if (GTK_IS_BOX(hbox89) && GTK_IS_WIDGET(entry280)) {
   gtk_box_append (GTK_BOX (hbox89), entry280);
+  }
   /* gtk_tooltips_set_tip removed in GTK-3 - use gtk_widget_set_tooltip_text */
   gtk_editable_set_text (GTK_EDITABLE (entry280), _("0.0"));
   gtk_entry_set_invisible_char (GTK_ENTRY (entry280), 8226);
@@ -10205,18 +12968,26 @@ create_window_Rmatrix (void)
 
   hseparator7 = gtk_separator_new(GTK_ORIENTATION_VERTICAL); /* vseparator/hseparator removed */
   gtk_widget_show (hseparator7);
+  if (GTK_IS_BOX(vbox_rmatrix) && GTK_IS_WIDGET(hseparator7)) {
   gtk_box_append (GTK_BOX (vbox_rmatrix), hseparator7);
+  }
 
   Rmat_close = gtk_button_new_with_mnemonic (_("Close"));
   gtk_widget_show (Rmat_close);
+  if (GTK_IS_BOX(vbox_rmatrix) && GTK_IS_WIDGET(Rmat_close)) {
   gtk_box_append (GTK_BOX (vbox_rmatrix), Rmat_close);
+  }
 
+  if (window_Rmatrix) {
   g_signal_connect ((gpointer) window_Rmatrix, "delete_event",
                     G_CALLBACK (on_window_Rmatrix_delete_event),
                     NULL);
+  }
+  if (Rmat_close) {
   g_signal_connect ((gpointer) Rmat_close, "clicked",
                     G_CALLBACK (on_Rmat_ok_clicked),
                     NULL);
+  }
 
   /* Store pointers to all widgets, for use by lookup_widget(). */
   GLADE_HOOKUP_OBJECT_NO_REF (window_Rmatrix, window_Rmatrix, "window_Rmatrix");
@@ -10295,11 +13066,13 @@ create_window_eintervals (void)
 
   vbox77 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 7);
   gtk_widget_show (vbox77);
-  gtk_box_append (GTK_BOX (window_eintervals), vbox77);
+  gtk_window_set_child (GTK_WINDOW (window_eintervals), vbox77);  /* GTK-4: windows use set_child, not box_append */
 
   frame115 = gtk_frame_new (NULL);
   gtk_widget_show (frame115);
+  if (GTK_IS_BOX(vbox77) && GTK_IS_WIDGET(frame115)) {
   gtk_box_append (GTK_BOX (vbox77), frame115);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
 
   table76 = gtk_grid_new(); /* gtk_table_new removed - using gtk_grid_new */
@@ -10311,79 +13084,131 @@ create_window_eintervals (void)
 
   elab1 = gtk_entry_new ();
   gtk_widget_show (elab1);
+  if (GTK_IS_GRID(table76) && GTK_IS_WIDGET(elab1)) {
   gtk_grid_attach (GTK_GRID (table76), elab1, 0, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(elab1)) {
   gtk_widget_set_hexpand (elab1, TRUE);
+  }
+  if (GTK_IS_WIDGET(elab1)) {
   gtk_widget_set_vexpand (elab1, TRUE);
+  }
   gtk_editable_set_editable (GTK_EDITABLE (elab1), FALSE);
   gtk_entry_set_invisible_char (GTK_ENTRY (elab1), 8226);
 
   nlab2 = gtk_entry_new ();
   gtk_widget_show (nlab2);
+  if (GTK_IS_GRID(table76) && GTK_IS_WIDGET(nlab2)) {
   gtk_grid_attach (GTK_GRID (table76), nlab2, 2, 2, 1, 1);
+  }
+  if (GTK_IS_WIDGET(nlab2)) {
   gtk_widget_set_hexpand (nlab2, TRUE);
+  }
+  if (GTK_IS_WIDGET(nlab2)) {
   gtk_widget_set_vexpand (nlab2, TRUE);
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (nlab2), 8226);
 
   nlab1 = gtk_entry_new ();
   gtk_widget_show (nlab1);
+  if (GTK_IS_GRID(table76) && GTK_IS_WIDGET(nlab1)) {
   gtk_grid_attach (GTK_GRID (table76), nlab1, 2, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(nlab1)) {
   gtk_widget_set_hexpand (nlab1, TRUE);
+  }
+  if (GTK_IS_WIDGET(nlab1)) {
   gtk_widget_set_vexpand (nlab1, TRUE);
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (nlab1), 8226);
 
   elab3b = gtk_entry_new ();
   gtk_widget_show (elab3b);
+  if (GTK_IS_GRID(table76) && GTK_IS_WIDGET(elab3b)) {
   gtk_grid_attach (GTK_GRID (table76), elab3b, 0, 3, 1, 1);
+  }
+  if (GTK_IS_WIDGET(elab3b)) {
   gtk_widget_set_hexpand (elab3b, TRUE);
+  }
+  if (GTK_IS_WIDGET(elab3b)) {
   gtk_widget_set_vexpand (elab3b, TRUE);
+  }
   gtk_editable_set_editable (GTK_EDITABLE (elab3b), FALSE);
   gtk_entry_set_invisible_char (GTK_ENTRY (elab3b), 8226);
 
   nlab3 = gtk_entry_new ();
   gtk_widget_show (nlab3);
+  if (GTK_IS_GRID(table76) && GTK_IS_WIDGET(nlab3)) {
   gtk_grid_attach (GTK_GRID (table76), nlab3, 2, 3, 1, 1);
+  }
+  if (GTK_IS_WIDGET(nlab3)) {
   gtk_widget_set_hexpand (nlab3, TRUE);
+  }
+  if (GTK_IS_WIDGET(nlab3)) {
   gtk_widget_set_vexpand (nlab3, TRUE);
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (nlab3), 8226);
 
   label938 = gtk_label_new (_("From"));
   gtk_widget_show (label938);
+  if (GTK_IS_GRID(table76) && GTK_IS_WIDGET(label938)) {
   gtk_grid_attach (GTK_GRID (table76), label938, 0, 0, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label938), GTK_JUSTIFY_CENTER);
 
   label941 = gtk_label_new (_("Linear intervals"));
   gtk_widget_show (label941);
+  if (GTK_IS_GRID(table76) && GTK_IS_WIDGET(label941)) {
   gtk_grid_attach (GTK_GRID (table76), label941, 2, 0, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label941), GTK_JUSTIFY_CENTER);
 
   label936 = gtk_label_new (_("To"));
   gtk_widget_show (label936);
+  if (GTK_IS_GRID(table76) && GTK_IS_WIDGET(label936)) {
   gtk_grid_attach (GTK_GRID (table76), label936, 1, 0, 1, 1);
+  }
   gtk_label_set_justify (GTK_LABEL (label936), GTK_JUSTIFY_CENTER);
 
   elab2b = gtk_entry_new ();
   gtk_widget_show (elab2b);
+  if (GTK_IS_GRID(table76) && GTK_IS_WIDGET(elab2b)) {
   gtk_grid_attach (GTK_GRID (table76), elab2b, 0, 2, 1, 1);
+  }
+  if (GTK_IS_WIDGET(elab2b)) {
   gtk_widget_set_hexpand (elab2b, TRUE);
+  }
   gtk_editable_set_editable (GTK_EDITABLE (elab2b), FALSE);
   gtk_entry_set_invisible_char (GTK_ENTRY (elab2b), 8226);
 
   elab2 = gtk_entry_new ();
   gtk_widget_show (elab2);
+  if (GTK_IS_GRID(table76) && GTK_IS_WIDGET(elab2)) {
   gtk_grid_attach (GTK_GRID (table76), elab2, 1, 1, 1, 1);
+  }
+  if (GTK_IS_WIDGET(elab2)) {
   gtk_widget_set_hexpand (elab2, TRUE);
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (elab2), 8226);
 
   elab3 = gtk_entry_new ();
   gtk_widget_show (elab3);
+  if (GTK_IS_GRID(table76) && GTK_IS_WIDGET(elab3)) {
   gtk_grid_attach (GTK_GRID (table76), elab3, 1, 2, 1, 1);
+  }
+  if (GTK_IS_WIDGET(elab3)) {
   gtk_widget_set_hexpand (elab3, TRUE);
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (elab3), 8226);
 
   elab4 = gtk_entry_new ();
   gtk_widget_show (elab4);
+  if (GTK_IS_GRID(table76) && GTK_IS_WIDGET(elab4)) {
   gtk_grid_attach (GTK_GRID (table76), elab4, 1, 3, 1, 1);
+  }
+  if (GTK_IS_WIDGET(elab4)) {
   gtk_widget_set_hexpand (elab4, TRUE);
+  }
   gtk_entry_set_invisible_char (GTK_ENTRY (elab4), 8226);
 
   label981 = gtk_label_new (_("Intervals: ELAB(i)      ELAB(i+1)         NLAB(i)"));
@@ -10392,33 +13217,49 @@ create_window_eintervals (void)
 
   hseparator8 = gtk_separator_new(GTK_ORIENTATION_VERTICAL); /* vseparator/hseparator removed */
   gtk_widget_show (hseparator8);
+  if (GTK_IS_BOX(vbox77) && GTK_IS_WIDGET(hseparator8)) {
   gtk_box_append (GTK_BOX (vbox77), hseparator8);
+  }
 
   hbuttonbox7 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0); /* button_box removed */
   gtk_widget_show (hbuttonbox7);
+  if (GTK_IS_BOX(vbox77) && GTK_IS_WIDGET(hbuttonbox7)) {
   gtk_box_append (GTK_BOX (vbox77), hbuttonbox7);
+  }
   gtk_box_set_spacing (GTK_BOX (hbuttonbox7), 25);
 
   einter_ok = gtk_button_new_with_mnemonic (_("OK"));
   gtk_widget_show (einter_ok);
+  if (GTK_IS_BOX(hbuttonbox7) && GTK_IS_WIDGET(einter_ok)) {
   gtk_box_append (GTK_BOX (hbuttonbox7), einter_ok);
+  }
   /* gtk_container_set_border_width removed in GTK-3 */
 
+  if (window_eintervals) {
   g_signal_connect ((gpointer) window_eintervals, "delete_event",
                     G_CALLBACK (on_window_ener_delete_event),
                     NULL);
+  }
+  if (elab1) {
   g_signal_connect ((gpointer) elab1, "changed",
                     G_CALLBACK (on_elab1_changed),
                     NULL);
+  }
+  if (elab2) {
   g_signal_connect ((gpointer) elab2, "changed",
                     G_CALLBACK (on_elab2_changed),
                     NULL);
+  }
+  if (elab3) {
   g_signal_connect ((gpointer) elab3, "changed",
                     G_CALLBACK (on_elab3_changed),
                     NULL);
+  }
+  if (einter_ok) {
   g_signal_connect ((gpointer) einter_ok, "clicked",
                     G_CALLBACK (on_jbord_ok_button_clicked),
                     NULL);
+  }
 
   /* Store pointers to all widgets, for use by lookup_widget(). */
   GLADE_HOOKUP_OBJECT_NO_REF (window_eintervals, window_eintervals, "window_eintervals");
