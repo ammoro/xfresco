@@ -54,7 +54,7 @@ extern gboolean file_changed ;
 /* A key used to store pointers to the main window. */
 extern const gchar *MainWindowKey;
 
-GtkWidget *main_window; 
+extern GtkWidget *main_window; 
 
 extern gchar *current_filename;
 

@@ -22,24 +22,23 @@
 #include <gtk/gtk.h>
 #include "clist_compat.h"
 
-enum {ZERO,
+/* Enum types - no variable declarations in header */
+enum BUTTONS_ENUM {ZERO,
       REPLACE,
       INSERT,
       ADD,
       DELETE
-}BUTTONS;
+};
 
-
-
-enum {
+enum STATES_ENUM {
   JP,COPYP,BANDP,EP,KKP,TP,CPOT,PWF,JT,COPYT,BANDT,ET,KKT,TT,EXCH,IGNORE,INFAM,OUTFAM
-}STATES;
+};
 
-enum {
+enum POTENTIALS_ENUM {
   KP,TYPE,ITT,SHAPE,DEF,MENP,MNET,AP,AT,RC,AC,P,P0,P1,P2,P3,P4,P5,P6,P7,
   V,R0,RV,VR0,A,AV,W,WR0,RW,AW,WA,R0W,VSL,RSL,RSO0,ASO,VSOI,RSOI,ASOI,WD,
   WDR,WDA,WDR0,AWD,DEFP,DEFT,VD,VDR,VDA
-}POTENTIALS;
+};
 
 
 /*
